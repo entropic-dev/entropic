@@ -81,11 +81,19 @@ on the resources of administrators.
 - INSTALLERS will be able to access VCPM packages through the registry.
 - INSTALLERS will not be subject to package privacy rules via access control lists.
 - MAINTAINERS will be subject to package access lists (who can publish which package?)
+- INSTALLERS may browse the registry via a website.
+- MAINTAINERS may create an account via the website.
 - Leave Stars out. :star2:
 - We want to demo _something_ by June 1st at JSConf EU.
     - Marketing can help nudge INSTALLERS and MAINTAINERS to move, avoiding CALAMITY.
     - It can also help some INSTALLERS and MAINTAINERS become ADMINISTRATORS, increasing
       our reserves of attention.
+- It is easy to put behind a CDN.
+- All packages are public.
+- All packages are namespaced by the originally-publishing entity.
+- Yes semver required. (discuss which standard)
+- We don't explicitly wish to make this API line up with other package manager APIs.
+    - Crates, VCPM, etc.
 
 # Open Questions & Consequences
 
@@ -113,6 +121,8 @@ on the resources of administrators.
     - Tink won't be ready by June 1st, _but_
     - Deno is also playing with this install-on-demand / CLI-less installer concept
     - This seems like a beneficial trend: then you just have to write a client for publishing
+- Which semver standard to use?
+- Do we want to let MAINTAINERS change package ACLs via the website?
 
 # Solutions
 
