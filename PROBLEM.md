@@ -9,8 +9,8 @@
 - [Solutions](#solutions)
   - [Just Build the Damn Registry From Scratch Again](#just-build-the-damn-registry-from-scratch-again)
   - [Or, Start With Verdaccio](#or-start-with-verdaccio)
-  - [A Moderately Content Addressible Take On The Situation, Publishes](#a-moderately-content-addressible-take-on-the-situation-publishes)
-  - [A Really Content Addressible Take On The Situation, Publishes and Installs](#a-really-content-addressible-take-on-the-situation-publishes-and-installs)
+  - [A Moderately Content Addressable Take On The Situation, Publishes](#a-moderately-content-addressable-take-on-the-situation-publishes)
+  - [A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
   - [Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
 ## Some background (star wars title scroll):
 
@@ -107,7 +107,7 @@ on the resources of administrators.
         - We'd need a new CLI.
     - If we're not supporting the legacy API, do we still want to store packuments,
       or should we break these down into "package version lists"?
-        - How far do we break things down? Into exploded files in a content addressible fashion?
+        - How far do we break things down? Into exploded files in a content addressable fashion?
 - What does it look like to sign up for the new registry?
     - There's a website flow, even from the CLI (github oauth?)
     - Prove that you own a VCPM account by publishing a placeholder package containing
@@ -140,14 +140,14 @@ on the resources of administrators.
 - Why not? They've got a start at a solution.
 - Does it save us time, attention, or the need to produce support docs?
 
-## A Moderately Content Addressible Take On The Situation, Publishes
+## A Moderately Content Addressable Take On The Situation, Publishes
 
 - Publish using Git, install using npm/yarn
 - This is probably a bad idea, on its own. The goal here would be to sidestep 2 things:
     1. Writing (and supporting) our own CLI.
     2. Supporting the base64'd tarball JSON of the legacy publish API.
 
-## A Really Content Addressible Take On The Situation, Publishes and Installs
+## A Really Content Addressable Take On The Situation, Publishes and Installs
 
 - Publish using Git/$newcli, install using tink/deno/$NEWCLI
 - Target the future!
