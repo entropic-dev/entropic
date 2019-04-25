@@ -169,4 +169,160 @@ on the resources of administrators.
 - Downside: it's a lot to do, and if we're leaning on Tink we already know we might slip.
 - **This is still an option.** It's really just an implementation detail of the above.
 
+# Proposed Solution
+
+## Objects
+
+### Packages
+
+* * *
+
+### PackageVersion
+
+* * *
+
+### PackageDistTag
+
+* * *
+
+### PackageMaintainer
+
+* * *
+
+## Actions
+
+### Install a package
+
+![installation](/assets/install.png)
+
+* * *
+
+### Publish a new package
+
+* * *
+
+### Publish a new version of a package
+
+* * *
+
+### Yank a version of a package
+
+* * *
+
+### Yank an entire package
+
+* * * 
+
+### Invite users to become maintainers of a package
+
+* * * 
+
+### Add or remove dist-tags of a package
+
+* * * 
+
+### Login to an existing account
+
+* * * 
+
+### Sign up for an account
+
+* * * 
+
+### Import account access from VCPM
+
+* * *
+
+## APIs
+
+New registry API Scheme:
+
+```
+GET     /packages
+GET     /packages/authored-by/<scope>
+GET     /packages/maintained-by/<scope>
+
+GET     /packages/package/<scope>/<name>
+GET     /packages/package/<scope>/<name>
+DELETE  /packages/package/<scope>/<name>                            # yank. still available, but not displayed anywhere. maintained only by "abandonware"
+
+GET     /packages/package/<scope>/<name>/dist-tags
+PUT     /packages/package/<scope>/<name>/dist-tags/latest           $DISALLOWED
+DELETE  /packages/package/<scope>/<name>/dist-tags/latest           $DISALLOWED
+PUT     /packages/package/<scope>/<name>/dist-tags/<tag>
+DELETE  /packages/package/<scope>/<name>/dist-tags/<tag>
+
+GET     /packages/package/<scope>/<name>/versions                   # version-list comes with hash of result of <files> call below
+PUT     /packages/package/<scope>/<name>/versions/<version>
+DELETE  /packages/package/<scope>/<name>/versions/<version>
+
+GET     /packages/package/<scope>/<name>/maintainers
+POST    /packages/package/<scope>/<name>/maintainers/<scope>
+DELETE  /packages/package/<scope>/<name>/maintainers/<scope>
+POST    /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # accept invitation to join/leave
+DELETE  /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # decline invitation to join/leave
+
+GET     /packages/package/<scope>/<name>/dependents
+GET     /packages/package/<scope>/<name>/dependencies
+
+GET     /packages/package/<scope>/<name>/readme
+
+GET     /packages/package/<scope>/<name>/files
+GET     /objects/object/<oid>
+
+GET     /packages/search
+
+POST    /auth/logout
+POST    /auth/login
+GET     /auth/login/ready
+GET     /auth/whoami
+
+GET     /changes
+```
+
+`scope` represents a user. Eventually we may allow teams to be created (for free.)
+
+We will reserve two scopes up-front: `legacy` and `abandonware`. `legacy` is
+special-cased and reads through to the legacy VCPM API. When a package is
+deleted by a user, access is transferred to `abandonware`.
+
+New website scheme:
+
+```
+GET     /
+GET     /login
+POST    /login
+GET     /login/-/from-cli/<uuid>                  # landing page for logging in from the cli
+POST    /login/-/from-cli/<uuid>                  # landing page for logging in from the cli
+GET     /login/-/from-github                      # oauth receiver for jthoobs
+GET     /signup
+POST    /signup
+POST    /logout
+GET     /settings/<scope>
+GET     /settings/<scope>/import
+POST    /settings/<scope>/import
+GET     /settings/<scope>/password
+POST    /settings/<scope>/password
+GET     /settings/<scope>/email
+POST    /settings/<scope>/email
+GET     /settings/<scope>/tfa
+POST    /settings/<scope>/tfa
+GET     /settings/<scope>/tokens
+POST    /settings/<scope>/tokens
+GET     /about
+GET     /legal
+GET     /support
+GET     /sitemap
+GET     /search
+GET     /legacy
+GET     /legacy/<legacy scope>/<legacy package>   # special casing this for the website: @smallwins/slack is available as /legacy/smallwins/slack
+GET     /legacy/<legacy package>
+GET     /<scope>/<package>/accept/<uuid>          # accept invitation
+POST    /<scope>/<package>/accept/<uuid>
+GET     /<scope>/<package>
+GET     /<scope>                                  # display all non-yanked packages that the user currently maintains.
+```
+
+Website uses cookie-based auth.
+
 [import-maps]: https://github.com/WICG/import-maps
