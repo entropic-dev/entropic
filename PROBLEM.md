@@ -2,6 +2,16 @@
 
 ## Table of contents
 
+- [Some background (star wars title scroll):](#some-background-star-wars-title-scroll)
+- [The problem, for real:](#the-problem-for-real)
+- [Assumptions / Decisions / The Chem in the Golem's Head](#assumptions--decisions--the-chem-in-the-golems-head)
+- [Open Questions & Consequences](#open-questions--consequences)
+- [Solutions](#solutions)
+  - [Just Build the Damn Registry From Scratch Again](#just-build-the-damn-registry-from-scratch-again)
+  - [Or, Start With Verdaccio](#or-start-with-verdaccio)
+  - [A Moderately Content Addressible Take On The Situation, Publishes](#a-moderately-content-addressible-take-on-the-situation-publishes)
+  - [A Really Content Addressible Take On The Situation, Publishes and Installs](#a-really-content-addressible-take-on-the-situation-publishes-and-installs)
+  - [Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
 ## Some background (star wars title scroll):
 
 People love downloading JavaScript (R) packages. JavaScript (R) packages depend
