@@ -12,6 +12,25 @@
   - [:x: A Moderately Content Addressable Take On The Situation, Publishes](#a-moderately-content-addressable-take-on-the-situation-publishes)
   - [:white_check_mark: Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
       - [:white_check_mark: A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
+- [Proposed Solution](#proposed-solution)
+  - [Objects](#objects)
+    - [Packages](#packages)
+    - [PackageVersion](#packageversion)
+    - [PackageDistTag](#packagedisttag)
+    - [PackageMaintainer](#packagemaintainer)
+  - [Actions](#actions)
+    - [Install a package](#install-a-package)
+    - [Publish a new package](#publish-a-new-package)
+    - [Publish a new version of a package](#publish-a-new-version-of-a-package)
+    - [Yank a version of a package](#yank-a-version-of-a-package)
+    - [Yank an entire package](#yank-an-entire-package)
+    - [Invite users to become maintainers of a package](#invite-users-to-become-maintainers-of-a-package)
+    - [Add or remove dist-tags of a package](#add-or-remove-dist-tags-of-a-package)
+    - [Login to an existing account](#login-to-an-existing-account)
+    - [Sign up for an account](#sign-up-for-an-account)
+    - [Import account access from VCPM](#import-account-access-from-vcpm)
+  - [APIs](#apis)
+
 ## Some background (star wars title scroll):
 
 People love downloading JavaScript (TM) packages. JavaScript (TM) packages depend
@@ -195,6 +214,39 @@ on the resources of administrators.
 
 ![installation](/assets/install.png)
 
+Installation of a package can happen in a couple of different ways:
+
+- a fresh install or tagged install (`npm i foo`, `npm i foo@beta`).
+- an install of a specific version (`npm i foo@1.0.0`)
+
+> #### Open questions
+>
+> **Why break out the installation flow into so many different requests? There's N+4 requests there!**
+>
+> To tackle the smaller bit of this first -- the 4 requests: the idea is to
+> unbundle the packument metadata. We've noticed over time that including
+> per-version metadata in a single packument tends to grow unbounded over time.
+> This extra metadata incurs a cost on all other operations, whether or not those
+> operations need that metadata at the moment.
+>
+> This install flow optimizes for skipping requests completely (vs. 301'ing them.)
+>
+> With regards to the larger bit of the question -- the N requests: that's a
+> tough one. What I've described looks a lot like Git's original HTTP
+> transport. You will be unsurprised to hear that [it was eventually superceded][git-smart].
+> Git eventually got around the speed constraints of HTTP by saying
+> "let's implement packfile negotiation over HTTP." You could do something
+> similar here.
+>
+> **If version and tag lists are referred to by content address in the top level
+> package, why not request them from the object store instead of a dedicated
+> endpoint?**
+>
+> I waffle on this.
+>
+> In order to install specific versions it's handy to be able to shortcircuit
+> by saying `GET /packages/package/CHRIS/FOO/versions/99.99.99/files`.
+
 * * *
 
 ### Publish a new package
@@ -263,11 +315,12 @@ POST    /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # accept inv
 DELETE  /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # decline invitation to join/leave
 
 GET     /packages/package/<scope>/<name>/dependents
+GET     /packages/package/<scope>/<name>/dependents/range/<range>
 GET     /packages/package/<scope>/<name>/dependencies
 
-GET     /packages/package/<scope>/<name>/readme
+GET     /packages/package/<scope>/<name>/versions/<version>/readme
 
-GET     /packages/package/<scope>/<name>/files
+GET     /packages/package/<scope>/<name>/versions/<version>/files
 GET     /objects/object/<oid>
 
 GET     /packages/search
@@ -326,3 +379,4 @@ GET     /<scope>                                  # display all non-yanked packa
 Website uses cookie-based auth.
 
 [import-maps]: https://github.com/WICG/import-maps
+[git-smart]: http://scottchacon.com/2010/03/04/smart-http.html
