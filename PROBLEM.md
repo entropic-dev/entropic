@@ -6,12 +6,12 @@
 - [The problem, for real:](#the-problem-for-real)
 - [Assumptions / Decisions / The Chem in the Golem's Head](#assumptions--decisions--the-chem-in-the-golems-head)
 - [Open Questions & Consequences](#open-questions--consequences)
-- [Solutions](#solutions)
-  - [Just Build the Damn Registry From Scratch Again](#just-build-the-damn-registry-from-scratch-again)
-  - [Or, Start With Verdaccio](#or-start-with-verdaccio)
-  - [A Moderately Content Addressable Take On The Situation, Publishes](#a-moderately-content-addressable-take-on-the-situation-publishes)
-  - [A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
-  - [Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
+- [Strategies](#strategies)
+  - [:x: Just Build the Damn Registry From Scratch Again](#just-build-the-damn-registry-from-scratch-again)
+  - [:x: Or, Start With Verdaccio](#or-start-with-verdaccio)
+  - [:x: A Moderately Content Addressable Take On The Situation, Publishes](#a-moderately-content-addressable-take-on-the-situation-publishes)
+  - [:white_check_mark: Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
+      - [:white_check_mark: A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
 ## Some background (star wars title scroll):
 
 People love downloading JavaScript (TM) packages. JavaScript (TM) packages depend
@@ -98,6 +98,9 @@ on the resources of administrators.
 - Yes semver required. (discuss which standard)
 - We don't explicitly wish to make this API line up with other package manager APIs.
     - Crates, VCPM, etc.
+- MAINTAINERS use authentication tokens for publishing. Version tokens in an
+  obvious fashion: `ent_v1_<uuid>`, say.
+    - This makes it obvious that they don't belong to any other registry.
 
 # Open Questions & Consequences
 
@@ -118,8 +121,6 @@ on the resources of administrators.
       `<nonce>` or something like that?
     - Provides the ability to mint new authentication tokens used by MAINTAINERS during
       publishes.
-        - Can we version the tokens in token -- `ent_v1_<uuid>`, say? Make 'em obviously
-          _not_ some other registry's brand of token?
 - Federation. What does it look like?
 - [Import maps][import-maps] are a going concern, as is tink.
     - Tink won't be ready by June 1st, _but_
@@ -128,7 +129,7 @@ on the resources of administrators.
 - Which semver standard to use?
 - Do we want to let MAINTAINERS change package ACLs via the website?
 
-# Solutions
+# Strategies
 
 ## Just Build the Damn Registry From Scratch Again
 
@@ -138,11 +139,13 @@ on the resources of administrators.
       you can `npm install` a whole dep graph from it.
 - Downside is that we're tied to legacy decisions about the API structure that have
   knock-on effects when it comes to implementation detail and bandwidth/storage/upload costs.
+- **We don't want to do this.** These legacy decisions box us in and precipitate future **CALAMITY**.
 
 ## Or, Start With Verdaccio
 
 - Why not? They've got a start at a solution.
 - Does it save us time, attention, or the need to produce support docs?
+- **We don't want to do this.** For similar reasons as above.
 
 ## A Moderately Content Addressable Take On The Situation, Publishes
 
@@ -150,17 +153,20 @@ on the resources of administrators.
 - This is probably a bad idea, on its own. The goal here would be to sidestep 2 things:
     1. Writing (and supporting) our own CLI.
     2. Supporting the base64'd tarball JSON of the legacy publish API.
-
-## A Really Content Addressable Take On The Situation, Publishes and Installs
-
-- Publish using Git/$newcli, install using tink/deno/$NEWCLI
-- Target the future!
-- Downside: it's a lot to do, and if we're leaning on Tink we already know we might slip.
+- **We don't want to do this**: while we've alleviated the publish side of the problem, the legacy package
+  installation API still boxes us in.
 
 ## Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI
 
 - Lots of green field here. This is both a good and a bad thing (Decisions take
   time. Making wise decisions takes even more time. We are time-limited.)
 - Target the future!
+
+### A Really Content Addressable Take On The Situation, Publishes and Installs
+
+- Publish using Git/$newcli, install using tink/deno/$NEWCLI
+- Target the future!
+- Downside: it's a lot to do, and if we're leaning on Tink we already know we might slip.
+- **This is still an option.** It's really just an implementation detail of the above.
 
 [import-maps]: https://github.com/WICG/import-maps
