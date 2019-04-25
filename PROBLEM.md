@@ -51,7 +51,8 @@ have to interact with the registry. They do not want to respond to the
 **CALAMITY**. They are reluctant to move to another registry. A new registry would
 have to, at minimum, provide the following:
 
-- A read-only mirror of all JavaScript (TM) packages published to **VCPM**.
+- A read-only mirror of JavaScript (TM) packages published to **VCPM**, delivered
+  on demand.
 - Critical mass of **INSTALLERS** and **MAINTAINERS** moving to the new registry.
 - Support structure for any new tooling **INSTALLERS** or **MAINTAINERS** must
   use (documentation, blog posts, reassurances that the new registry won't turn
@@ -78,7 +79,10 @@ on the resources of administrators.
 
 - Do the dumbest thing that works, then iterate on that as it breaks. KISS.
 - We will build a new registry and website.
-- INSTALLERS will be able to access VCPM packages through the registry.
+- INSTALLERS will be able to access VCPM packages through the registry, on demand.
+    - Note: this implies we will mirror on-demand, not optimistically.
+    - This means we'll defer (or eliminate) the cost of supporting the long tail of
+      VCPM packages.
 - INSTALLERS will not be subject to package privacy rules via access control lists.
 - MAINTAINERS will be subject to package access lists (who can publish which package?)
 - INSTALLERS may browse the registry via a website.
