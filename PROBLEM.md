@@ -233,7 +233,7 @@ Installation of a package can happen in a couple of different ways:
 >
 > With regards to the larger bit of the question -- the N requests: that's a
 > tough one. What I've described looks a lot like Git's original HTTP
-> transport. You will be unsurprised to hear that [it was eventually superceded][git-smart].
+> transport. You will be unsurprised to hear that [it was eventually superseded][git-smart].
 > Git eventually got around the speed constraints of HTTP by saying
 > "let's implement packfile negotiation over HTTP." You could do something
 > similar here.
