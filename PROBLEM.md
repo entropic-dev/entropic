@@ -14,15 +14,15 @@
   - [Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
 ## Some background (star wars title scroll):
 
-People love downloading JavaScript (R) packages. JavaScript (R) packages depend
-on many other JavaScript (R) packages, forming a dependency graph. People want
-to find JavaScript (R) packages using a centralized store, download an entire
+People love downloading JavaScript (TM) packages. JavaScript (TM) packages depend
+on many other JavaScript (TM) packages, forming a dependency graph. People want
+to find JavaScript (TM) packages using a centralized store, download an entire
 dependency graph, and then unpack those packages on disk, on demand, in such a
-way that popular JavaScript (R) runtimes like Node.JS (TM) can execute them. We
+way that popular JavaScript (TM) runtimes like Node.JS (TM) can execute them. We
 will call this group of people **"INSTALLERS."**
 
 Some subset of people enjoy this experience so much that they may feel
-compelled to write new JavaScript (R) packages and publish them for others to
+compelled to write new JavaScript (TM) packages and publish them for others to
 find. They will want to manage publish access to these packages, distributing
 the responsibility amongst their team. They want to provide identity assurances
 about these packages: they want to be able to enable two factor auth, require
@@ -51,8 +51,8 @@ have to interact with the registry. They do not want to respond to the
 **CALAMITY**. They are reluctant to move to another registry. A new registry would
 have to, at minimum, provide the following:
 
-- A read-only mirror of all JavaScript (R) packages published to **VCPM**.
-- Critical mass of **INSTALLERS** and **MAINTAINERS** moving to **VCPM**.
+- A read-only mirror of all JavaScript (TM) packages published to **VCPM**.
+- Critical mass of **INSTALLERS** and **MAINTAINERS** moving to the new registry.
 - Support structure for any new tooling **INSTALLERS** or **MAINTAINERS** must
   use (documentation, blog posts, reassurances that the new registry won't turn
   into a werewolf.)
