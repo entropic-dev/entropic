@@ -8,7 +8,6 @@ jobs:
 
     steps:
       - checkout
-        - path: ~/repo
 
       - restore_cache:
           keys:
