@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "dotenv": "~7.0.0",
-    "micro": "~9.3.3"
+    "micro": "~9.3.3",
+    "node-fetch": "^2.4.1",
+    "pino": "^5.12.3"
   },
   "devDependencies": {
     "mocha": "~6.1.4",
