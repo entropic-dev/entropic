@@ -218,7 +218,7 @@ on the resources of administrators.
 
 ### Install a package
 
-![installation](/assets/install.png)
+![installation](/docs/assets/install.png)
 
 Installation of a package can happen in a couple of different ways:
 
