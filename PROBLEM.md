@@ -120,12 +120,18 @@ on the resources of administrators.
 - MAINTAINERS use authentication tokens for publishing. Version tokens in an
   obvious fashion: `ent_v1_<uuid>`, say.
     - This makes it obvious that they don't belong to any other registry.
+- IMPLEMENTATION: (NOTE_SERVICES)
+    - Plan is: 3 services: registry, website, internal.
+    - Start with the registry.
+        - Plan to split out internal from the registry.
+    - Splitting www from the registry makes security easier, and gives us much more room
+      to manuever with regards to the legacy VCPM API.
 
 # Open Questions & Consequences
 
-- Do we split the website and registry components into two services and two
+- ~Do we split the website and registry components into two services and two
   URLs? One service running in two modes depending on incoming `Host` header?
-  One service running at one URL?
+  One service running at one URL?~ See "NOTE_SERVICES" above.
 - Do we support the legacy VCPM API? To what degree?
     - For installation? For publication? For ACL manipulation?
     - Notably: breaking with the VCPM API may make life better for ADMINISTRATORS in
