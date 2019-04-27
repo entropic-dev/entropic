@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/repo/src
 
     steps:
-      - checkout:
+      - checkout
         - path: ~/repo
 
       - restore_cache:
