@@ -1,10 +1,12 @@
-"use strict";
+'use strict';
 
-const { Response } = require("node-fetch");
-const { send } = require("micro");
+require('dotenv').config();
 
-const middleware = require("./middleware");
-const handlers = require("./handlers");
+const { Response } = require('node-fetch');
+const { send } = require('micro');
+
+const middleware = require('./middleware');
+const handlers = require('./handlers');
 
 const handler = middleware.reduceRight((lhs, rhs) => {
   return rhs(lhs);
