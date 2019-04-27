@@ -1,5 +1,5 @@
-const demand = require("must");
+const demand = require('must');
 
-describe("entropic", () => {
-  it("has tests");
+describe('entropic', () => {
+  it('has tests');
 });
