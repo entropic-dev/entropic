@@ -1,0 +1,37 @@
+{
+  "name": "entropic",
+  "description": "community package manager",
+  "private": true,
+  "version": "0.0.1",
+  "author": "C J Silverio <ceejceej@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/ceejbot/entropic/issues"
+  },
+  "dependencies": {
+    "dotenv": "~7.0.0",
+    "micro": "~9.3.3"
+  },
+  "devDependencies": {
+    "mocha": "~6.1.4",
+    "must": "~0.13.4",
+    "nyc": "~14.0.0",
+    "prettier": "~1.17.0"
+  },
+  "homepage": "https://github.com/ceejbot/entropic#readme",
+  "keywords": [
+    "entropy",
+    "heat death"
+  ],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ceejbot/entropic.git"
+  },
+  "scripts": {
+    "coverage": "nyc mocha -R spec",
+    "lint": "prettier -c **/*.js",
+    "test": "mocha -R spec",
+    "registry": "micro registry/"
+  }
+}
