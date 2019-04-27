@@ -17,6 +17,7 @@ function mw(next) {
     const [host, port] = request.headers['host'].split(':');
 
     logger.info({
+      request_id: request.id,
       ip: remote,
       host,
       method: request.method,

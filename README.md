@@ -4,3 +4,5 @@ A new package registry with a new CLI, designed to be easy to stand up inside
 your network.
 
 See [docs/README.md](docs/README.md) for implementation notes.
+
+This project is released under the Apache 2.0 license.

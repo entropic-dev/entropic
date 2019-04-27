@@ -1,6 +1,6 @@
 'use strict';
 
-const middleware = ['./log'];
+const middleware = ['./log', './requestid'];
 
 if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
   const dev = require('./dev-only');
