@@ -6,7 +6,7 @@ require('dotenv').config();
 const micro = require('micro');
 const logger = require('pino')();
 const middleware = require('./middleware');
-const router = require('./handlers');
+const router = require('./handlers')();
 const { makeRequestHandler } = require('./lib/request-handler');
 
 const handler = makeRequestHandler(router, middleware);
