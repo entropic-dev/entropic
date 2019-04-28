@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:lts-stretch
+      - image: circleci/postgres:latest
 
     working_directory: ~/repo/src
 
