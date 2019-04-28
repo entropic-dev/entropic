@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:10.1-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${USER}
+volumes:
+  postgres_data:
