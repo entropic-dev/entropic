@@ -42,7 +42,7 @@ function makeRequestHandler(router, middleware) {
       }
     }
 
-    send(res, response.status, response.body);
+    await send(res, response.status, response.body);
 
     try {
       // Now we log the request. We need to do it here, after the response is
