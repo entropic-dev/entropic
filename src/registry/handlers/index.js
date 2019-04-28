@@ -4,13 +4,13 @@ module.exports = makeRouter;
 
 const { getNamespace } = require('cls-hooked');
 const { Response } = require('node-fetch');
-const fork =  require('../lib/router');
+const fork = require('../lib/router');
 
 function makeRouter() {
   const router = fork.router()(
     fork.get('/ping', ping),
     fork.get('/', greeting)
-  )
+  );
 
   return router;
 }
