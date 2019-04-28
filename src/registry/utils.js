@@ -1,16 +1,16 @@
-'use strict'
+'use strict';
 
 const { Response } = require('node-fetch');
 const { send } = require('micro');
 
 module.exports = {
   makeRequestHandler
-}
+};
 
-function makeRequestHandler (view, middleware) {
+function makeRequestHandler(view, middleware) {
   const handler = middleware.reduceRight((lhs, rhs) => {
     return rhs(lhs);
-  }, view)
+  }, view);
 
   return async (req, res) => {
     const response = await handler(req);
@@ -22,5 +22,5 @@ function makeRequestHandler (view, middleware) {
     }
 
     return send(res, response.status, response.body);
-  }
+  };
 }

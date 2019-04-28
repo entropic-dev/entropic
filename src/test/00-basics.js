@@ -1,12 +1,18 @@
 /* eslint-env node, mocha */
-'use strict'
+'use strict';
 
 const fetch = require('node-fetch');
 const demand = require('must');
-const provideRegistry = require('./utils/registry')
+const providePostgres = require('./utils/postgres');
+const provideRegistry = require('./utils/registry');
 
 describe('entropic', () => {
-  it('has tests', provideRegistry(async (url) => {
-    const result = await fetch(url)
-  }));
+  it(
+    'has tests',
+    providePostgres(
+      provideRegistry(async url => {
+        const result = await fetch(url);
+      })
+    )
+  );
 });
