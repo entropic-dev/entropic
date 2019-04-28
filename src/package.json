@@ -49,7 +49,7 @@
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
     "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
     "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
-    "test": "mocha -R spec",
+    "test": "PGUSER=postgres PGDATABASE=entropic_test mocha -R spec",
     "posttest": "npm run lint",
     "preregistry": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",
     "registry": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./registry/index.js"
