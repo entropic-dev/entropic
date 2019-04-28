@@ -3,13 +3,13 @@
 
 require('dotenv').config();
 
-const { makeRequestHandler } = require('./utils');
 const micro = require('micro');
 const logger = require('pino')();
 const middleware = require('./middleware');
-const handlers = require('./handlers');
+const router = require('./handlers')();
+const { makeRequestHandler } = require('./lib/request-handler');
 
-const handler = makeRequestHandler(handlers, middleware);
+const handler = makeRequestHandler(router, middleware);
 const server = micro((req, res) => handler(req, res));
 
 server.listen(process.env.PORT);
