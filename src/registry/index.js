@@ -6,4 +6,4 @@ const { makeRequestHandler } = require('./utils');
 const middleware = require('./middleware');
 const handlers = require('./handlers');
 
-module.exports = makeRequestHandler(handlers, middleware)
+module.exports = makeRequestHandler(handlers, middleware);

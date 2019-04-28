@@ -1,35 +1,35 @@
-'use strict'
+'use strict';
 
-module.exports = provideRegistry
+module.exports = provideRegistry;
 
-const listen = require('test-listen')
-const micro = require('micro')
+const listen = require('test-listen');
+const micro = require('micro');
 
-const { makeRequestHandler } = require('../../registry/utils')
-const registry = require('../../registry/handlers')
+const { makeRequestHandler } = require('../../registry/utils');
+const registry = require('../../registry/handlers');
 
-function provideRegistry (to) {
-  let middleware = []
-  const testHandler = async function (...args) {
-    const requestHandler = makeRequestHandler(registry, middleware)
+function provideRegistry(to) {
+  let middleware = [];
+  const testHandler = async function(...args) {
+    const requestHandler = makeRequestHandler(registry, middleware);
 
-    const service = await micro(requestHandler)
-    const url = await listen(service)
+    const service = await micro(requestHandler);
+    const url = await listen(service);
 
     try {
-      await to(url, ...args)
+      await to(url, ...args);
     } finally {
-      service.close()
+      service.close();
     }
-  }
+  };
 
-  testHandler.middleware = function (mw) {
+  testHandler.middleware = function(mw) {
     if (!mw) {
-      return middleware
+      return middleware;
     }
-    middleware = mw
-    return this
-  }
+    middleware = mw;
+    return this;
+  };
 
-  return testHandler
+  return testHandler;
 }
