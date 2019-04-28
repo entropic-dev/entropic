@@ -49,7 +49,7 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
 
       try {
         const response = await namespace.runAndReturn(() => {
-          namespace.set('getConnection', req.getPostgresClient);
+          namespace.set('getConnection', () => req.getPostgresClient());
           return next(req);
         });
 
