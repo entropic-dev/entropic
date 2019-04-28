@@ -21,7 +21,8 @@
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.0.0",
-    "prettier": "1.17.0"
+    "prettier": "1.17.0",
+    "test-listen": "^1.1.0"
   },
   "homepage": "https://github.com/ceejbot/entropic#readme",
   "keywords": [
