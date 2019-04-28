@@ -8,9 +8,12 @@
     "url": "https://github.com/ceejbot/entropic/issues"
   },
   "dependencies": {
-    "dotenv": "~7.0.0",
+    "dotenv": "^7.0.0",
+    "cls-hooked": "^4.2.2",
     "micro": "~9.3.3",
     "node-fetch": "^2.4.1",
+    "ormnomnom": "^5.2.2",
+    "pg": "^7.10.0",
     "pino": "^5.12.3",
     "uuid": "~3.3.2"
   },
@@ -39,6 +42,7 @@
     "lint": "eslint .",
     "lint-fix": "prettier --single-quote --write **.js",
     "test": "mocha -R spec",
+    "posttest": "npm run lint",
     "registry": "micro registry/"
   }
 }
