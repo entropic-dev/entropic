@@ -4,7 +4,7 @@ module.exports = createLogger;
 
 const logger = require('pino')();
 
-function createLogger () {
+function createLogger() {
   return function mw(next) {
     return async function inner(request) {
       const now = Date.now();
@@ -31,5 +31,5 @@ function createLogger () {
 
       return response;
     };
-  }
+  };
 }
