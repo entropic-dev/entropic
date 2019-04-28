@@ -18,9 +18,12 @@
     "uuid": "~3.3.2"
   },
   "devDependencies": {
+    "db-migrate": "^0.11.5",
+    "db-migrate-pg": "^0.5.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.0.0",
+    "pgtools": "^0.3.0",
     "prettier": "1.17.0",
     "test-listen": "^1.1.0"
   },
@@ -39,8 +42,12 @@
     "coverage": "nyc mocha -R spec",
     "lint": "prettier -c --single-quote '**/*.js'",
     "lint-fix": "prettier --single-quote --write '**/*.js'",
-    "test": "mocha -R spec",
+    "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
+    "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
+    "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
+    "test": "PGUSER=postgres PGDATABASE=entropic_test mocha -R spec",
     "posttest": "npm run lint",
-    "registry": "micro registry/"
+    "preregistry": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",
+    "registry": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} micro registry/"
   }
 }

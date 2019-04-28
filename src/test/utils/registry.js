@@ -24,6 +24,9 @@ function provideRegistry (to) {
   }
 
   testHandler.middleware = function (mw) {
+    if (!mw) {
+      return middleware
+    }
     middleware = mw
     return this
   }
