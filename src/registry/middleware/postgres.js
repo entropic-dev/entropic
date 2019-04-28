@@ -40,22 +40,22 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
       };
     });
 
-    return async function inner(req) {
+    return async function inner(context) {
       let client = null;
-      req.getPostgresClient = async () => {
+      context.getPostgresClient = async () => {
         client = await pool.connect();
         return client;
       };
 
       try {
         const response = await namespace.runAndReturn(() => {
-          namespace.set('getConnection', () => req.getPostgresClient());
-          return next(req);
+          namespace.set('getConnection', () => context.getPostgresClient());
+          return next(context);
         });
 
         return response;
       } finally {
-        req.getPostgresClient = fail;
+        context.getPostgresClient = fail;
         if (client) {
           client.release();
         }

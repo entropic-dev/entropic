@@ -2,6 +2,8 @@
 
 module.exports = dev;
 
+const logger = require('pino')();
+
 const hangWarning = Symbol('hang-stall');
 const hangError = Symbol('hang-error');
 
@@ -11,43 +13,44 @@ function dev(
   errorAt = Number(process.env.DEV_LATENCY_ERROR_MS) || 2000
 ) {
   return function mw(next) {
-    return async function inner(req) {
-      if (req[hangWarning]) {
-        clearTimeout(req[hangWarning]);
+    return async function inner(context) {
+      const req = context.request;
+      if (context[hangWarning]) {
+        clearTimeout(context[hangWarning]);
       }
-      req[hangWarning] = setTimeout(() => {
-        console.error(
+      context[hangWarning] = setTimeout(() => {
+        logger.error(
           `⚠️ Response from ${nextName} > ${warnAt}ms fetching "${req.method} ${
             req.url
           }".`
         );
-        console.error(
+        logger.error(
           `\x1b[0;37m - (Tune timeout using DEV_LATENCY_WARNING_MS env variable.)\x1b[0;0m`
         );
       }, warnAt);
 
-      if (req[hangError]) {
-        clearTimeout(req[hangError]);
+      if (context[hangError]) {
+        clearTimeout(context[hangError]);
       }
-      req[hangError] = setTimeout(() => {
-        console.error(
+      context[hangError] = setTimeout(() => {
+        logger.error(
           `🛑 STALL: Response from ${nextName} > ${errorAt}ms: "${req.method} ${
             req.url
           }". (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)`
         );
-        console.error(
+        logger.error(
           `\x1b[0;37m - (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)\x1b[0;0m`
         );
       }, errorAt);
 
       try {
-        return await next(req);
+        return await next(context);
       } finally {
-        clearTimeout(req[hangWarning]);
-        req[hangWarning] = null;
+        clearTimeout(context[hangWarning]);
+        context[hangWarning] = null;
 
-        clearTimeout(req[hangError]);
-        req[hangError] = null;
+        clearTimeout(context[hangError]);
+        context[hangError] = null;
       }
     };
   };

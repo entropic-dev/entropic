@@ -7,13 +7,24 @@ module.exports = {
   makeRequestHandler
 };
 
-function makeRequestHandler(view, middleware) {
+// A request context holds the raw req/response objects and
+// all other useful information shared by views and middlewares.
+
+class Context {
+  constructor(req, res) {
+    this.request = req;
+    this.rawResponse = res;
+  }
+}
+
+function makeRequestHandler(router, middleware) {
   const handler = middleware.reduceRight((lhs, rhs) => {
     return rhs(lhs);
-  }, view);
+  }, router);
 
   return async (req, res) => {
-    const response = await handler(req);
+    const context = new Context(req, res);
+    const response = await handler(context);
 
     if (response.headers) {
       for (const [header, value] of response.headers) {

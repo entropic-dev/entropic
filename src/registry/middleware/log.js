@@ -4,21 +4,25 @@ module.exports = createLogger;
 
 const logger = require('pino')();
 
+// TODO: Note that we're logging before the response has been sent,
+// so we don't know how many bytes.
+
 function createLogger() {
   return function mw(next) {
-    return async function inner(request) {
+    return async function inner(context) {
+      const request = context.request;
       const now = Date.now();
-      const response = await next(request);
+      const response = await next(context);
 
       const remote = request.socket
         ? request.socket.remoteAddress.replace('::ffff:', '')
         : request.remoteAddress
         ? request.remoteAddress
         : '';
-      const [host, port] = request.headers['host'].split(':');
+      const [host, _] = request.headers['host'].split(':');
 
       logger.info({
-        request_id: request.id,
+        request_id: context.id,
         ip: remote,
         host,
         method: request.method,

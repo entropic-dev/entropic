@@ -4,14 +4,15 @@ module.exports = createTxnMiddleware;
 
 function createTxnMiddleware() {
   return next => {
-    return async req => {
+    return async context => {
+      const req = context.request;
       if (req.method === 'GET' || req.method === 'HEAD') {
-        return next(req);
+        return next(context);
       }
 
-      const getClient = req.getPostgresClient;
+      const getClient = context.getPostgresClient;
       let client = null;
-      req.getPostgresClient = async () => {
+      context.getPostgresClient = async () => {
         client = await getClient();
         await client.query('BEGIN');
         return client;
@@ -19,7 +20,7 @@ function createTxnMiddleware() {
 
       let closeTransaction = 'COMMIT';
       try {
-        const response = await next(req);
+        const response = await next(context);
 
         if (response.status > 399) {
           closeTransaction = 'ROLLBACK';
