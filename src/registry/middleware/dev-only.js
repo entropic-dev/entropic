@@ -40,15 +40,15 @@ function dev(
         );
       }, errorAt);
 
-      const response = await next(req);
+      try {
+        return await next(req);
+      } finally {
+        clearTimeout(req[hangWarning]);
+        req[hangWarning] = null;
 
-      clearTimeout(req[hangWarning]);
-      req[hangWarning] = null;
-
-      clearTimeout(req[hangError]);
-      req[hangError] = null;
-
-      return response;
+        clearTimeout(req[hangError]);
+        req[hangError] = null;
+      }
     };
   };
 }

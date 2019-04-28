@@ -8,20 +8,21 @@
     "url": "https://github.com/ceejbot/entropic/issues"
   },
   "dependencies": {
-    "dotenv": "~7.0.0",
+    "dotenv": "^7.0.0",
+    "cls-hooked": "^4.2.2",
     "micro": "~9.3.3",
     "node-fetch": "^2.4.1",
+    "ormnomnom": "^5.2.2",
+    "pg": "^7.10.0",
     "pino": "^5.12.3",
     "uuid": "~3.3.2"
   },
   "devDependencies": {
-    "eslint": "~5.16.0",
-    "eslint-config-prettier": "~4.2.0",
-    "eslint-plugin-prettier": "~3.0.1",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.0.0",
-    "prettier": "1.17.0"
+    "prettier": "1.17.0",
+    "test-listen": "^1.1.0"
   },
   "homepage": "https://github.com/ceejbot/entropic#readme",
   "keywords": [
@@ -36,9 +37,10 @@
   },
   "scripts": {
     "coverage": "nyc mocha -R spec",
-    "lint": "eslint .",
-    "lint-fix": "prettier --single-quote --write **.js",
+    "lint": "prettier -c --single-quote '**/*.js'",
+    "lint-fix": "prettier --single-quote --write '**/*.js'",
     "test": "mocha -R spec",
+    "posttest": "npm run lint",
     "registry": "micro registry/"
   }
 }
