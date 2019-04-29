@@ -6,7 +6,6 @@ const response = require('../lib/response');
 module.exports = {
   packument,
   namespacedPackument,
-  namespacedEncodedPackument,
   tarball
 };
 
@@ -20,12 +19,7 @@ async function packument(context, { pkg }) {
   // TODO headers
   return result;
 }
-async function namespacedPackument(context, { namespace, pkgname }) {
-  const pkg = `@${namespace}/${pkgname}`;
-  return packument(context, { pkg });
-}
-
-async function namespacedEncodedPackument(context, { encodedspec }) {
+async function namespacedPackument(context, { encodedspec }) {
   const pkg = `@${decodeURIComponent(encodedspec)}`;
   return packument(context, { pkg });
 }
