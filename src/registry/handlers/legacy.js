@@ -3,7 +3,12 @@
 const cache = require('../lib/cache');
 const response = require('../lib/response');
 
-module.exports = { packument, namespacedPackument, tarball };
+module.exports = {
+  packument,
+  namespacedPackument,
+  namespacedEncodedPackument,
+  tarball
+};
 
 async function packument(context, { pkg }) {
   const hasVersion = /.+@.+/.test(pkg);
@@ -15,9 +20,13 @@ async function packument(context, { pkg }) {
   // TODO headers
   return result;
 }
-
 async function namespacedPackument(context, { namespace, pkgname }) {
   const pkg = `@${namespace}/${pkgname}`;
+  return packument(context, { pkg });
+}
+
+async function namespacedEncodedPackument(context, { encodedspec }) {
+  const pkg = `@${decodeURIComponent(encodedspec)}`;
   return packument(context, { pkg });
 }
 

@@ -16,6 +16,8 @@ function makeRouter() {
     fork.get('/ping', ping),
     fork.get('/:pkg', legacy.packument),
     fork.get('/@:namespace/:pkgname', legacy.namespacedPackument),
+    fork.get('/@:encodedspec', legacy.namespacedEncodedPackument),
+    fork.get('/%40:encodedspec', legacy.namespacedEncodedPackument),
     fork.get('/:pkg/-/:mess', legacy.tarball)
   );
 
