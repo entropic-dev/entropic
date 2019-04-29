@@ -8,6 +8,7 @@ const { Client } = require('pg');
 function providePostgres(to) {
   return async function(...args) {
     const client = new Client();
+
     await client.connect();
 
     if (typeof to.middleware === 'function') {
@@ -22,7 +23,7 @@ function providePostgres(to) {
       ]);
     }
 
-    orm.setConnection(() => {
+    orm.setConnection(async () => {
       return {
         connection: client,
         release() {}
