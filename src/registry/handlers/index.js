@@ -2,17 +2,27 @@
 
 module.exports = makeRouter;
 
-const { getNamespace } = require('cls-hooked');
-const { Response } = require('node-fetch');
 const fork = require('../lib/router');
+const pkg = require('../../package.json');
+const response = require('../lib/response');
 
 function makeRouter() {
   const router = fork.router()(
-    fork.get('/ping', ping),
-    fork.get('/', greeting)
+    fork.get('/', version),
+    fork.get('/hello', greeting),
+    fork.get('/ping', ping)
   );
 
   return router;
+}
+
+async function version() {
+  const data = {
+    server: 'entropic',
+    version: pkg.version,
+    message: 'generating waste heat since 2019'
+  };
+  return response.json(data);
 }
 
 async function greeting() {
@@ -21,9 +31,9 @@ async function greeting() {
   // NB(chrisdickinson): this is just a sketch of grabbing a direct connection
   // to postgres. Usually we'll be dealing with the ORM.
   const { rows } = await client.query(`select 'hello world'`);
-  return new Response(JSON.stringify(rows));
+  return response.json(rows);
 }
 
 async function ping() {
-  return new Response('pong');
+  return response.text('pong');
 }

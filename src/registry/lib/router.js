@@ -5,11 +5,18 @@
 const fmw = require('find-my-way');
 
 function router(options) {
-  const router = fmw(options);
+  const wayfinder = fmw(options);
   return function(...routes) {
-    routes.forEach(rt => router.on(...rt));
+    routes.forEach(rt => wayfinder.on(...rt));
+
+    // If we're in development mode, dump our routes.
+    if (/^dev/.test(process.env.NODE_ENV)) {
+      console.log('Routes:');
+      console.log(wayfinder.prettyPrint());
+    }
+
     return context =>
-      router.lookup(context.request, context.rawResponse, context);
+      wayfinder.lookup(context.request, context.rawResponse, context);
   };
 }
 
