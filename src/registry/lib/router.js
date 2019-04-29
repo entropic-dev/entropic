@@ -1,8 +1,12 @@
+'use strict';
+
 // This router is an *even simpler* version of micro-fork.
 // It uses a context object instead of a req/res pair.
 // See https://github.com/amio/micro-fork
 
+const response = require('./response');
 const fmw = require('find-my-way');
+const URL = require('url');
 
 function router(options) {
   const wayfinder = fmw(options);
@@ -15,8 +19,17 @@ function router(options) {
       console.log(wayfinder.prettyPrint());
     }
 
-    return context =>
-      wayfinder.lookup(context.request, context.rawResponse, context);
+    return context => {
+      const { request } = context;
+      const { path } = URL.parse(request.url);
+      const match = wayfinder.find(request.method, path);
+
+      if (!match) {
+        return response.json({ message: 'Not found' }, 404);
+      }
+
+      return match.handler(context, match.params, match.store);
+    };
   };
 }
 
