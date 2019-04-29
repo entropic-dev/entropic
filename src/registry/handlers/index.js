@@ -4,7 +4,7 @@ module.exports = makeRouter;
 
 const fork = require('../lib/router');
 const pkg = require('../../package.json');
-const { jsonResponse, textResponse } = require('../lib/util');
+const response = require('../lib/response');
 
 function makeRouter() {
   const router = fork.router()(
@@ -22,7 +22,7 @@ async function version() {
     version: pkg.version,
     message: 'generating waste heat since 2019'
   };
-  return jsonResponse(data);
+  return response.json(data);
 }
 
 async function greeting() {
@@ -31,9 +31,9 @@ async function greeting() {
   // NB(chrisdickinson): this is just a sketch of grabbing a direct connection
   // to postgres. Usually we'll be dealing with the ORM.
   const { rows } = await client.query(`select 'hello world'`);
-  return jsonResponse(rows);
+  return response.json(rows);
 }
 
 async function ping() {
-  return textResponse('pong');
+  return response.text('pong');
 }
