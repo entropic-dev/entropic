@@ -37,18 +37,15 @@ async function ping() {
   return response.text('GCU Grey Area');
 }
 
-async function legacyPackument(req, res, params) {
-  return response.text(
-    `VCpm packument for ${params.pkg} not yet available`,
-    501
-  );
+async function legacyPackument(context, { pkg }) {
+  return response.text(`VCpm packument for ${pkg} not yet available`, 501);
 }
 
-async function legacyTarball(req, res, params) {
-  const version = params.tarball.replace('.tgz', '');
-  this.logger.info(`requesting ${params.pkg} from VCpm`);
+async function legacyTarball(context, { pkg, tarball }) {
+  const version = tarball.replace('.tgz', '');
+  context.logger.info(`requesting ${pkg} from VCpm`);
   return response.text(
-    `VCpm tarball for ${params.pkg}@${version} not yet available`,
+    `VCpm tarball for ${pkg}@${version} not yet available`,
     501
   );
 }
