@@ -28,5 +28,5 @@ async function tarball(context, { pkg, mess }) {
   context.logger.info(`requesting tarball for ${spec} from VCpm`);
   const input = await cache.tarball(spec);
   // TODO headers
-  return response.octetStream(input);
+  return response.bytes(input);
 }

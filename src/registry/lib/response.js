@@ -5,7 +5,7 @@ const { Response, Headers } = require('node-fetch');
 module.exports = {
   json,
   text,
-  octetStream
+  bytes
 };
 
 function json(body, status = 200) {
@@ -20,7 +20,7 @@ function text(body, status = 200) {
 }
 
 // Unnecessary, but a hook for other work.
-function octetStream(stream, status = 200) {
+function bytes(stream, status = 200) {
   const headers = new Headers({ 'content-type': 'application/octet-stream' });
   const r = new Response(stream, { status, headers });
   return r;
