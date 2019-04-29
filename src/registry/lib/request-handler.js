@@ -49,7 +49,8 @@ function makeRequestHandler(router, middleware) {
       // written in stone. Note that the moment we do a second thing here
       // we'll want to make a request lifecycle abstraction.
       logger.info({
-        request_id: context.id,
+        msg: `${response.status} ${req.method} ${req.url}`,
+        id: context.id,
         ip: context.remote,
         host: context.host,
         method: req.method,

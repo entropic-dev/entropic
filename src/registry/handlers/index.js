@@ -11,7 +11,9 @@ function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
     fork.get('/hello', greeting),
-    fork.get('/ping', ping)
+    fork.get('/ping', ping),
+    fork.get('/:pkg', legacyPackument),
+    fork.get('/:pkg/-/:pkg2-:tarball', legacyTarball)
   );
 
   return router;
@@ -32,5 +34,18 @@ async function greeting() {
 }
 
 async function ping() {
-  return response.text('pong');
+  return response.text('GCU Grey Area');
+}
+
+async function legacyPackument(context, { pkg }) {
+  return response.text(`VCpm packument for ${pkg} not yet available`, 501);
+}
+
+async function legacyTarball(context, { pkg, tarball }) {
+  const version = tarball.replace('.tgz', '');
+  context.logger.info(`requesting ${pkg} from VCpm`);
+  return response.text(
+    `VCpm tarball for ${pkg}@${version} not yet available`,
+    501
+  );
 }
