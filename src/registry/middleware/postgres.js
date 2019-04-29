@@ -1,10 +1,6 @@
 'use strict';
 
-const {
-  getNamespace,
-  createNamespace,
-  destroyNamespace
-} = require('cls-hooked');
+const { createNamespace, destroyNamespace } = require('cls-hooked');
 const orm = require('ormnomnom');
 const { Pool } = require('pg');
 
@@ -22,9 +18,8 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
         : [])
     );
     const namespace = createNamespace('postgres');
-
     orm.setConnection(async () => {
-      const connector = getNamespace('postgres').get('getConnection');
+      const connector = namespace.get('getConnection');
       if (typeof connector !== 'function') {
         throw new Error(
           'Accessing postgres outside the context of a request? UNACCEPTABLE'
@@ -34,9 +29,7 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
       const connection = await connector();
       return {
         connection,
-        release() {
-          return connection.release();
-        }
+        release() {}
       };
     });
 
@@ -48,7 +41,7 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
       };
 
       try {
-        const response = await namespace.runAndReturn(() => {
+        const response = await namespace.runAndReturn(async () => {
           namespace.set('getConnection', () => context.getPostgresClient());
           return next(context);
         });

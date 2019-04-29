@@ -20,7 +20,7 @@ if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
   module.exports.push(dev('registry/handlers/*'));
 } else {
   module.exports = middleware.map(xs => {
-    const [mw, ...args] = Array.isArray(rhs) ? rhs : [rhs];
+    const [mw, ...args] = Array.isArray(xs) ? xs : [xs];
     require(xs);
   });
 }

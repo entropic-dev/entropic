@@ -7,13 +7,14 @@
     "url": "https://github.com/ceejbot/entropic/issues"
   },
   "dependencies": {
+    "@hapi/joi": "^15.0.0",
     "cls-hooked": "^4.2.2",
     "dotenv": "^7.0.0",
     "find-my-way": "~2.0.1",
     "micro": "~9.3.3",
     "node-fetch": "^2.4.1",
     "ormnomnom": "^5.2.2",
-    "pg": "^7.10.0",
+    "pg": "~7.4.0",
     "pino": "^5.12.3",
     "uuid": "~3.3.2"
   },

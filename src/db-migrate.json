@@ -1,5 +1,6 @@
 {
   "entropic": {
-    "driver": "postgres"
+    "driver": "postgres",
+    "database": {"ENV": "PGDATABASE"}
   }
 }
