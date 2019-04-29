@@ -6,14 +6,18 @@ const fork = require('../lib/router');
 const pkg = require('../../package.json');
 const response = require('../lib/response');
 const User = require('../models/user');
+const ship = require('culture-ships').random();
+const legacy = require('./legacy');
 
 function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
     fork.get('/hello', greeting),
     fork.get('/ping', ping),
-    fork.get('/:pkg', legacyPackument),
-    fork.get('/:pkg/-/:pkg2-:tarball', legacyTarball)
+    fork.get('/:pkg', legacy.packument),
+    fork.get('/@:encodedspec', legacy.namespacedPackument),
+    fork.get('/%40:encodedspec', legacy.namespacedPackument),
+    fork.get('/:pkg/-/:mess', legacy.tarball)
   );
 
   return router;
@@ -34,18 +38,5 @@ async function greeting() {
 }
 
 async function ping() {
-  return response.text('GCU Grey Area');
-}
-
-async function legacyPackument(context, { pkg }) {
-  return response.text(`VCpm packument for ${pkg} not yet available`, 501);
-}
-
-async function legacyTarball(context, { pkg, tarball }) {
-  const version = tarball.replace('.tgz', '');
-  context.logger.info(`requesting ${pkg} from VCpm`);
-  return response.text(
-    `VCpm tarball for ${pkg}@${version} not yet available`,
-    501
-  );
+  return response.text(ship);
 }

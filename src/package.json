@@ -9,21 +9,23 @@
   "dependencies": {
     "@hapi/joi": "^15.0.0",
     "cls-hooked": "^4.2.2",
+    "culture-ships": "~1.0.0",
     "dotenv": "^7.0.0",
     "find-my-way": "~2.0.1",
     "micro": "~9.3.3",
     "node-fetch": "^2.4.1",
     "ormnomnom": "^5.2.2",
+    "pacote": "~9.5.0",
     "pg": "~7.4.0",
     "pino": "^5.12.3",
     "uuid": "~3.3.2"
   },
   "devDependencies": {
     "db-migrate": "^0.11.5",
+    "db-migrate-pg": "^0.5.0",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.2.0",
     "eslint-plugin-prettier": "~3.0.1",
-    "db-migrate-pg": "^0.5.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.0.0",
@@ -46,14 +48,14 @@
   },
   "scripts": {
     "coverage": "nyc mocha -R spec",
+    "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
-    "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
-    "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
-    "test": "PGUSER=postgres PGDATABASE=entropic_test mocha -R spec",
     "posttest": "npm run lint",
     "preregistry": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",
-    "registry": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./registry/index.js"
+    "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
+    "registry": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./registry/server.js",
+    "test": "PGUSER=postgres PGDATABASE=entropic_test mocha -R spec"
   }
 }
