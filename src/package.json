@@ -13,6 +13,7 @@
     "dotenv": "^7.0.0",
     "find-my-way": "~2.0.1",
     "micro": "~9.3.3",
+    "mkdirp": "~0.5.1",
     "node-fetch": "^2.4.1",
     "ormnomnom": "^5.2.2",
     "pacote": "~9.5.0",
