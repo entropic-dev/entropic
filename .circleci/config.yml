@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:12.1.0
+      - image: circleci/node:latest
       - image: circleci/postgres:latest
 
     working_directory: ~/repo/src
@@ -10,7 +10,6 @@ jobs:
     steps:
       - checkout:
           path: ~/repo
-
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
