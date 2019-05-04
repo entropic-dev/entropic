@@ -28,7 +28,8 @@ function makeRouter() {
     fork.get('/:pkg', legacy.packument),
     fork.get('/@:encodedspec', legacy.namespacedPackument),
     fork.get('/%40:encodedspec', legacy.namespacedPackument),
-    fork.get('/:pkg/-/:mess', legacy.tarball)
+    fork.get('/:pkg/-/:mess', legacy.tarball),
+    fork.get('/@:namespace/:pkg/-/:mess', legacy.namespacedTarball)
   );
 
   return router;

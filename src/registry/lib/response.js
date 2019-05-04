@@ -3,11 +3,12 @@
 const { Response, Headers } = require('node-fetch');
 
 module.exports = {
-  redirect,
-  json,
-  text,
+  bytes,
+  error,
   html,
-  bytes
+  json,
+  redirect,
+  text
 };
 
 function json(body, status = 200) {
@@ -37,5 +38,14 @@ function html(text, status = 200, extraHeaders = {}) {
 function redirect(where, extraHeaders = {}, status = 301) {
   const headers = new Headers({ location: where, ...extraHeaders });
   const r = new Response('', { status, headers });
+  return r;
+}
+
+function error(err, status = 500) {
+  const headers = new Headers({ 'content-type': 'application/json' });
+  if (err instanceof String) {
+    err = { error: err };
+  }
+  const r = new Response(JSON.stringify(err), { status, headers });
   return r;
 }
