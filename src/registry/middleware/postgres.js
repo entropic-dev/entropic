@@ -36,6 +36,10 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
     return async function inner(context) {
       let client = null;
       context.getPostgresClient = async () => {
+        if (client) {
+          return client;
+        }
+
         client = await pool.connect();
         return client;
       };
