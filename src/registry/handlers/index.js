@@ -29,7 +29,9 @@ function makeRouter() {
     fork.get('/@:encodedspec', legacy.namespacedPackument),
     fork.get('/%40:encodedspec', legacy.namespacedPackument),
     fork.get('/:pkg/-/:mess', legacy.tarball),
-    fork.get('/@:namespace/:pkg/-/:mess', legacy.namespacedTarball)
+    fork.get('/@:namespace/:pkg/-/:mess', legacy.namespacedTarball),
+    fork.post('/-/npm/v1/security/audits', legacy.audit),
+    fork.post('/-/npm/v1/security/audits/quick', legacy.quickAudit)
   );
 
   return router;

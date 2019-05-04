@@ -1,15 +1,55 @@
 'use strict';
 
+const { buffer } = require('micro');
+const fetch = require('node-fetch');
 const cache = require('../lib/cache');
 const response = require('../lib/response');
 
 module.exports = {
+  audit,
   tarball,
   packument,
+  quickAudit,
   namespacedTarball,
   rewriteTarballUrls,
   namespacedPackument
 };
+
+async function audit(context) {
+  const headers = {
+    'content-type': 'application/json',
+    'content-encoding': 'gzip',
+    'accept-encoding': 'gzip,deflate'
+  };
+  const result = await fetch(
+    'https://registry.npmjs.org/-/npm/v1/security/audits',
+    {
+      method: 'post',
+      body: context.request,
+      headers
+    }
+  );
+  const body = await result.json();
+  return response.json(body);
+}
+
+async function quickAudit(context) {
+  const headers = {
+    'content-type': 'application/json',
+    'content-encoding': 'gzip',
+    'accept-encoding': 'gzip,deflate'
+  };
+  const result = await fetch(
+    'https://registry.npmjs.org/-/npm/v1/security/audits/quick',
+    {
+      method: 'post',
+      body: context.request,
+      headers
+    }
+  );
+  const body = await result.json();
+  return response.json(body);
+}
 
 // This is a simplest-possible-thing-that-works take on the problem.
 // Ideally we'd rewrite on the way in, store in the cache as modified,
