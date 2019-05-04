@@ -10,10 +10,10 @@ module.exports = class NamespaceMember {
   #user = null
   #namespace = null
 
-  constructor ({ id, user_id, user: pkg, namespace_id, namespace, created, modified, active }) {
+  constructor ({ id, user_id, user, namespace_id, namespace, created, modified, active }) {
     this.id = id
     this.user_id = user_id
-    this.#user = pkg ? Promise.resolve(pkg) : null
+    this.#user = user ? Promise.resolve(user) : null
     this.namespace_id = namespace_id
     this.#namespace = namespace ? Promise.resolve(namespace) : null
     this.created = created
