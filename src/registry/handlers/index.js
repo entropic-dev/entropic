@@ -2,16 +2,27 @@
 
 module.exports = makeRouter;
 
-const fork = require('../lib/router');
-const pkg = require('../../package.json');
-const response = require('../lib/response');
-const User = require('../models/user');
 const ship = require('culture-ships').random();
+
+const response = require('../lib/response');
+const pkg = require('../../package.json');
+const User = require('../models/user');
+const fork = require('../lib/router');
 const legacy = require('./legacy');
+const auth = require('./auth');
+const www = require('./www');
 
 function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
+    fork.post('/-/v1/login', auth.login),
+    fork.post('/-/v1/login/poll', auth.poll),
+    fork.get('/www/login/providers/:provider/callback', www.oauthCallback),
+    fork.get('/www/login', www.login),
+    fork.get('/www/signup', www.signup),
+    fork.post('/www/signup', www.signupAction),
+    fork.get('/www/tokens', www.tokens),
+    fork.post('/www/tokens', www.handleTokenAction),
     fork.get('/hello', greeting),
     fork.get('/ping', ping),
     fork.get('/:pkg', legacy.packument),

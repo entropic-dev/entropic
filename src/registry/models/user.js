@@ -1,5 +1,6 @@
 'use strict';
 
+const iron = require('@hapi/iron');
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
@@ -12,7 +13,32 @@ module.exports = class User {
     this.modified = modified;
     this.active = active;
   }
+
+  static async signup (name, email, accessEncrypted) {
+    const user = await User.objects.create({
+      name,
+      email
+    })
+
+    if (accessEncrypted) {
+      const { remote, provider } = JSON.parse(
+        await iron.unseal(accessEncrypted, process.env.OAUTH_PASSWORD, iron.defaults)
+      )
+
+      await Authentication.objects.create({
+        user,
+        remote_identity: remote.id,
+        provider,
+        access_token_enc: accessEncrypted,
+        metadata: {}
+      })
+    }
+
+    return user
+  }
 };
+
+const Authentication = require('./authentication')
 
 module.exports.objects = orm(module.exports, {
   id: joi
