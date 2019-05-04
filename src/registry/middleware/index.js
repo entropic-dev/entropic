@@ -1,6 +1,6 @@
 'use strict';
 
-const middleware = ['./requestid', './postgres', './transaction'];
+const middleware = ['./requestid', './postgres', './transaction', './redis', './session'];
 
 if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
   const dev = require('./dev-only');
