@@ -24,6 +24,7 @@
     "pacote": "~9.5.0",
     "pg": "~7.4.0",
     "pino": "^5.12.3",
+    "redis": "^2.8.0",
     "uuid": "~3.3.2"
   },
   "devDependencies": {
