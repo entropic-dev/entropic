@@ -12,7 +12,10 @@ module.exports = {
 };
 
 function json(body, status = 200, extraHeaders = {}) {
-  const headers = new Headers({ 'content-type': 'application/json', ...extraHeaders });
+  const headers = new Headers({
+    'content-type': 'application/json',
+    ...extraHeaders
+  });
   const r = new Response(JSON.stringify(body), { status, headers });
   return r;
 }
