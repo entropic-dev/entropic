@@ -48,9 +48,7 @@ async function login (context) {
 
 async function oauthCallback (context, { provider: providerName }) {
   const clientState = cookie.parse(context.request.headers.cookie || '')
-  const provider = Authentication.providers.reduce(
-    (found, xs) => found || xs.name === providerName
-  );
+  const provider = Authentication.providers.find(({name}) => name === providerName)
 
   const url = new URL(`${process.env.EXTERNAL_HOST}${context.request.url}`)
 
@@ -88,12 +86,6 @@ async function oauthCallback (context, { provider: providerName }) {
     'user.active': true
   }).catch(Authentication.objects.NotFound, () => null)
 
-  const sealed = await iron.seal(JSON.stringify({
-    token,
-    provider: provider.name,
-    remote
-  }), process.env.OAUTH_PASSWORD, iron.defaults)
-
   if (authn) {
     // TODO: hey hey, we really need session middleware.
     const user = await authn.user;
@@ -101,6 +93,12 @@ async function oauthCallback (context, { provider: providerName }) {
       'set-cookie': `user=${user.name}; SameSite=Lax; HttpOnly; Path=/www; Max-Age=365000`
     })
   }
+
+  const sealed = await iron.seal(JSON.stringify({
+    token,
+    provider: provider.name,
+    remote
+  }), process.env.OAUTH_PASSWORD, iron.defaults)
 
   return response.redirect('/www/signup', {
     'set-cookie': `access=${sealed}; SameSite=Lax; HttpOnly; Path=/www; Max-Age=10000`
