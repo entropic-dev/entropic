@@ -4,6 +4,8 @@ const querystring = require('querystring');
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
+const User = require('./user')
+
 module.exports = class Token {
   #user = null
 
