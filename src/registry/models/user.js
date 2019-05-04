@@ -14,16 +14,20 @@ module.exports = class User {
     this.active = active;
   }
 
-  static async signup (name, email, accessEncrypted) {
+  static async signup(name, email, accessEncrypted) {
     const user = await User.objects.create({
       name,
       email
-    })
+    });
 
     if (accessEncrypted) {
       const { remote, provider } = JSON.parse(
-        await iron.unseal(accessEncrypted, process.env.OAUTH_PASSWORD, iron.defaults)
-      )
+        await iron.unseal(
+          accessEncrypted,
+          process.env.OAUTH_PASSWORD,
+          iron.defaults
+        )
+      );
 
       await Authentication.objects.create({
         user,
@@ -31,14 +35,14 @@ module.exports = class User {
         provider,
         access_token_enc: accessEncrypted,
         metadata: {}
-      })
+      });
     }
 
-    return user
+    return user;
   }
 };
 
-const Authentication = require('./authentication')
+const Authentication = require('./authentication');
 
 module.exports.objects = orm(module.exports, {
   id: joi
