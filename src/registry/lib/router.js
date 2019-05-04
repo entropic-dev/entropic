@@ -21,8 +21,9 @@ function router(options) {
 
     return context => {
       const { request } = context;
-      const { path } = URL.parse(request.url);
-      const match = wayfinder.find(request.method, path);
+      const { pathname } = URL.parse(request.url);
+
+      const match = wayfinder.find(request.method, pathname);
 
       if (!match) {
         return response.json({ message: 'Not found' }, 404);
