@@ -3,8 +3,10 @@
 const { Response, Headers } = require('node-fetch');
 
 module.exports = {
+  redirect,
   json,
   text,
+  html,
   bytes
 };
 
@@ -23,5 +25,17 @@ function text(body, status = 200) {
 function bytes(stream, status = 200) {
   const headers = new Headers({ 'content-type': 'application/octet-stream' });
   const r = new Response(stream, { status, headers });
+  return r;
+}
+
+function html(text, status = 200, extraHeaders = {}) {
+  const headers = new Headers({ 'content-type': 'text/html', ...extraHeaders });
+  const r = new Response(text, { status, headers });
+  return r;
+}
+
+function redirect(where, extraHeaders = {}, status = 301) {
+  const headers = new Headers({ location: where, ...extraHeaders });
+  const r = new Response('', { status, headers });
   return r;
 }
