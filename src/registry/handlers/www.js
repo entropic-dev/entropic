@@ -115,7 +115,7 @@ async function oauthCallback(context, { provider: providerName }) {
     email: remote.email || ''
   };
 
-  session.set('remoteAuth', remoteAuth);
+  context.session.set('remoteAuth', remoteAuth);
   return response.redirect('/www/signup');
 }
 
