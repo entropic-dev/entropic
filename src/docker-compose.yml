@@ -8,5 +8,9 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: ${USER}
+  redis:
+    image: redis
+    expose:
+      - 6379
 volumes:
   postgres_data:
