@@ -7,7 +7,7 @@ const joi = require('@hapi/joi');
 module.exports = class Token {
   #user = null
 
-  constructor({ id, user, user_id, value_hash, created, modified, active }) {
+  constructor({ id, user, user_id, value_hash, description, created, modified, active }) {
     this.id = id;
 
     this.#user = user ? Promise.resolve(user) : null;
@@ -44,6 +44,7 @@ module.exports.objects = orm(module.exports, {
     .required(),
   user: orm.fk(User),
   value_hash: joi.string(),
+  description: joi.string(),
   created: joi.date(),
   modified: joi.date(),
   active: joi.boolean().default(true)
