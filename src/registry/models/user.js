@@ -14,26 +14,18 @@ module.exports = class User {
     this.active = active;
   }
 
-  static async signup(name, email, accessEncrypted) {
+  static async signup(name, email, remoteAuth) {
     const user = await User.objects.create({
       name,
       email
     });
 
-    if (accessEncrypted) {
-      const { remote, provider } = JSON.parse(
-        await iron.unseal(
-          accessEncrypted,
-          process.env.OAUTH_PASSWORD,
-          iron.defaults
-        )
-      );
-
+    if (remoteAuth) {
       await Authentication.objects.create({
         user,
-        remote_identity: remote.id,
-        provider,
-        access_token_enc: accessEncrypted,
+        remote_identity: remoteAuth.id,
+        provider: remoteAuth.provider,
+        access_token_enc: await iron.seal(remoteAuth.token, process.env.OAUTH_PASSWORD, iron.defaults),
         metadata: {}
       });
     }

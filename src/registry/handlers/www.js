@@ -110,6 +110,7 @@ async function oauthCallback(context, { provider: providerName }) {
 
   const remoteAuth = {
     token,
+    id: remote.id,
     provider: provider.name,
     username: remote.username || '',
     email: remote.email || ''
@@ -195,10 +196,7 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const { access: accessSealed } = cookie.parse(
-    context.request.headers.cookie || ''
-  );
-  const user = await User.signup(username, email, accessSealed);
+  const user = await User.signup(username, email, context.session.get('remoteAuth'));
 
   context.session.delete('remoteAuth');
   context.session.set('user', user.name);
