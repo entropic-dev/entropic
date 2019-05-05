@@ -25,7 +25,11 @@ module.exports = class User {
         user,
         remote_identity: remoteAuth.id,
         provider: remoteAuth.provider,
-        access_token_enc: await iron.seal(remoteAuth.token, process.env.OAUTH_PASSWORD, iron.defaults),
+        access_token_enc: await iron.seal(
+          remoteAuth.token,
+          process.env.OAUTH_PASSWORD,
+          iron.defaults
+        ),
         metadata: {}
       });
     }

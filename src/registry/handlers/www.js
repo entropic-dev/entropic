@@ -8,7 +8,6 @@ const fetch = require('node-fetch');
 const iron = require('@hapi/iron');
 const { text } = require('micro');
 const cookie = require('cookie');
-const crypto = require('crypto');
 const logger = require('pino')();
 const { URL } = require('url');
 const CSRF = require('csrf');
@@ -200,7 +199,11 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const user = await User.signup(username, email, context.session.get('remoteAuth'));
+  const user = await User.signup(
+    username,
+    email,
+    context.session.get('remoteAuth')
+  );
 
   context.session.delete('remoteAuth');
   context.session.set('user', user.name);
@@ -239,7 +242,9 @@ async function tokens(context) {
         <form method="POST" action="/www/tokens">
           <input name="action" value="create" type="hidden" />
           <input name="description" value="${escapeHtml(description)}" />
-          <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
+          <input name="csrf_token" value="${escapeHtml(
+            context.csrf_token
+          )}" type="hidden" />
           <input type="submit" value="create a new token" />
         </form>
         <hr />
@@ -266,7 +271,9 @@ async function tokens(context) {
                     ? `
                   <td>
                     <form method="POST" action="/www/tokens">
-                    <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
+                    <input name="csrf_token" value="${escapeHtml(
+                      context.csrf_token
+                    )}" type="hidden" />
                     <input name="action" value="delete" type="hidden" />
                       <input name="token" value="${escapeHtml(
                         token.value_hash
@@ -302,10 +309,7 @@ async function handleTokenAction(context) {
     const tokenValue = `ent_v1_${uuid.v4()}`;
     const target = await User.objects.get({ active: true, name: user });
     await Token.objects.create({
-      value_hash: crypto
-        .createHash('sha256')
-        .update(tokenValue)
-        .digest('base64'),
+      value_hash: Token.hasher(tokenValue),
       description,
       user: target
     });
@@ -418,7 +422,7 @@ function seasurf(next) {
       const token = TOKENS.create(secret);
       context.session.set('csrf', secret);
       context.csrf_token = token;
-    } else if (mutation.has(context.request.method)) {
+    } else {
       // if it's a mutating verb, check the token in the form against the one in the session
       const secret = context.session.get('csrf');
       const { csrf_token } = querystring.parse(await text(context.request));

@@ -5,7 +5,8 @@ const middleware = [
   './postgres',
   './transaction',
   './redis',
-  './session'
+  './session',
+  './bearer-auth'
 ];
 
 if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
