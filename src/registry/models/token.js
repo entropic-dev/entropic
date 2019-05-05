@@ -43,11 +43,19 @@ module.exports = class Token {
   static async lookupUser(value) {
     const hashed = Token.hasher(value);
     try {
-      const found = await Token.objects.get({ value_hash: hashed });
+      const found = await Token.objects.get({
+        value_hash: hashed,
+        active: true,
+        'user.active': true
+      });
       const user = await found.user;
       return user;
     } catch (err) {
-      // no-op
+      // Rethrow problems that are not a missing user, because they are likely
+      // either bugs or operational problems.
+      if (!(err instanceof User.objects.NotFound)) {
+        throw err;
+      }
     }
   }
 
