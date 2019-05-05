@@ -1,14 +1,65 @@
 'use strict';
 
+const { buffer } = require('micro');
+const fetch = require('node-fetch');
 const cache = require('../lib/cache');
 const response = require('../lib/response');
 
 module.exports = {
-  packument,
-  namespacedPackument,
+  audit,
   tarball,
-  namespacedTarball
+  packument,
+  quickAudit,
+  namespacedTarball,
+  rewriteTarballUrls,
+  namespacedPackument
 };
+
+async function audit(context) {
+  const headers = {
+    'content-type': 'application/json',
+    'content-encoding': 'gzip',
+    'accept-encoding': 'gzip,deflate'
+  };
+  const result = await fetch(
+    'https://registry.npmjs.org/-/npm/v1/security/audits',
+    {
+      method: 'post',
+      body: context.request,
+      headers
+    }
+  );
+  const body = await result.json();
+  return response.json(body);
+}
+
+async function quickAudit(context) {
+  const headers = {
+    'content-type': 'application/json',
+    'content-encoding': 'gzip',
+    'accept-encoding': 'gzip,deflate'
+  };
+  const result = await fetch(
+    'https://registry.npmjs.org/-/npm/v1/security/audits/quick',
+    {
+      method: 'post',
+      body: context.request,
+      headers
+    }
+  );
+  const body = await result.json();
+  return response.json(body);
+}
+
+// This is a simplest-possible-thing-that-works take on the problem.
+// Ideally we'd rewrite on the way in, store in the cache as modified,
+// and not repeat this work every time. But for now, this is functional.
+const LEGACY_PREFIX = new RegExp(/https:\/\/registry.npmjs.(com|org)/gi);
+const OUR_PREFIX = `https://${process.env.EXTERNAL_REGISTRY_HOST}`;
+function rewriteTarballUrls(input) {
+  const hacky = JSON.stringify(input).replace(LEGACY_PREFIX, OUR_PREFIX);
+  return JSON.parse(hacky);
+}
 
 async function packument(context, { pkg }) {
   // Welcome to the jungle.
@@ -27,8 +78,10 @@ async function packument(context, { pkg }) {
     const payload = await (version
       ? cache.manifest(pkg)
       : cache.packument(pkg));
-    const result = response.json(payload);
-    // TODO headers
+
+    const local = rewriteTarballUrls(payload);
+    const result = response.json(local);
+
     return result;
   } catch (err) {
     const { body, statusCode, code, headers, method, ...cleaned } = err;
@@ -55,7 +108,6 @@ async function tarball(context, { pkg, mess }) {
     const input = await cache.tarball(spec);
     context.logger.info(`fetched legacy tarball in ${Date.now() - start}ms`);
 
-    // TODO headers
     return response.bytes(input);
   } catch (err) {
     const { body, statusCode, code, headers, method, ...cleaned } = err;

@@ -1,26 +1,26 @@
-'use strict'
+'use strict';
 
 module.exports = class SessionMap extends Map {
-  constructor (...args) {
-    super(...args)
-    this.dirty = false
+  constructor(...args) {
+    super(...args);
+    this.dirty = false;
   }
 
-  set (key, value) {
-    const current = this.get(key)
-    const result = super.set(key, value)
+  set(key, value) {
+    const current = this.get(key);
+    const result = super.set(key, value);
     if (current !== value) {
-      this.dirty = true
+      this.dirty = true;
     }
-    return result
+    return result;
   }
 
-  delete (key) {
-    const had = this.has(key)
-    const result = super.delete(key)
+  delete(key) {
+    const had = this.has(key);
+    const result = super.delete(key);
     if (had) {
-      this.dirty = true
+      this.dirty = true;
     }
-    return result
+    return result;
   }
-}
+};
