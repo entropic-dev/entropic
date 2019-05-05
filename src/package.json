@@ -11,6 +11,7 @@
     "@hapi/joi": "^15.0.0",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
+    "csrf": "~3.1.0",
     "culture-ships": "~1.0.0",
     "dotenv": "^7.0.0",
     "escape-html": "^1.0.3",

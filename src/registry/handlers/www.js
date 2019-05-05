@@ -9,7 +9,9 @@ const iron = require('@hapi/iron');
 const { text } = require('micro');
 const cookie = require('cookie');
 const crypto = require('crypto');
+const logger = require('pino')();
 const { URL } = require('url');
+const CSRF = require('csrf');
 const uuid = require('uuid');
 
 const Authentication = require('../models/authentication');
@@ -19,13 +21,15 @@ const User = require('../models/user');
 
 const { Response } = require('node-fetch');
 
+const TOKENS = new CSRF();
+
 module.exports = {
   login: handleCLISession(redirectAuthenticated(login)),
   oauthCallback: redirectAuthenticated(oauthCallback),
   signup: redirectAuthenticated(signup),
   signupAction: redirectAuthenticated(signupAction),
-  tokens: redirectUnauthenticated(tokens),
-  handleTokenAction: redirectUnauthenticated(handleTokenAction)
+  tokens: seasurf(redirectUnauthenticated(tokens)),
+  handleTokenAction: seasurf(redirectUnauthenticated(handleTokenAction))
 };
 
 async function login(context) {
@@ -235,6 +239,7 @@ async function tokens(context) {
         <form method="POST" action="/www/tokens">
           <input name="action" value="create" type="hidden" />
           <input name="description" value="${escapeHtml(description)}" />
+          <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
           <input type="submit" value="create a new token" />
         </form>
         <hr />
@@ -261,7 +266,8 @@ async function tokens(context) {
                     ? `
                   <td>
                     <form method="POST" action="/www/tokens">
-                      <input name="action" value="delete" type="hidden" />
+                    <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
+                    <input name="action" value="delete" type="hidden" />
                       <input name="token" value="${escapeHtml(
                         token.value_hash
                       )}" type="hidden" />
@@ -398,5 +404,32 @@ function redirectUnauthenticated(to) {
 
       return next(context, ...args);
     };
+  };
+}
+
+const mutation = new Set(['POST', 'PATCH', 'PUT']);
+const idempotent = new Set(['GET', 'HEAD']);
+
+function seasurf(next) {
+  return async (context, ...args) => {
+    if (idempotent.has(context.request.method)) {
+      // if it's an idempotent verb, issue a token in the session
+      const secret = TOKENS.secretSync();
+      const token = TOKENS.create(secret);
+      context.session.set('csrf', secret);
+      context.csrf_token = token;
+    } else if (mutation.has(context.request.method)) {
+      // if it's a mutating verb, check the token in the form against the one in the session
+      const secret = context.session.get('csrf');
+      const { csrf_token } = querystring.parse(await text(context.request));
+
+      const okay = TOKENS.verify(secret, csrf_token);
+      if (!okay) {
+        logger.warn('csrf token mismatch!', { bad: csrf_token });
+        return response.redirect('/www/login');
+      }
+    }
+
+    return next(context, ...args);
   };
 }

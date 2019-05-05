@@ -31,7 +31,8 @@ function makeRouter() {
     fork.get('/:pkg/-/:mess', legacy.tarball),
     fork.get('/@:namespace/:pkg/-/:mess', legacy.namespacedTarball),
     fork.post('/-/npm/v1/security/audits', legacy.audit),
-    fork.post('/-/npm/v1/security/audits/quick', legacy.quickAudit)
+    fork.post('/-/npm/v1/security/audits/quick', legacy.quickAudit),
+    fork.get('/-/whoami', legacy.whoami)
   );
 
   return router;

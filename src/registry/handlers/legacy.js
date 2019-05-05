@@ -7,6 +7,7 @@ const response = require('../lib/response');
 
 module.exports = {
   audit,
+  whoami,
   tarball,
   packument,
   quickAudit,
@@ -14,6 +15,10 @@ module.exports = {
   rewriteTarballUrls,
   namespacedPackument
 };
+
+async function whoami(context) {
+  return response.text('dunno yet',  501);
+}
 
 async function audit(context) {
   const headers = {
@@ -55,7 +60,7 @@ async function quickAudit(context) {
 // Ideally we'd rewrite on the way in, store in the cache as modified,
 // and not repeat this work every time. But for now, this is functional.
 const LEGACY_PREFIX = new RegExp(/https:\/\/registry.npmjs.(com|org)/gi);
-const OUR_PREFIX = `https://${process.env.EXTERNAL_REGISTRY_HOST}`;
+const OUR_PREFIX = `https://${process.env.TARBALL_HOST}`;
 function rewriteTarballUrls(input) {
   const hacky = JSON.stringify(input).replace(LEGACY_PREFIX, OUR_PREFIX);
   return JSON.parse(hacky);
@@ -129,8 +134,6 @@ async function namespacedTarball(context, { namespace, pkg, mess }) {
     const start = Date.now();
     const input = await cache.tarball(spec);
     context.logger.info(`fetched legacy tarball in ${Date.now() - start}ms`);
-
-    // TODO headers
     return response.bytes(input);
   } catch (err) {
     const { body, statusCode, code, headers, method, ...cleaned } = err;
