@@ -1,6 +1,6 @@
 'use strict';
 
-const { buffer } = require('micro');
+const logger = require('pino')();
 const fetch = require('node-fetch');
 const cache = require('../lib/cache');
 const response = require('../lib/response');
@@ -17,7 +17,10 @@ module.exports = {
 };
 
 async function whoami(context) {
-  return response.text('dunno yet',  501);
+  if (!context.user) {
+    return response.json({ error: 'You are not logged in' });
+  }
+  return response.json({ username: context.user.name });
 }
 
 async function audit(context) {

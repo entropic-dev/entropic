@@ -1,15 +1,25 @@
 'use strict';
 
+const crypto = require('crypto');
 const querystring = require('querystring');
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const User = require('./user')
+const User = require('./user');
 
 module.exports = class Token {
-  #user = null
+  #user = null;
 
-  constructor({ id, user, user_id, value_hash, description, created, modified, active }) {
+  constructor({
+    id,
+    user,
+    user_id,
+    value_hash,
+    description,
+    created,
+    modified,
+    active
+  }) {
     this.id = id;
 
     this.#user = user ? Promise.resolve(user) : null;
@@ -23,18 +33,44 @@ module.exports = class Token {
     this.active = active;
   }
 
-  get user () {
+  static hasher(value) {
+    return crypto
+      .createHash('sha256')
+      .update(value)
+      .digest('base64');
+  }
+
+  static async lookupUser(value) {
+    const hashed = Token.hasher(value);
+    try {
+      const found = await Token.objects.get({
+        value_hash: hashed,
+        active: true,
+        'user.active': true
+      });
+      const user = await found.user;
+      return user;
+    } catch (err) {
+      // Rethrow problems that are not a missing user, because they are likely
+      // either bugs or operational problems.
+      if (!(err instanceof User.objects.NotFound)) {
+        throw err;
+      }
+    }
+  }
+
+  get user() {
     if (this.#user === null) {
-      this.#user = User.objects.get({id: this.user_id})
+      this.#user = User.objects.get({ id: this.user_id });
       this.#user.catch(() => {});
     }
 
-    return this.#user
+    return this.#user;
   }
 
-  set user (u) {
-    this.#user = Promise.resolve(u)
-    this.user_id = this.#user.id
+  set user(u) {
+    this.#user = Promise.resolve(u);
+    this.user_id = this.#user.id;
   }
 };
 
