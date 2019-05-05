@@ -6,14 +6,18 @@ const response = require('../lib/response');
 
 module.exports = createBearerAuthMW;
 
+const idempotent = new Set(['GET', 'HEAD']);
+
 function createBearerAuthMW() {
   return next => {
     return async context => {
       // We skip our (temporarily) embedded website AND paths that are
       // never expected to have valid tokens.
+      const requrl = context.request.url;
       if (
-        context.request.url.startsWith('/www') ||
-        context.request.url.startsWith('/-/v1/login')
+        requrl.startsWith('/www') ||
+        requrl.startsWith('/-/v1/login') ||
+        (idempotent.has(context.request.method) && requrl !== '/-/whoami')
       ) {
         return next(context);
       }
