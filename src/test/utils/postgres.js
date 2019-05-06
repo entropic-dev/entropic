@@ -10,7 +10,7 @@ function providePostgres(to) {
     const client = new Client();
 
     await client.connect();
-
+    await client.query('begin');
     if (typeof to.middleware === 'function') {
       to.middleware([
         ...to.middleware(),
@@ -33,6 +33,7 @@ function providePostgres(to) {
     try {
       await to(...args);
     } finally {
+      await client.query('rollback');
       await client.end();
       orm.setConnection(() => {
         throw new Error('no connection available');

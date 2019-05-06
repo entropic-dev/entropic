@@ -1,9 +1,10 @@
 'use strict';
 
-const crypto = require('crypto');
 const querystring = require('querystring');
+const crypto = require('crypto');
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
+const uuid = require('uuid');
 
 const User = require('./user');
 
@@ -38,6 +39,17 @@ module.exports = class Token {
       .createHash('sha256')
       .update(value)
       .digest('base64');
+  }
+
+  static async create({ for: user, description }) {
+    const value = `ent_v1_${uuid.v4()}`;
+    await Token.objects.create({
+      value_hash: Token.hasher(value),
+      description,
+      user
+    });
+
+    return value;
   }
 
   static async lookupUser(value) {

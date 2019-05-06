@@ -3,31 +3,40 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const User = require('./user')
-const Namespace = require('./namespace')
+const User = require('./user');
+const Namespace = require('./namespace');
 
 module.exports = class NamespaceMember {
-  #user = null
-  #namespace = null
+  #user = null;
+  #namespace = null;
 
-  constructor ({ id, user_id, user, namespace_id, namespace, created, modified, active }) {
-    this.id = id
-    this.user_id = user_id
-    this.#user = user ? Promise.resolve(user) : null
-    this.namespace_id = namespace_id
-    this.#namespace = namespace ? Promise.resolve(namespace) : null
-    this.created = created
-    this.modified = modified
-    this.active = active
+  constructor({
+    id,
+    user_id,
+    user,
+    namespace_id,
+    namespace,
+    created,
+    modified,
+    active
+  }) {
+    this.id = id;
+    this.user_id = user_id;
+    this.#user = user ? Promise.resolve(user) : null;
+    this.namespace_id = namespace_id;
+    this.#namespace = namespace ? Promise.resolve(namespace) : null;
+    this.created = created;
+    this.modified = modified;
+    this.active = active;
   }
 
-  get user () {
+  get user() {
     if (this.#user === null) {
-      this.#user = User.objects.get({id: this.user_id})
+      this.#user = User.objects.get({ id: this.user_id });
       this.#user.catch(() => {});
     }
 
-    return this.#user
+    return this.#user;
   }
 
   set user(u) {
@@ -35,20 +44,20 @@ module.exports = class NamespaceMember {
     this.user_id = this.#user.id;
   }
 
-  get namespace () {
+  get namespace() {
     if (this.#namespace === null) {
-      this.#namespace = Namespace.objects.get({id: this.namespace_id})
+      this.#namespace = Namespace.objects.get({ id: this.namespace_id });
       this.#namespace.catch(() => {});
     }
 
-    return this.#namespace
+    return this.#namespace;
   }
 
   set namespace(u) {
     this.#namespace = Promise.resolve(u);
     this.namespace_id = this.#namespace.id;
   }
-}
+};
 
 module.exports.objects = orm(module.exports, {
   id: joi
@@ -60,6 +69,5 @@ module.exports.objects = orm(module.exports, {
   namespace: orm.fk(Namespace),
   created: joi.date(),
   modified: joi.date(),
-  active: joi.boolean().default(true),
+  active: joi.boolean().default(true)
 });
-

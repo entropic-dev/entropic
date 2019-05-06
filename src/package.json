@@ -60,8 +60,8 @@
   "scripts": {
     "coverage": "nyc mocha -R spec",
     "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
-    "lint": "eslint .",
-    "lint-fix": "eslint --fix .",
+    "lint": "prettier -c --single-quote '**/*.js'",
+    "lint-fix": "prettier --single-quote --write '**/*.js'",
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
     "posttest": "true || npm run lint",
     "preregistry": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",

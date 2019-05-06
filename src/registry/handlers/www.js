@@ -209,14 +209,16 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const [err, user] = await User.signup(username, email, remoteAuth)
-    .then(xs => [null, xs], xs => [xs, null]);
+  const [err, user] = await User.signup(username, email, remoteAuth).then(
+    xs => [null, xs],
+    xs => [xs, null]
+  );
 
   if (err && err instanceof User.Conflict) {
     context.errors = { username: 'That username is already taken.' };
     return signup(context);
   } else if (err) {
-    throw err
+    throw err;
   }
 
   context.session.delete('remoteAuth');
@@ -320,13 +322,8 @@ async function handleTokenAction(context) {
   context.description = description;
 
   if (action === 'create') {
-    const tokenValue = `ent_v1_${uuid.v4()}`;
     const target = await User.objects.get({ active: true, name: user });
-    await Token.objects.create({
-      value_hash: Token.hasher(tokenValue),
-      description,
-      user: target
-    });
+    const tokenValue = await Token.create({ for: target, description });
 
     if (cliLoginSession) {
       context.session.set(
