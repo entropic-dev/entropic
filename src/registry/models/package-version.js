@@ -3,8 +3,6 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const Package = require('./package');
-
 module.exports = class PackageVersion {
   #parent = null;
 
@@ -80,6 +78,8 @@ module.exports = class PackageVersion {
     this.parent_id = this.#parent.id;
   }
 };
+
+const Package = require('./package');
 
 module.exports.objects = orm(module.exports, {
   id: joi

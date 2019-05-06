@@ -322,13 +322,8 @@ async function handleTokenAction(context) {
   context.description = description;
 
   if (action === 'create') {
-    const tokenValue = `ent_v1_${uuid.v4()}`;
     const target = await User.objects.get({ active: true, name: user });
-    await Token.objects.create({
-      value_hash: Token.hasher(tokenValue),
-      description,
-      user: target
-    });
+    const tokenValue = await Token.create({ for: target, description });
 
     if (cliLoginSession) {
       context.session.set(

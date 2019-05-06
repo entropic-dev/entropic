@@ -22,7 +22,6 @@ module.exports = [
   fork.put('/packages/package/:namespace/:name', canWrite(packageCreate)),
   fork.del('/packages/package/:namespace/:name', canWrite(packageDelete)),
 
-  fork.get('/packages/package/:namespace/:name/versions', versionList),
   fork.get(
     '/packages/package/:namespace/:name/versions/:version',
     versionDetail
@@ -39,13 +38,33 @@ module.exports = [
   fork.get('/objects/object/:algo/:digest', getObject)
 ];
 
-async function packageDetail(context, { namespace, name }) {}
+async function packageDetail(context, { namespace, name }) {
+  const pkg = await Package.objects
+    .get({
+      active: true,
+      name,
+      'namespace.active': true,
+      'namespace.name': namespace
+    })
+    .catch(Package.objects.NotFound, () => null);
+
+  if (!pkg) {
+    return response.error(`Could not find "${namespace}/${name}"`, 404)
+  }
+
+  return response.json(await pkg.serialize())
+}
 
 async function packageCreate(context, { namespace: namespaceName, name }) {
   const namespace = Namespace.objects.get({
     name: namespaceName,
     active: true
-  });
+  }).catch(Namespace.objects.NotFound, () => null);
+
+  if (!namespace) {
+    return response.error(`Could not find namespace "${namespaceName}"`)
+  }
+
   const { require_tfa = null } = await json(context.request);
   const update = {
     ...(require_tfa !== null ? { require_tfa: Boolean(require_tfa) } : {}),
@@ -218,9 +237,22 @@ function canWrite(next) {
   };
 }
 
-async function versionList(context, { namespace, name }) {}
+async function versionDetail(context, { namespace, name, version }) {
+  const v = await PackageVersion.objects.get({
+    'parent.namespace.name': namespace,
+    'parent.namespace.active': true,
+    'parent.active': true,
+    'parent.name': name,
+    active: true,
+    version
+  }).catch(PackageVersion.objects.NotFound, () => null)
 
-async function versionDetail(context, { namespace, name, version }) {}
+  if (!v) {
+    return response.error(`Could not find "${namespace}/${name}@${version}"`, 404)
+  }
+
+  return response.json(await v.serialize())
+}
 
 async function versionCreate(context, { namespace, name, version }) {
   // does a package with this version currently exist?
@@ -373,7 +405,8 @@ async function versionCreate(context, { namespace, name, version }) {
   return response.json(await pkgVersion.serialize(), 201);
 }
 
-async function versionDelete(context, { namespace, name, version }) {}
+async function versionDelete(context, { namespace, name, version }) {
+}
 
 async function getObject(context, { algo, digest }) {
   return new Response(await context.storage.strategy.get(algo, digest), {

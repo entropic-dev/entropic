@@ -3,8 +3,6 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const Namespace = require('./namespace');
-
 module.exports = class Package {
   #namespace = null;
 
@@ -33,7 +31,33 @@ module.exports = class Package {
   }
 
   async serialize() {
-    return {};
+    const namespace = await this.namespace
+    return {
+      name: `${namespace.name}/${this.name}`,
+      yanked: this.yanked,
+      created: this.created,
+      modified: this.modified,
+      require_tfa: Boolean(this.require_tfa),
+      versions: await this.versions(),
+      tags: this.tags
+    };
+  }
+
+  // TODO: precompute this on version change events.
+  async versions() {
+    const versions = await PackageVersion.objects.filter({
+      active: true,
+      parent: this
+    }).then();
+
+    const acc = {}
+    for (const version of versions) {
+      acc[version.version] = ssri.fromData(
+        JSON.stringify(await version.serialize())
+      )
+    }
+
+    return acc
   }
 
   get namespace() {
@@ -50,6 +74,9 @@ module.exports = class Package {
     this.namespace_id = this.#namespace.id;
   }
 };
+
+const PackageVersion = require('./package-version')
+const Namespace = require('./namespace');
 
 module.exports.objects = orm(module.exports, {
   id: joi
