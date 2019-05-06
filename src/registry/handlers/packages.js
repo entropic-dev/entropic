@@ -18,6 +18,7 @@ const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
 const MAX_FILES = Number(process.env.MAX_FILES) || 2000000;
 
 module.exports = [
+  fork.get('/packages', packageList),
   fork.get('/packages/package/:namespace/:name', packageDetail),
   fork.put('/packages/package/:namespace/:name', canWrite(packageCreate)),
   fork.del('/packages/package/:namespace/:name', canWrite(packageDelete)),
@@ -37,6 +38,17 @@ module.exports = [
 
   fork.get('/objects/object/:algo/:digest', getObject)
 ];
+
+async function packageList(context) {
+  const packages = await Package.objects.filter({ active: true, 'namespace.active': true }).then();
+
+  const objects = []
+  for (const pkg of packages) {
+    objects.push(await pkg.serialize())
+  }
+
+  return response.json({ objects })
+}
 
 async function packageDetail(context, { namespace, name }) {
   const pkg = await Package.objects

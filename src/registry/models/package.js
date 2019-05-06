@@ -2,6 +2,7 @@
 
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
+const ssri = require('ssri');
 
 module.exports = class Package {
   #namespace = null;
