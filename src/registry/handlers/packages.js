@@ -33,9 +33,8 @@ async function packageDetail (context, { namespace, name }) {
 
 async function packageCreate (context, { namespace: namespaceName, name }) {
   const namespace = Namespace.objects.get({ name: namespaceName, active: true });
-  const { yanked = null, require_tfa = null } = await json(context.request)
+  const { require_tfa = null } = await json(context.request)
   const update = {
-    ...(yanked !== null ? { yanked: Boolean(yanked) } : {}),
     ...(require_tfa !== null ? { require_tfa: Boolean(require_tfa) } : {}),
     modified: new Date()
   };
