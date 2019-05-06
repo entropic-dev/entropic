@@ -12,6 +12,10 @@ const Package = require('../models/package');
 const response = require('../lib/response');
 const fork = require('../lib/router');
 
+// Set these env vars to "Infinity" if you'd like to turn these checks off.
+const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024
+const MAX_FILES = Number(process.env.MAX_FILES) || 2000000
+
 module.exports = [
   fork.get('/packages/package/:namespace/:name', packageDetail),
   fork.put('/packages/package/:namespace/:name', canWrite(packageCreate)),
@@ -235,12 +239,12 @@ async function versionCreate (context, { namespace, name, version }) {
     Object.keys(formdata.optionalDependencies).length + 
     Object.keys(formdata.devDependencies).length +
     Object.keys(formdata.peerDependencies).length >
-    (Number(process.env.MAX_DEPENDENCIES) || 1024)
+    MAX_DEPENDENCIES
   ) {
     return response.error(`Exceeded maximum number of dependencies.`, 400);
   }
 
-  if (filecount > (Number(process.env.MAX_FILES) || 2000000)) {
+  if (filecount > MAX_FILES) {
     return response.error(`Exceeded maximum number of files in a version.`, 400);
   }
 
