@@ -141,7 +141,7 @@ async function versionDetail (context, { namespace, name, version }) {
 
 async function versionCreate (context, { namespace, name, version }) {
   // does a package with this version currently exist?
-  // if it does, that's a 400
+  // if it does, that's a 409
   // is the version valid semver? if not, that's a 400
   if (!context.pkg) {
     return response.error(`"${namespace}/${name}" does not exist. Create it!`, 404);
@@ -166,7 +166,7 @@ async function versionCreate (context, { namespace, name, version }) {
   }).values('id').slice(0, 1).then()
 
   if (any) {
-    return response.error(`Cannot publish over previously-published "${namespace}/${name}@${version}".`, 400);
+    return response.error(`Cannot publish over previously-published "${namespace}/${name}@${version}".`, 409);
   }
 
   const form = new Form()
