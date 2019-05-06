@@ -71,7 +71,48 @@ async function packageCreate (context, { namespace: namespaceName, name }) {
 }
 
 async function packageDelete (context, { namespace, name }) {
+  // yank the package. Transfer it to "abandonware" and mark it yanked. A
+  // yanked package can still be downloaded, but it won't be displayed in any
+  // lists, and should emit a warning when people use it.
+  //
+  // Support users can transfer the package to a new user using the usual
+  // package transfer machinery.
+  if (!context.pkg) {
+    return response.error(`"${namespace}/${name}" does not exist.`, 404);
+  }
 
+  const modified = new Date()
+
+  await Maintainer.objects.filter({
+    package: context.pkg,
+    active: true
+  }).update({
+    modified,
+    active: false
+  })
+
+  // XXX: Should yanking a package yank all versions?
+  await PackageVersion.objects.filter({
+    parent: context.pkg,
+    yanked: false
+  }).update({
+    modified,
+    yanked: true
+  })
+
+  await Package.objects.filter({
+    id: context.pkg.id
+  }).update({
+    modified,
+    yanked: true
+  })
+
+  await Maintainer.objects.create({
+    namespace: await Namespace.objects.get({ active: true, name: 'abandonware' }),
+    package: context.pkg
+  })
+
+  return response.text('', 204)
 }
 
 function canWrite (next) {
