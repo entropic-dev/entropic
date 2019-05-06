@@ -4,10 +4,20 @@ const iron = require('@hapi/iron');
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-orm.describeConflict('users_name_idx', 'Usernames must be unique.')
+orm.describeConflict('users_name_idx', 'Usernames must be unique.');
 
 module.exports = class User {
-  constructor({ id, name, email, tfa_secret, backup_codes, tfa_active, created, modified, active }) {
+  constructor({
+    id,
+    name,
+    email,
+    tfa_secret,
+    backup_codes,
+    tfa_active,
+    created,
+    modified,
+    active
+  }) {
     this.id = id;
     this.name = name;
     this.email = email;

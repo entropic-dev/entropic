@@ -1,100 +1,107 @@
-'use strict'
+'use strict';
 
-const { promises: fs } = require('fs')
-const { promisify } = require('util')
-const mkdirp = promisify(require('mkdirp'))
-const ssri = require('ssri')
-const uuid = require('uuid')
+const { promises: fs } = require('fs');
+const { promisify } = require('util');
+const mkdirp = promisify(require('mkdirp'));
+const ssri = require('ssri');
+const uuid = require('uuid');
 
 module.exports = class ObjectStore {
-  constructor (strategy, algorithms = (process.env.STORAGE_HASHES || 'sha512').split(',')) {
-    this.strategy = strategy
-    this.algorithms = algorithms
+  constructor(
+    strategy,
+    algorithms = (process.env.STORAGE_HASHES || 'sha512').split(',')
+  ) {
+    this.strategy = strategy;
+    this.algorithms = algorithms;
   }
 
-  async add (stream, { hint = null } = {}) {
-    const chunks = []
-    stream.on('data', chunk => chunks.push(chunk))
+  async add(stream, { hint = null } = {}) {
+    const chunks = [];
+    stream.on('data', chunk => chunks.push(chunk));
     const integrity = await ssri.fromStream(stream, {
       algorithms: this.algorithms
-    })
-    const data = Buffer.concat(chunks)
+    });
+    const data = Buffer.concat(chunks);
 
-    const targets = []
+    const targets = [];
     for (const algo of this.algorithms) {
-      for (const {digest} of integrity[algo] || []) {
-        targets.push(this.strategy.has(algo, digest).then(has => {
-          if (!has) {
-            return this.strategy.add(algo, digest, data)
-          }
-        }))
+      for (const { digest } of integrity[algo] || []) {
+        targets.push(
+          this.strategy.has(algo, digest).then(has => {
+            if (!has) {
+              return this.strategy.add(algo, digest, data);
+            }
+          })
+        );
       }
     }
 
-    await Promise.all(targets)
+    await Promise.all(targets);
 
-    return integrity.toString('base64')
+    return integrity.toString('base64');
   }
 
   // XXX: do we even need this? we know which algo folks are asking for.
-  async get (integrity) {
-    integrity = ssri.parse(integrity)
-    const streams = []
+  async get(integrity) {
+    integrity = ssri.parse(integrity);
+    const streams = [];
     for (const algo of this.algorithms) {
-      for (const {digest} of integrity[algo] || []) {
-        streams.push(this.strategy.get(algo, digest))
+      for (const { digest } of integrity[algo] || []) {
+        streams.push(this.strategy.get(algo, digest));
       }
     }
 
     if (!streams.length) {
-      return null
+      return null;
     }
 
     do {
-      const stream = await Promise.race(streams).catch(() => null)
-      streams.splice(streams.indexOf(stream), 1)
-    } while (!stream)
+      const stream = await Promise.race(streams).catch(() => null);
+      streams.splice(streams.indexOf(stream), 1);
+    } while (!stream);
 
     for (const other of streams) {
-      other.abort()
+      other.abort();
     }
 
-    return stream
+    return stream;
   }
 
   static FileSystemStrategy = class {
-    constructor (dir = process.env.CACHE_DIR || '.') {
-      this.dir = dir
-      this.algos = new Set()
+    constructor(dir = process.env.CACHE_DIR || '.') {
+      this.dir = dir;
+      this.algos = new Set();
     }
 
-    async get (algo, digest) {
-      digest = encodeURIComponent(digest)
-      return fs.readFile(`${this.dir}/${algo}/${digest}`)
+    async get(algo, digest) {
+      digest = encodeURIComponent(digest);
+      return fs.readFile(`${this.dir}/${algo}/${digest}`);
     }
 
-    async has (algo, digest) {
-      digest = encodeURIComponent(digest)
+    async has(algo, digest) {
+      digest = encodeURIComponent(digest);
       try {
-        await fs.access(`${this.dir}/${algo}/${digest}`)
-        return true
+        await fs.access(`${this.dir}/${algo}/${digest}`);
+        return true;
       } catch {
-        return false
+        return false;
       }
     }
 
-    async add (algo, digest, data) {
-      digest = encodeURIComponent(digest)
+    async add(algo, digest, data) {
+      digest = encodeURIComponent(digest);
       if (!this.algos.has(algo)) {
-        await mkdirp(`${this.dir}/${algo}/tmp`)
-        this.algos.add(algo)
+        await mkdirp(`${this.dir}/${algo}/tmp`);
+        this.algos.add(algo);
       }
 
-
-      const uniq = uuid.v4()
-      await fs.writeFile(`${this.dir}/${algo}/tmp/${uniq}`, data)
-      await fs.link(`${this.dir}/${algo}/tmp/${uniq}`, `${this.dir}/${algo}/${digest}`)
-      await fs.unlink(`${this.dir}/${algo}/tmp/${uniq}`)
+      const uniq = uuid.v4();
+      await fs.writeFile(`${this.dir}/${algo}/tmp/${uniq}`, data);
+      await fs.link(
+        `${this.dir}/${algo}/tmp/${uniq}`,
+        `${this.dir}/${algo}/${digest}`
+      );
+      await fs.unlink(`${this.dir}/${algo}/tmp/${uniq}`);
     }
-  }
-}
+  };
+};

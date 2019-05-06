@@ -1,17 +1,17 @@
-'use strict'
+'use strict';
 
-module.exports = createObjectStorageMW
+module.exports = createObjectStorageMW;
 
-const ObjectStorage = require('../lib/object-storage')
+const ObjectStorage = require('../lib/object-storage');
 
-function createObjectStorageMW (strategyName = 'FileSystemStrategy') {
+function createObjectStorageMW(strategyName = 'FileSystemStrategy') {
   return next => {
-    const strategy = new (ObjectStorage[strategyName])
-    const storage = new ObjectStorage(strategy)
+    const strategy = new ObjectStorage[strategyName]();
+    const storage = new ObjectStorage(strategy);
 
     return (context, ...args) => {
-      context.storage = storage
-      return next(context, ...args)
-    }
-  }
+      context.storage = storage;
+      return next(context, ...args);
+    };
+  };
 }

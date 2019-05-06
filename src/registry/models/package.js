@@ -3,42 +3,53 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const Namespace = require('./namespace')
+const Namespace = require('./namespace');
 
 module.exports = class Package {
-  #namespace = null
+  #namespace = null;
 
-  constructor ({ id, name, namespace_id, namespace, require_tfa, yanked, created, modified, active, tags }) {
-    this.id = id
-    this.name = name
-    this.namespace_id = namespace_id
-    this.#namespace = namespace ? Promise.resolve(namespace) : null
-    this.require_tfa = require_tfa
-    this.yanked = yanked
-    this.created = created
-    this.modified = modified
-    this.active = active
-    this.tags = tags
+  constructor({
+    id,
+    name,
+    namespace_id,
+    namespace,
+    require_tfa,
+    yanked,
+    created,
+    modified,
+    active,
+    tags
+  }) {
+    this.id = id;
+    this.name = name;
+    this.namespace_id = namespace_id;
+    this.#namespace = namespace ? Promise.resolve(namespace) : null;
+    this.require_tfa = require_tfa;
+    this.yanked = yanked;
+    this.created = created;
+    this.modified = modified;
+    this.active = active;
+    this.tags = tags;
   }
 
-  async serialize () {
-    return {}
+  async serialize() {
+    return {};
   }
 
-  get namespace () {
+  get namespace() {
     if (this.#namespace === null) {
-      this.#namespace = Namespace.objects.get({id: this.namespace_id})
+      this.#namespace = Namespace.objects.get({ id: this.namespace_id });
       this.#namespace.catch(() => {});
     }
 
-    return this.#namespace
+    return this.#namespace;
   }
 
   set namespace(u) {
     this.#namespace = Promise.resolve(u);
     this.namespace_id = this.#namespace.id;
   }
-}
+};
 
 module.exports.objects = orm(module.exports, {
   id: joi

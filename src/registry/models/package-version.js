@@ -3,12 +3,12 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const Package = require('./package')
+const Package = require('./package');
 
 module.exports = class PackageVersion {
-  #parent = null
+  #parent = null;
 
-  constructor ({
+  constructor({
     id,
     version,
     parent_id,
@@ -25,26 +25,26 @@ module.exports = class PackageVersion {
     modified,
     active
   }) {
-    this.id = id
-    this.version = version
-    this.parent_id = parent_id
-    this.#parent = parent ? Promise.resolve(parent) : null
-    this.yanked = yanked
-    this.files = files // JSON blob. {"path/to/file": "<subresource integrity hash>"}
-    this.signatures = signatures
-    this.dependencies = dependencies
-    this.devDependencies = devDependencies
-    this.peerDependencies = peerDependencies
-    this.optionalDependencies = optionalDependencies
-    this.bundledDependencies = bundledDependencies
+    this.id = id;
+    this.version = version;
+    this.parent_id = parent_id;
+    this.#parent = parent ? Promise.resolve(parent) : null;
+    this.yanked = yanked;
+    this.files = files; // JSON blob. {"path/to/file": "<subresource integrity hash>"}
+    this.signatures = signatures;
+    this.dependencies = dependencies;
+    this.devDependencies = devDependencies;
+    this.peerDependencies = peerDependencies;
+    this.optionalDependencies = optionalDependencies;
+    this.bundledDependencies = bundledDependencies;
     // TODO: list mirrors here?
 
-    this.active = active
-    this.created = created
-    this.modified = modified
+    this.active = active;
+    this.created = created;
+    this.modified = modified;
   }
 
-  async serialize () {
+  async serialize() {
     const {
       files,
       dependencies,
@@ -53,7 +53,7 @@ module.exports = class PackageVersion {
       optionalDependencies,
       bundledDependencies,
       signatures
-    } = this
+    } = this;
 
     return {
       files,
@@ -63,23 +63,23 @@ module.exports = class PackageVersion {
       optionalDependencies,
       bundledDependencies,
       signatures
-    }
+    };
   }
 
-  get parent () {
+  get parent() {
     if (this.#parent === null) {
-      this.#parent = Package.objects.get({id: this.parent_id})
+      this.#parent = Package.objects.get({ id: this.parent_id });
       this.#parent.catch(() => {});
     }
 
-    return this.#parent
+    return this.#parent;
   }
 
-  set parent (p) {
+  set parent(p) {
     this.#parent = Promise.resolve(p);
     this.parent_id = this.#parent.id;
   }
-}
+};
 
 module.exports.objects = orm(module.exports, {
   id: joi

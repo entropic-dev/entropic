@@ -209,14 +209,16 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const [err, user] = await User.signup(username, email, remoteAuth)
-    .then(xs => [null, xs], xs => [xs, null]);
+  const [err, user] = await User.signup(username, email, remoteAuth).then(
+    xs => [null, xs],
+    xs => [xs, null]
+  );
 
   if (err && err instanceof User.Conflict) {
     context.errors = { username: 'That username is already taken.' };
     return signup(context);
   } else if (err) {
-    throw err
+    throw err;
   }
 
   context.session.delete('remoteAuth');
