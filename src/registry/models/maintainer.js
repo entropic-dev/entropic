@@ -30,6 +30,11 @@ module.exports = class Maintainer {
     return this.#package
   }
 
+  set package (p) {
+    this.#package = Promise.resolve(p);
+    this.package_id = this.#package.id;
+  }
+
   get namespace () {
     if (this.#namespace === null) {
       this.#namespace = Namespace.objects.get({id: this.namespace_id})
@@ -37,6 +42,11 @@ module.exports = class Maintainer {
     }
 
     return this.#namespace
+  }
+
+  set namespace(n) {
+    this.#namespace = Promise.resolve(n);
+    this.namespace_id = this.#namespace.id;
   }
 }
 

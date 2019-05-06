@@ -19,6 +19,7 @@
     "is-email-maybe": "^1.0.1",
     "micro": "~9.3.3",
     "mkdirp": "~0.5.1",
+    "multiparty": "^4.2.1",
     "node-fetch": "^2.4.1",
     "npm-user-validate": "^1.0.0",
     "ormnomnom": "^5.2.2",
@@ -26,6 +27,8 @@
     "pg": "~7.4.0",
     "pino": "^5.12.3",
     "redis": "^2.8.0",
+    "semver": "^6.0.0",
+    "ssri": "^6.0.1",
     "uuid": "~3.3.2"
   },
   "devDependencies": {

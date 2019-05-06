@@ -1,0 +1,268 @@
+'use strict'
+
+const { Form } = require('multiparty');
+const { json } = require('micro');
+const semver = require('semver');
+const ssri = require('ssri');
+
+const PackageVersion = require('../models/package-version');
+const Maintainer = require('../models/maintainer');
+const Namespace = require('../models/namespace');
+const Package = require('../models/package');
+const response = require('../lib/response');
+const fork = require('../lib/router');
+
+module.exports = [
+  fork.get('/packages/package/:namespace/:name', packageDetail),
+  fork.put('/packages/package/:namespace/:name', canWrite(packageCreate)),
+  fork.del('/packages/package/:namespace/:name', canWrite(packageDelete)),
+
+  fork.get('/packages/package/:namespace/:name/versions', versionList),
+  fork.get('/packages/package/:namespace/:name/versions/:version', versionDetail),
+  fork.put('/packages/package/:namespace/:name/versions/:version', canWrite(versionCreate)),
+  fork.del('/packages/package/:namespace/:name/versions/:version', canWrite(versionDelete))
+]
+
+async function packageDetail (context, { namespace, name }) {
+  
+}
+
+async function packageCreate (context, { namespace: namespaceName, name }) {
+  const namespace = Namespace.objects.get({ name: namespaceName, active: true });
+  const { yanked = null, require_tfa = null } = await json(context.request)
+  const update = {
+    ...(yanked !== null ? { yanked: Boolean(yanked) } : {}),
+    ...(require_tfa !== null ? { require_tfa: Boolean(require_tfa) } : {}),
+    modified: new Date()
+  };
+
+  if (update.require_tfa && !context.user.tfa_active) {
+    return response.error(`You cannot require 2fa on a package without activating it for your account`, 400)
+  }
+
+  let result = null
+  if (context.pkg) {
+    await Package.objects.filter({
+      id: pkg.id
+    }).update(update)
+
+    result = await Package.objects.get({
+      namespace,
+      name,
+      active: true
+    })
+  } else {
+    result = await Package.objects.create({
+      name,
+      namespace,
+      ...update
+    })
+
+    await Maintainer.objects.create({
+      namespace,
+      package: result
+    })
+  }
+
+  return response.json(await result.serialize())
+}
+
+async function packageDelete (context, { namespace, name }) {
+
+}
+
+function canWrite (next) {
+  // is there a current user?
+  // does the package exist?
+  // -> YES
+  //    is the current user a maintainer or a member of a namespace that is a maintainer of package?
+  //    does the package require 2fa to be enabled to change?
+  //    -> YES
+  //      did the user authenticate with 2fa?
+  //    are we enabling 2fa?
+  //    -> YES
+  //      does the current user have 2fa enabled? (if not 400)
+  // -> NO
+  //    is the current user a member of namespace?
+
+  return async (context, params) => {
+    const { namespace, name } = params
+    if (!context.user) {
+      return response.error('You must be logged in to create a package', 403)
+    }
+
+    const pkg = await Package.objects.get({
+      active: true,
+      name,
+      'namespace.active': true,
+      'namespace.name': namespace
+    }).catch(Package.objects.NotFound, () => null)
+
+    if (pkg) {
+      const [any = null] = await Maintainer.objects.filter({
+        package: pkg,
+        active: true,
+        'namespace.active': true,
+        'namespace.name': namespace,
+        'namespace.namespace_members.active': true,
+        'namespace.namespace_members.user_id': context.user.id
+      }).values('id').slice(0, 1).then()
+
+      if (!any) {
+        return response.error(`You are not a maintainer of "${namespace}/${name}"`, 403)
+      }
+
+      if (pkg.require_tfa && !user.tfa_active) {
+        return response.error(`You must enable 2FA to edit "${namespace}/${name}"`, 403)
+      }
+    } else {
+      const [any = null] = await Namespace.objects.filter({
+        active: true,
+        name: namespace,
+        'namespace_members.active': true,
+        'namespace_members.user_id': context.user.id
+      }).then()
+
+      if (!any) {
+        return response.error(`You are not a member of "${namespace}"`, 403)
+      }
+    }
+
+    context.pkg = pkg
+    return next(context, params)
+  }
+}
+
+async function versionList (context, { namespace, name }) {
+}
+
+async function versionDetail (context, { namespace, name, version }) {
+}
+
+async function versionCreate (context, { namespace, name, version }) {
+  // does a package with this version currently exist?
+  // if it does, that's a 400
+  // is the version valid semver? if not, that's a 400
+  if (!context.pkg) {
+    return response.error(`"${namespace}/${name}" does not exist. Create it!`, 404);
+  }
+
+  const cleaned = semver.clean(version)
+  if (cleaned !== version) {
+    return response.error(`"${version}" is not valid semver; try "${cleaned}" instead.`, 400);
+  }
+
+  if (!semver.valid(version)) {
+    return response.error(`"${version}" is not valid semver`, 400);
+  }
+
+  const [any = null] = await PackageVersion.objects.filter({
+    'parent.namespace.name': namespace,
+    'parent.namespace.active': true,
+    'parent.name': name,
+    'parent.active': true,
+    active: true,
+    version
+  }).values('id').slice(0, 1).then()
+
+  if (any) {
+    return response.error(`Cannot publish over previously-published "${namespace}/${name}@${version}".`, 400);
+  }
+
+  const form = new Form()
+
+  const oncomplete = new Promise((resolve, reject) => {
+    form.once('error', reject)
+    form.once('close', resolve)
+  })
+
+  const formdata = {
+    signatures: [],
+    dependencies: {},
+    devDependencies: {},
+    optionalDependencies: {},
+    peerDependencies: {},
+    bundledDependencies: {},
+    files: {}
+  }
+
+  form.on('field', (key, value) => {
+    switch (key) {
+      case 'signature':
+        formdata.signatures.push(value)
+      break;
+      case 'dependencies':
+      case 'devDependencies':
+      case 'optionalDependencies':
+      case 'peerDependencies':
+      case 'bundledDependencies':
+        try {
+          value = JSON.parse(value)
+        } catch {
+          form.emit('error', new Error(`expected "${key}" to be JSON`))
+        }
+
+        for (const dep in value) {
+          // XXX: how do we validate npm-style short deps like `github/bloo`?
+          if (typeof value[dep] !== 'string' || !semver.validRange(value[dep])) {
+            form.emit('error', new Error(`invalid semver range in "${key}" for "${dep}": "${value[dep]}"`))
+          }
+        }
+
+        formdata[key] = value
+      break;
+    }
+  })
+
+  let filecount = 0
+  form.on('part', part => {
+    ++filecount
+    part.on('error', err => form.emit('error', err));
+    const filename = './' + String(part.filename).replace(/^\/+/g, '')
+    formdata.files[filename] = ssri.fromStream(part)
+  })
+
+  form.parse(context.request)
+  try {
+    await oncomplete
+  } catch (err) {
+    return response.error(err.message, 400);
+  }
+
+  // leaving bundledDeps out of the deps count.
+  if (
+    Object.keys(formdata.dependencies).length +
+    Object.keys(formdata.optionalDependencies).length + 
+    Object.keys(formdata.devDependencies).length +
+    Object.keys(formdata.peerDependencies).length >
+    (Number(process.env.MAX_DEPENDENCIES) || 1024)
+  ) {
+    return response.error(`Exceeded maximum number of dependencies.`, 400);
+  }
+
+  if (filecount > (Number(process.env.MAX_FILES) || 2000000)) {
+    return response.error(`Exceeded maximum number of files in a version.`, 400);
+  }
+
+  await Promise.all(Object.keys(formdata.files).map(filename => {
+    return formdata.files[filename].then(
+      integrity => formdata.files[filename] = integrity.toString('base64')
+    )
+  }))
+
+  const pkgVersion = await PackageVersion.objects.create({
+    ...formdata,
+    version,
+    parent: context.pkg
+  })
+
+  await Package.objects.filter({id: context.pkg.id}).update({
+    modified: pkgVersion.modified,
+    tags: {...(context.pkg.tags || {}), latest: version}
+  })
+
+  return response.json(await pkgVersion.serialize(), 201)
+}
+
+async function versionDelete (context, { namespace, name, version }) {
+}

@@ -19,7 +19,7 @@ module.exports.objects = orm(module.exports, {
     .integer()
     .greater(-1)
     .required(),
-  name: joi.string().min(6),
+  name: joi.string().min(1),
   created: joi.date(),
   modified: joi.date(),
   active: joi.boolean().default(true)

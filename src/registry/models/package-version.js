@@ -8,7 +8,23 @@ const Package = require('./package')
 module.exports = class PackageVersion {
   #parent = null
 
-  constructor ({ id, version, parent_id, parent, yanked, files, signatures, created, modified, active}) {
+  constructor ({
+    id,
+    version,
+    parent_id,
+    parent,
+    yanked,
+    files,
+    signatures,
+    dependencies,
+    devDependencies,
+    peerDependencies,
+    optionalDependencies,
+    bundledDependencies,
+    created,
+    modified,
+    active
+  }) {
     this.id = id
     this.version = version
     this.parent_id = parent_id
@@ -16,11 +32,38 @@ module.exports = class PackageVersion {
     this.yanked = yanked
     this.files = files // JSON blob. {"path/to/file": "<subresource integrity hash>"}
     this.signatures = signatures
+    this.dependencies = dependencies
+    this.devDependencies = devDependencies
+    this.peerDependencies = peerDependencies
+    this.optionalDependencies = optionalDependencies
+    this.bundledDependencies = bundledDependencies
     // TODO: list mirrors here?
 
     this.active = active
     this.created = created
     this.modified = modified
+  }
+
+  async serialize () {
+    const {
+      files,
+      dependencies,
+      devDependencies,
+      peerDependencies,
+      optionalDependencies,
+      bundledDependencies,
+      signatures
+    } = this
+
+    return {
+      files,
+      dependencies,
+      devDependencies,
+      peerDependencies,
+      optionalDependencies,
+      bundledDependencies,
+      signatures
+    }
   }
 
   get parent () {
@@ -31,6 +74,11 @@ module.exports = class PackageVersion {
 
     return this.#parent
   }
+
+  set parent (p) {
+    this.#parent = Promise.resolve(p);
+    this.parent_id = this.#parent.id;
+  }
 }
 
 module.exports.objects = orm(module.exports, {
@@ -39,11 +87,16 @@ module.exports.objects = orm(module.exports, {
     .integer()
     .greater(-1)
     .required(),
-  version: joi.string().min(6),
+  version: joi.string().min(1),
   parent: orm.fk(Package),
   yanked: joi.boolean().default(false),
   files: joi.object().unknown(),
   signatures: joi.array().items(joi.string()),
+  dependencies: joi.object().unknown(),
+  devDependencies: joi.object().unknown(),
+  peerDependencies: joi.object().unknown(),
+  optionalDependencies: joi.object().unknown(),
+  bundledDependencies: joi.object().unknown(),
   active: joi.boolean().default(true),
   created: joi.date(),
   modified: joi.date()
