@@ -30,6 +30,11 @@ module.exports = class NamespaceMember {
     return this.#user
   }
 
+  set user(u) {
+    this.#user = Promise.resolve(u);
+    this.user_id = this.#user.id;
+  }
+
   get namespace () {
     if (this.#namespace === null) {
       this.#namespace = Namespace.objects.get({id: this.namespace_id})
@@ -37,6 +42,11 @@ module.exports = class NamespaceMember {
     }
 
     return this.#namespace
+  }
+
+  set namespace(u) {
+    this.#namespace = Promise.resolve(u);
+    this.namespace_id = this.#namespace.id;
   }
 }
 

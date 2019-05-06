@@ -127,6 +127,10 @@ async function signup(context) {
   // on signup, create a User, Namespace, NamespaceMember, and Authentication.
   const remoteAuth = context.session.get('remoteAuth');
 
+  if (!remoteAuth) {
+    return response.redirect('/www/login');
+  }
+
   let username = '';
   let email = '';
   if (remoteAuth) {
@@ -176,6 +180,12 @@ async function signup(context) {
 }
 
 async function signupAction(context) {
+  const remoteAuth = context.session.get('remoteAuth');
+
+  if (!remoteAuth) {
+    return response.redirect('/www/login');
+  }
+
   const { username, email } = querystring.parse(await text(context.request));
   context.username = username;
   context.email = email;
@@ -199,11 +209,15 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const user = await User.signup(
-    username,
-    email,
-    context.session.get('remoteAuth')
-  );
+  const [err, user] = await User.signup(username, email, remoteAuth)
+    .then(xs => [null, xs], xs => [xs, null]);
+
+  if (err && err instanceof User.Conflict) {
+    context.errors = { username: 'That username is already taken.' };
+    return signup(context);
+  } else if (err) {
+    throw err
+  }
 
   context.session.delete('remoteAuth');
   context.session.set('user', user.name);

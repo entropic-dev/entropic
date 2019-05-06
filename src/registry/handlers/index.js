@@ -15,6 +15,8 @@ const www = require('./www');
 function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
+    ...require('./packages'),
+
     fork.get('/-/v1/login/poll/:session', auth.poll),
     fork.post('/-/v1/login', auth.login),
     fork.get('/www/login/providers/:provider/callback', www.oauthCallback),

@@ -8,16 +8,21 @@ const Namespace = require('./namespace')
 module.exports = class Package {
   #namespace = null
 
-  constructor ({ id, name, namespace_id, namespace, yanked, created, modified, active, tags }) {
+  constructor ({ id, name, namespace_id, namespace, require_tfa, yanked, created, modified, active, tags }) {
     this.id = id
     this.name = name
     this.namespace_id = namespace_id
     this.#namespace = namespace ? Promise.resolve(namespace) : null
+    this.require_tfa = require_tfa
     this.yanked = yanked
     this.created = created
     this.modified = modified
     this.active = active
     this.tags = tags
+  }
+
+  async serialize () {
+    return {}
   }
 
   get namespace () {
@@ -28,6 +33,11 @@ module.exports = class Package {
 
     return this.#namespace
   }
+
+  set namespace(u) {
+    this.#namespace = Promise.resolve(u);
+    this.namespace_id = this.#namespace.id;
+  }
 }
 
 module.exports.objects = orm(module.exports, {
@@ -36,8 +46,9 @@ module.exports.objects = orm(module.exports, {
     .integer()
     .greater(-1)
     .required(),
-  name: joi.string().min(6),
+  name: joi.string().min(1),
   namespace: orm.fk(Namespace),
+  require_tfa: joi.boolean(),
   yanked: joi.boolean().default(false),
   created: joi.date(),
   modified: joi.date(),
