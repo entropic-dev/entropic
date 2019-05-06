@@ -41,15 +41,15 @@ module.exports = class Token {
       .digest('base64');
   }
 
-  static async create ({ for: user, description }) {
+  static async create({ for: user, description }) {
     const value = `ent_v1_${uuid.v4()}`;
     await Token.objects.create({
       value_hash: Token.hasher(value),
       description,
       user
-    })
+    });
 
-    return value
+    return value;
   }
 
   static async lookupUser(value) {

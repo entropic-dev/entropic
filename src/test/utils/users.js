@@ -1,23 +1,21 @@
-'use strict'
+'use strict';
 
 module.exports = {
   createUser,
   createToken
+};
+
+const Token = require('../../registry/models/token');
+const User = require('../../registry/models/user');
+
+async function createUser(username, email = `${username}@entropic.dev`) {
+  return await User.signup(username, email, null);
 }
 
-const Token = require('../../registry/models/token')
-const User = require('../../registry/models/user')
-
-async function createUser (username, email = `${username}@entropic.dev`) {
-  return await User.signup(username, email, null)
-}
-
-async function createToken (username) {
-  const user = (
-    username.id
+async function createToken(username) {
+  const user = username.id
     ? username
-    : await User.objects.get({ active: true, name: username })
-  )
+    : await User.objects.get({ active: true, name: username });
 
-  return await Token.create({ for: user, description: 'just a test' })
+  return await Token.create({ for: user, description: 'just a test' });
 }
