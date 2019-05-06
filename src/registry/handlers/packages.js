@@ -1,5 +1,6 @@
 'use strict'
 
+const { Response } = require('node-fetch');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
@@ -24,7 +25,9 @@ module.exports = [
   fork.get('/packages/package/:namespace/:name/versions', versionList),
   fork.get('/packages/package/:namespace/:name/versions/:version', versionDetail),
   fork.put('/packages/package/:namespace/:name/versions/:version', canWrite(versionCreate)),
-  fork.del('/packages/package/:namespace/:name/versions/:version', canWrite(versionDelete))
+  fork.del('/packages/package/:namespace/:name/versions/:version', canWrite(versionDelete)),
+
+  fork.get('/objects/object/:algo/:digest', getObject)
 ]
 
 async function packageDetail (context, { namespace, name }) {
@@ -263,7 +266,7 @@ async function versionCreate (context, { namespace, name, version }) {
     ++filecount
     part.on('error', err => form.emit('error', err));
     const filename = './' + String(part.filename).replace(/^\/+/g, '')
-    formdata.files[filename] = ssri.fromStream(part)
+    formdata.files[filename] = context.storage.add(part)
   })
 
   form.parse(context.request)
@@ -290,7 +293,7 @@ async function versionCreate (context, { namespace, name, version }) {
 
   await Promise.all(Object.keys(formdata.files).map(filename => {
     return formdata.files[filename].then(
-      integrity => formdata.files[filename] = integrity.toString('base64')
+      integrity => formdata.files[filename] = integrity
     )
   }))
 
@@ -309,4 +312,13 @@ async function versionCreate (context, { namespace, name, version }) {
 }
 
 async function versionDelete (context, { namespace, name, version }) {
+}
+
+async function getObject (context, { algo, digest }) {
+  return new Response(await context.storage.strategy.get(algo, digest), {
+    status: 200,
+    headers: {
+      'content-type': 'application/octet-stream'
+    }
+  })
 }

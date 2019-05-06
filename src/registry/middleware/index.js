@@ -6,7 +6,8 @@ const middleware = [
   './transaction',
   './redis',
   './session',
-  './bearer-auth'
+  './bearer-auth',
+  './object-store'
 ];
 
 if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
