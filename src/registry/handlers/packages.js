@@ -42,14 +42,16 @@ module.exports = [
 ];
 
 async function packageList(context) {
-  const packages = await Package.objects.filter({ active: true, 'namespace.active': true }).then();
+  const packages = await Package.objects
+    .filter({ active: true, 'namespace.active': true })
+    .then();
 
-  const objects = []
+  const objects = [];
   for (const pkg of packages) {
-    objects.push(await pkg.serialize())
+    objects.push(await pkg.serialize());
   }
 
-  return response.json({ objects })
+  return response.json({ objects });
 }
 
 async function packageDetail(context, { namespace, name }) {
@@ -380,24 +382,27 @@ async function versionCreate(context, { namespace, name, version }) {
     formdata.files[filename] = context.storage.add(part);
 
     if (/^\.\/readme(\.(md|markdown))?/i.test(filename)) {
-      const chunks = []
-      formdata.derivedFiles['./readme.html'] = context.storage.add(part.pipe(new Transform({
-        transform (chunk, enc, ready) {
-          chunks.push(chunk)
-          return ready()
-        },
-        flush (ready) {
-          try {
-            const readme = Buffer.concat(chunks) // TODO: utf16 is important!
-            const md = markdown.toHTML(String(readme))
-            this.push(md);
-          } finally {
-            ready()
-          }
-        }
-      })))
+      const chunks = [];
+      formdata.derivedFiles['./readme.html'] = context.storage.add(
+        part.pipe(
+          new Transform({
+            transform(chunk, enc, ready) {
+              chunks.push(chunk);
+              return ready();
+            },
+            flush(ready) {
+              try {
+                const readme = Buffer.concat(chunks); // TODO: utf16 is important!
+                const md = markdown.toHTML(String(readme));
+                this.push(md);
+              } finally {
+                ready();
+              }
+            }
+          })
+        )
+      );
     }
-
   });
 
   form.parse(context.request);

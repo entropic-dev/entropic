@@ -41,7 +41,6 @@ module.exports = class PackageVersion {
     this.bundledDependencies = bundledDependencies;
     // TODO: list mirrors here?
 
-
     this.active = active;
     this.created = created;
     this.modified = modified;
