@@ -17,6 +17,7 @@
     "escape-html": "^1.0.3",
     "find-my-way": "~2.0.1",
     "is-email-maybe": "^1.0.1",
+    "markdown": "^0.5.0",
     "micro": "~9.3.3",
     "mkdirp": "~0.5.1",
     "multiparty": "^4.2.1",

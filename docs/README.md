@@ -198,11 +198,84 @@ on the resources of administrators.
 
 ## Objects
 
-### Packages
+### IntegrityString
+
+A [subresource-integrity](https://mdn.io/subresource-integrity) string.
+
+```
+"sha512-S2XAR1R0DqkECH3W+lI6zP/HWsbvrxSt7gCPjfQXX7SvG5vANp3CfOFjmtn7NGV7Km7zY1pRzCLcHis/wBNKdw=="
+```
+
+* * *
+
+### VersionsIntegrity
+
+```javascript
+{
+  "<version>": IntegrityString,
+  "<version>": IntegrityString,
+  ...
+}
+```
+
+E.g.: `{"1.0.0":
+"sha512-S2XAR1R0DqkECH3W+lI6zP/HWsbvrxSt7gCPjfQXX7SvG5vANp3CfOFjmtn7NGV7Km7zY1pRzCLcHis/wBNKdw=="}`.
+
+A mapping of versions to subresource-integrity hashes of
+[`PackageVersion`](#package-version) contents.
+
+* * *
+
+### Tags
+
+```javascript
+{
+  "latest": String,
+  "<tag spec>": String,
+  ...
+}
+```
+
+A mapping of tags to versions. `"latest"` will always point to the most
+recently published (un-yanked) version. If there are no un-yanked versions (or
+no versions, in the case of a brand-new package), this object will be
+**empty**.
+
+* * *
+
+### Package
+
+```javascript
+{
+  name: String, // "{namespace}/{package name}"; e.g. "chrisdickinson/buffer"
+  yanked: Boolean,
+  require_tfa: Boolean,
+  versions: VersionsIntegrity,
+  tags: Tags,
+  created: Date,
+  modified: Date
+}
+```
 
 * * *
 
 ### PackageVersion
+
+```javascript
+{
+  yanked: Boolean,
+  files: FilesIntegrity,
+  derivedFiles: FilesIntegrity,
+  dependencies: Dependencies,
+  devDependencies: Dependencies,
+  peerDependencies: Dependencies,
+  optionalDependencies: Dependencies,
+  bundledDependencies: Dependencies,
+  signatures: [String, String, ...],
+  created: Date,
+  modified: Date
+}
+```
 
 * * *
 

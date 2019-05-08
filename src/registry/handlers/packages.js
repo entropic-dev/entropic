@@ -1,6 +1,8 @@
 'use strict';
 
 const { Response } = require('node-fetch');
+const { markdown } = require('markdown');
+const { Transform } = require('stream');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
@@ -330,7 +332,8 @@ async function versionCreate(context, { namespace, name, version }) {
     optionalDependencies: {},
     peerDependencies: {},
     bundledDependencies: {},
-    files: {}
+    files: {},
+    derivedFiles: {}
   };
 
   form.on('field', (key, value) => {
@@ -375,6 +378,26 @@ async function versionCreate(context, { namespace, name, version }) {
     part.on('error', err => form.emit('error', err));
     const filename = './' + String(part.filename).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
+
+    if (/^\.\/readme(\.(md|markdown))?/i.test(filename)) {
+      const chunks = []
+      formdata.derivedFiles['./readme.html'] = context.storage.add(part.pipe(new Transform({
+        transform (chunk, enc, ready) {
+          chunks.push(chunk)
+          return ready()
+        },
+        flush (ready) {
+          try {
+            const readme = Buffer.concat(chunks) // TODO: utf16 is important!
+            const md = markdown.toHTML(String(readme))
+            this.push(md);
+          } finally {
+            ready()
+          }
+        }
+      })))
+    }
+
   });
 
   form.parse(context.request);
@@ -410,6 +433,14 @@ async function versionCreate(context, { namespace, name, version }) {
     })
   );
 
+  await Promise.all(
+    Object.keys(formdata.derivedFiles).map(filename => {
+      return formdata.derivedFiles[filename].then(
+        integrity => (formdata.derivedFiles[filename] = integrity)
+      );
+    })
+  );
+
   const pkgVersion = await PackageVersion.objects.create({
     ...formdata,
     version,
@@ -418,7 +449,8 @@ async function versionCreate(context, { namespace, name, version }) {
 
   await Package.objects.filter({ id: context.pkg.id }).update({
     modified: pkgVersion.modified,
-    tags: { ...(context.pkg.tags || {}), latest: version }
+    tags: { ...(context.pkg.tags || {}), latest: version },
+    version_integrities: await context.pkg.versions()
   });
 
   return response.json(await pkgVersion.serialize(), 201);

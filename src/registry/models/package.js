@@ -13,6 +13,7 @@ module.exports = class Package {
     namespace_id,
     namespace,
     require_tfa,
+    version_integrities,
     yanked,
     created,
     modified,
@@ -25,6 +26,7 @@ module.exports = class Package {
     this.#namespace = namespace ? Promise.resolve(namespace) : null;
     this.require_tfa = require_tfa;
     this.yanked = yanked;
+    this.version_integrities = version_integrities;
     this.created = created;
     this.modified = modified;
     this.active = active;
@@ -39,7 +41,7 @@ module.exports = class Package {
       created: this.created,
       modified: this.modified,
       require_tfa: Boolean(this.require_tfa),
-      versions: await this.versions(),
+      versions: this.version_integrities,
       tags: this.tags
     };
   }
@@ -90,6 +92,7 @@ module.exports.objects = orm(module.exports, {
   name: joi.string().min(1),
   namespace: orm.fk(Namespace),
   require_tfa: joi.boolean(),
+  version_integrities: joi.object().unknown(),
   yanked: joi.boolean().default(false),
   created: joi.date(),
   modified: joi.date(),
