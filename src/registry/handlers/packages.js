@@ -321,6 +321,7 @@ async function versionCreate(context, { namespace, name, version }) {
   }
 
   const form = new Form();
+  let validationError = null
 
   const oncomplete = new Promise((resolve, reject) => {
     form.once('error', reject);
@@ -339,6 +340,10 @@ async function versionCreate(context, { namespace, name, version }) {
   };
 
   form.on('field', (key, value) => {
+    if (validationError) {
+      return
+    }
+
     switch (key) {
       case 'signature':
         formdata.signatures.push(value);
@@ -351,7 +356,7 @@ async function versionCreate(context, { namespace, name, version }) {
         try {
           value = JSON.parse(value);
         } catch {
-          form.emit('error', new Error(`expected "${key}" to be JSON`));
+          validationError = new Error(`expected "${key}" to be JSON`);
         }
 
         for (const dep in value) {
@@ -360,11 +365,8 @@ async function versionCreate(context, { namespace, name, version }) {
             typeof value[dep] !== 'string' ||
             !semver.validRange(value[dep])
           ) {
-            form.emit(
-              'error',
-              new Error(
-                `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
-              )
+            validationError = new Error(
+              `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
             );
           }
         }
@@ -376,13 +378,20 @@ async function versionCreate(context, { namespace, name, version }) {
 
   let filecount = 0;
   form.on('part', part => {
+    if (validationError) {
+      part.resume()
+      return
+    }
+
     ++filecount;
-    part.on('error', err => form.emit('error', err));
+    part.on('error', err => {
+      validationError = err
+    });
 
     const filename = './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
 
-    if (/^\.\/readme(\.(md|markdown))?/i.test(filename)) {
+    if (/^\.\/package\/readme(\.(md|markdown))?/i.test(filename)) {
       const chunks = [];
       formdata.derivedFiles['./readme.html'] = context.storage.add(
         part.pipe(
@@ -409,6 +418,9 @@ async function versionCreate(context, { namespace, name, version }) {
   form.parse(context.request);
   try {
     await oncomplete;
+    if (validationError) {
+      throw validationError
+    }
   } catch (err) {
     return response.error(err.message, 400);
   }
