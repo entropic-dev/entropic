@@ -1,6 +1,8 @@
 'use strict';
 
 const { Response } = require('node-fetch');
+const { markdown } = require('markdown');
+const { Transform } = require('stream');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
@@ -40,14 +42,16 @@ module.exports = [
 ];
 
 async function packageList(context) {
-  const packages = await Package.objects.filter({ active: true, 'namespace.active': true }).then();
+  const packages = await Package.objects
+    .filter({ active: true, 'namespace.active': true })
+    .then();
 
-  const objects = []
+  const objects = [];
   for (const pkg of packages) {
-    objects.push(await pkg.serialize())
+    objects.push(await pkg.serialize());
   }
 
-  return response.json({ objects })
+  return response.json({ objects });
 }
 
 async function packageDetail(context, { namespace, name }) {
@@ -68,7 +72,7 @@ async function packageDetail(context, { namespace, name }) {
 }
 
 async function packageCreate(context, { namespace: namespaceName, name }) {
-  const namespace = Namespace.objects
+  const namespace = await Namespace.objects
     .get({
       name: namespaceName,
       active: true
@@ -96,7 +100,7 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
   if (context.pkg) {
     await Package.objects
       .filter({
-        id: pkg.id
+        id: context.pkg.id
       })
       .update(update);
 
@@ -317,6 +321,7 @@ async function versionCreate(context, { namespace, name, version }) {
   }
 
   const form = new Form();
+  let validationError = null;
 
   const oncomplete = new Promise((resolve, reject) => {
     form.once('error', reject);
@@ -330,10 +335,15 @@ async function versionCreate(context, { namespace, name, version }) {
     optionalDependencies: {},
     peerDependencies: {},
     bundledDependencies: {},
-    files: {}
+    files: {},
+    derivedFiles: {}
   };
 
   form.on('field', (key, value) => {
+    if (validationError) {
+      return;
+    }
+
     switch (key) {
       case 'signature':
         formdata.signatures.push(value);
@@ -346,7 +356,7 @@ async function versionCreate(context, { namespace, name, version }) {
         try {
           value = JSON.parse(value);
         } catch {
-          form.emit('error', new Error(`expected "${key}" to be JSON`));
+          validationError = new Error(`expected "${key}" to be JSON`);
         }
 
         for (const dep in value) {
@@ -355,11 +365,8 @@ async function versionCreate(context, { namespace, name, version }) {
             typeof value[dep] !== 'string' ||
             !semver.validRange(value[dep])
           ) {
-            form.emit(
-              'error',
-              new Error(
-                `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
-              )
+            validationError = new Error(
+              `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
             );
           }
         }
@@ -371,15 +378,50 @@ async function versionCreate(context, { namespace, name, version }) {
 
   let filecount = 0;
   form.on('part', part => {
+    if (validationError) {
+      part.resume();
+      return;
+    }
+
     ++filecount;
-    part.on('error', err => form.emit('error', err));
-    const filename = './' + String(part.filename).replace(/^\/+/g, '');
+    part.on('error', err => {
+      validationError = err;
+    });
+
+    const filename =
+      './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
+
+    if (/^\.\/package\/readme(\.(md|markdown))?/i.test(filename)) {
+      const chunks = [];
+      formdata.derivedFiles['./readme.html'] = context.storage.add(
+        part.pipe(
+          new Transform({
+            transform(chunk, enc, ready) {
+              chunks.push(chunk);
+              return ready();
+            },
+            flush(ready) {
+              try {
+                const readme = Buffer.concat(chunks); // TODO: utf16 is important!
+                const md = markdown.toHTML(String(readme));
+                this.push(md);
+              } finally {
+                ready();
+              }
+            }
+          })
+        )
+      );
+    }
   });
 
   form.parse(context.request);
   try {
     await oncomplete;
+    if (validationError) {
+      throw validationError;
+    }
   } catch (err) {
     return response.error(err.message, 400);
   }
@@ -410,6 +452,14 @@ async function versionCreate(context, { namespace, name, version }) {
     })
   );
 
+  await Promise.all(
+    Object.keys(formdata.derivedFiles).map(filename => {
+      return formdata.derivedFiles[filename].then(
+        integrity => (formdata.derivedFiles[filename] = integrity)
+      );
+    })
+  );
+
   const pkgVersion = await PackageVersion.objects.create({
     ...formdata,
     version,
@@ -418,7 +468,8 @@ async function versionCreate(context, { namespace, name, version }) {
 
   await Package.objects.filter({ id: context.pkg.id }).update({
     modified: pkgVersion.modified,
-    tags: { ...(context.pkg.tags || {}), latest: version }
+    tags: { ...(context.pkg.tags || {}), latest: version },
+    version_integrities: await context.pkg.versions()
   });
 
   return response.json(await pkgVersion.serialize(), 201);

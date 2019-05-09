@@ -97,10 +97,16 @@ module.exports = class ObjectStore {
 
       const uniq = uuid.v4();
       await fs.writeFile(`${this.dir}/${algo}/tmp/${uniq}`, data);
-      await fs.link(
-        `${this.dir}/${algo}/tmp/${uniq}`,
-        `${this.dir}/${algo}/${digest}`
-      );
+      try {
+        await fs.link(
+          `${this.dir}/${algo}/tmp/${uniq}`,
+          `${this.dir}/${algo}/${digest}`
+        );
+      } catch (err) {
+        if (err.code !== 'EEXIST') {
+          throw err;
+        }
+      }
       await fs.unlink(`${this.dir}/${algo}/tmp/${uniq}`);
     }
   };

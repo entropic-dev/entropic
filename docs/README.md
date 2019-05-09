@@ -198,11 +198,84 @@ on the resources of administrators.
 
 ## Objects
 
-### Packages
+### IntegrityString
+
+A [subresource-integrity](https://mdn.io/subresource-integrity) string.
+
+```
+"sha512-S2XAR1R0DqkECH3W+lI6zP/HWsbvrxSt7gCPjfQXX7SvG5vANp3CfOFjmtn7NGV7Km7zY1pRzCLcHis/wBNKdw=="
+```
+
+* * *
+
+### VersionsIntegrity
+
+```javascript
+{
+  "<version>": IntegrityString,
+  "<version>": IntegrityString,
+  ...
+}
+```
+
+E.g.: `{"1.0.0":
+"sha512-S2XAR1R0DqkECH3W+lI6zP/HWsbvrxSt7gCPjfQXX7SvG5vANp3CfOFjmtn7NGV7Km7zY1pRzCLcHis/wBNKdw=="}`.
+
+A mapping of versions to subresource-integrity hashes of
+[`PackageVersion`](#package-version) contents.
+
+* * *
+
+### Tags
+
+```javascript
+{
+  "latest": String,
+  "<tag spec>": String,
+  ...
+}
+```
+
+A mapping of tags to versions. `"latest"` will always point to the most
+recently published (un-yanked) version. If there are no un-yanked versions (or
+no versions, in the case of a brand-new package), this object will be
+**empty**.
+
+* * *
+
+### Package
+
+```javascript
+{
+  name: String, // "{namespace}/{package name}"; e.g. "chrisdickinson/buffer"
+  yanked: Boolean,
+  require_tfa: Boolean,
+  versions: VersionsIntegrity,
+  tags: Tags,
+  created: Date,
+  modified: Date
+}
+```
 
 * * *
 
 ### PackageVersion
+
+```javascript
+{
+  yanked: Boolean,
+  files: FilesIntegrity,
+  derivedFiles: FilesIntegrity,
+  dependencies: Dependencies,
+  devDependencies: Dependencies,
+  peerDependencies: Dependencies,
+  optionalDependencies: Dependencies,
+  bundledDependencies: Dependencies,
+  signatures: [String, String, ...],
+  created: Date,
+  modified: Date
+}
+```
 
 * * *
 
@@ -225,33 +298,39 @@ Installation of a package can happen in a couple of different ways:
 - a fresh install or tagged install (`npm i foo`, `npm i foo@beta`).
 - an install of a specific version (`npm i foo@1.0.0`)
 
-> #### Open questions
->
-> **Why break out the installation flow into so many different requests? There's N+4 requests there!**
->
-> To tackle the smaller bit of this first -- the 4 requests: the idea is to
-> unbundle the packument metadata. We've noticed over time that including
-> per-version metadata in a single packument tends to grow unbounded over time.
-> This extra metadata incurs a cost on all other operations, whether or not those
-> operations need that metadata at the moment.
->
-> This install flow optimizes for skipping requests completely (vs. 301'ing them.)
->
-> With regards to the larger bit of the question -- the N requests: that's a
-> tough one. What I've described looks a lot like Git's original HTTP
-> transport. You will be unsurprised to hear that [it was eventually superseded][git-smart].
-> Git eventually got around the speed constraints of HTTP by saying
-> "let's implement packfile negotiation over HTTP." You could do something
-> similar here.
->
-> **If version and tag lists are referred to by content address in the top level
-> package, why not request them from the object store instead of a dedicated
-> endpoint?**
->
-> I waffle on this.
->
-> In order to install specific versions it's handy to be able to shortcircuit
-> by saying `GET /packages/package/CHRIS/FOO/versions/99.99.99/files`.
+The flow for syncing a dependency tree to local cache:
+
+1. For a given package USER/PACKAGE P, CONSTRAINT C, and MODE M:
+    1. Request P from the local cache BY NAME. If the entry is less than 5 minutes old, do not attempt to revalidate.
+        1. If the package is missing, or if it needs revalidated, request P from the registry at `/packages/package/USER/PACKAGE`.
+            1. If the package could not be found, fail with NOTFOUND.
+    2. Create a version array called "RESOLVED".
+    3. For each key and value (V and I) in the `P.versions` object:
+        1. If V does not match constraint C, ignore and continue to the next version.
+        2. For each hash H in I, interpreted as a subresource integrity string:
+            1. Check to see if H exists in local cache. If it exists:
+                1. Store object from local cache in RESOLVED, and as "O".
+            2. If it does not exist:
+                1. Fetch the version from the registry at `/packages/package/USER/PACKAGE/versions/V`.
+                2. Store object as "O".
+                2. Create a subresource integrity string for O, and store in cache.
+                3. Store object in RESOLVED.
+            3. For each key and value (F and I) in the `O.files` object:
+                1. For each algo A, hash H in I, interpreted as a subresource integrity string:
+                    1. Check to see if H exists in local cache.
+                    2. If it does not exist:
+                        1. Fetch the object from one of the available mirrors using `/objects/object/A/H`.
+                        2. Store it in cache.
+            4. For each key and value (D and R) in the `O.dependencies` object:
+                2. Recurse to 1 with D and R. Propagate failure upward.
+            5. If if the "dev" flag is set in M, for each key and value (D and R) in `O.devDependencies` object:
+                2. Recurse to 1 with D and R. Propagate failure upward.
+            6. For each key and value (D and R) in the `O.peerDependencies` object:
+                2. Recurse to 1 with D and R. Propagate failure upward.
+            7. For each key and value (D and R) in the `O.optionalDependencies` object:
+                2. Recurse to 1 with D and R. Ignore failure.
+      4. If RESOLVED length is 0, fail with UNRESOLVABLERANGE.
+      5. Return success with RESOLVED.
 
 * * *
 
@@ -385,4 +464,3 @@ GET     /<scope>                                  # display all non-yanked packa
 Website uses cookie-based auth.
 
 [import-maps]: https://github.com/WICG/import-maps
-[git-smart]: http://scottchacon.com/2010/03/04/smart-http.html

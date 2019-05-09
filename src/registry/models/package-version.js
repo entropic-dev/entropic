@@ -13,12 +13,14 @@ module.exports = class PackageVersion {
     parent,
     yanked,
     files,
+    derivedFiles,
     signatures,
     dependencies,
     devDependencies,
     peerDependencies,
     optionalDependencies,
     bundledDependencies,
+
     created,
     modified,
     active
@@ -29,6 +31,8 @@ module.exports = class PackageVersion {
     this.#parent = parent ? Promise.resolve(parent) : null;
     this.yanked = yanked;
     this.files = files; // JSON blob. {"path/to/file": "<subresource integrity hash>"}
+    this.derivedFiles = derivedFiles;
+
     this.signatures = signatures;
     this.dependencies = dependencies;
     this.devDependencies = devDependencies;
@@ -45,21 +49,27 @@ module.exports = class PackageVersion {
   async serialize() {
     const {
       files,
+      derivedFiles,
       dependencies,
       devDependencies,
       peerDependencies,
       optionalDependencies,
       bundledDependencies,
+      created,
+      modified,
       signatures
     } = this;
 
     return {
       files,
+      derivedFiles,
       dependencies,
       devDependencies,
       peerDependencies,
       optionalDependencies,
       bundledDependencies,
+      created,
+      modified,
       signatures
     };
   }
@@ -91,6 +101,7 @@ module.exports.objects = orm(module.exports, {
   parent: orm.fk(Package),
   yanked: joi.boolean().default(false),
   files: joi.object().unknown(),
+  derivedFiles: joi.object().unknown(),
   signatures: joi.array().items(joi.string()),
   dependencies: joi.object().unknown(),
   devDependencies: joi.object().unknown(),
