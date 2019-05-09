@@ -72,7 +72,7 @@ async function packageDetail(context, { namespace, name }) {
 }
 
 async function packageCreate(context, { namespace: namespaceName, name }) {
-  const namespace = Namespace.objects
+  const namespace = await Namespace.objects
     .get({
       name: namespaceName,
       active: true
