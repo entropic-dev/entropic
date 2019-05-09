@@ -321,7 +321,7 @@ async function versionCreate(context, { namespace, name, version }) {
   }
 
   const form = new Form();
-  let validationError = null
+  let validationError = null;
 
   const oncomplete = new Promise((resolve, reject) => {
     form.once('error', reject);
@@ -341,7 +341,7 @@ async function versionCreate(context, { namespace, name, version }) {
 
   form.on('field', (key, value) => {
     if (validationError) {
-      return
+      return;
     }
 
     switch (key) {
@@ -379,16 +379,17 @@ async function versionCreate(context, { namespace, name, version }) {
   let filecount = 0;
   form.on('part', part => {
     if (validationError) {
-      part.resume()
-      return
+      part.resume();
+      return;
     }
 
     ++filecount;
     part.on('error', err => {
-      validationError = err
+      validationError = err;
     });
 
-    const filename = './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
+    const filename =
+      './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
 
     if (/^\.\/package\/readme(\.(md|markdown))?/i.test(filename)) {
@@ -419,7 +420,7 @@ async function versionCreate(context, { namespace, name, version }) {
   try {
     await oncomplete;
     if (validationError) {
-      throw validationError
+      throw validationError;
     }
   } catch (err) {
     return response.error(err.message, 400);

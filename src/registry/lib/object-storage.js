@@ -104,7 +104,7 @@ module.exports = class ObjectStore {
         );
       } catch (err) {
         if (err.code !== 'EEXIST') {
-          throw err
+          throw err;
         }
       }
       await fs.unlink(`${this.dir}/${algo}/tmp/${uniq}`);
