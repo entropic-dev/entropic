@@ -100,7 +100,7 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
   if (context.pkg) {
     await Package.objects
       .filter({
-        id: pkg.id
+        id: context.pkg.id
       })
       .update(update);
 
@@ -378,7 +378,8 @@ async function versionCreate(context, { namespace, name, version }) {
   form.on('part', part => {
     ++filecount;
     part.on('error', err => form.emit('error', err));
-    const filename = './' + String(part.filename).replace(/^\/+/g, '');
+
+    const filename = './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
 
     if (/^\.\/readme(\.(md|markdown))?/i.test(filename)) {
