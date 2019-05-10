@@ -1,36 +1,36 @@
-'use strict'
+'use strict';
 
-module.exports = { load, save }
+module.exports = { load, save };
 
-const { promises: fs } = require('fs')
-const toml = require('@iarna/toml')
-const home = require('user-home')
-const path = require('path')
+const { promises: fs } = require('fs');
+const toml = require('@iarna/toml');
+const home = require('user-home');
+const path = require('path');
 
-const errors = require('./errors')
+const errors = require('./errors');
 
-async function load (filename = path.join(home, '.entropicrc')) {
-  var content = null
+async function load(filename = path.join(home, '.entropicrc')) {
+  var content = null;
   try {
-    content = await fs.readFile(filename, 'utf8')
+    content = await fs.readFile(filename, 'utf8');
   } catch (e) {
     if (e.code === 'ENOENT') {
-      return {}
+      return {};
     }
 
-    throw new errors.CouldNotReadConfigFile(filename, e)
+    throw new errors.CouldNotReadConfigFile(filename, e);
   }
 
-  var parsed = null
+  var parsed = null;
   try {
-    parsed = toml.parse(content)
+    parsed = toml.parse(content);
   } catch {
-    throw new errors.CouldNotParseConfigToml(filename, e)
+    throw new errors.CouldNotParseConfigToml(filename, e);
   }
 
-  return parsed
+  return parsed;
 }
 
-async function save (content, filename = path.join(home, '.entropicrc')) {
-  await fs.writeFile(filename, toml.stringify(content))
+async function save(content, filename = path.join(home, '.entropicrc')) {
+  await fs.writeFile(filename, toml.stringify(content));
 }

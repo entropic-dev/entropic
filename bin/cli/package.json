@@ -1,5 +1,5 @@
 {
-  "name": "chrisdickinson/ds",
+  "name": "ds",
   "version": "1.0.0",
   "description": "ds: entropy delta; the entropic client",
   "main": "index.js",
