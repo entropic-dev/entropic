@@ -1,5 +1,6 @@
 'use strict';
 
+const validatePackage = require('validate-npm-package-name');
 const { Response } = require('node-fetch');
 const { markdown } = require('markdown');
 const { Transform } = require('stream');
@@ -38,7 +39,7 @@ module.exports = [
     canWrite(versionDelete)
   ),
 
-  fork.get('/objects/object/:algo/:digest', getObject)
+  fork.get('/objects/object/:algo/*', getObject)
 ];
 
 async function packageList(context) {
@@ -81,6 +82,15 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
 
   if (!namespace) {
     return response.error(`Could not find namespace "${namespaceName}"`);
+  }
+
+  if (namespaceName !== 'legacy' && name[0] === '@') {
+    return response.error(`Invalid package name "${name}": name cannot be scoped`);
+  }
+
+  const validated = validatePackage(name)
+  if (!validated.validForNewPackages) {
+    return response.error(`Invalid package name "${name}": ${validated.errors.join(', ')}`);
   }
 
   const { require_tfa = null } = await json(context.request);
@@ -477,7 +487,7 @@ async function versionCreate(context, { namespace, name, version }) {
 
 async function versionDelete(context, { namespace, name, version }) {}
 
-async function getObject(context, { algo, digest }) {
+async function getObject(context, { algo, '*': digest }) {
   return new Response(await context.storage.strategy.get(algo, digest), {
     status: 200,
     headers: {
