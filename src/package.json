@@ -30,7 +30,8 @@
     "redis": "^2.8.0",
     "semver": "^6.0.0",
     "ssri": "^6.0.1",
-    "uuid": "~3.3.2"
+    "uuid": "~3.3.2",
+    "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
     "db-migrate": "^0.11.5",

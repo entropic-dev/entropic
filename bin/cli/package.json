@@ -1,0 +1,30 @@
+{
+  "name": "ds",
+  "version": "1.0.0",
+  "description": "ds: entropy delta; the entropic client",
+  "main": "index.js",
+  "bin": "./lib/main.js",
+  "scripts": {
+    "lint": "prettier -c --single-quote '**/*.js'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@iarna/toml": "^2.2.3",
+    "figgy-pudding": "^3.5.1",
+    "form-data": "^2.3.3",
+    "minimist": "^1.2.0",
+    "node-fetch": "^2.5.0",
+    "npm-packlist": "^1.4.1",
+    "npm-profile": "^4.0.1",
+    "npmlog": "^4.1.2",
+    "opener": "^1.5.1",
+    "ssri": "^6.0.1",
+    "user-home": "^2.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^1.17.0"
+  }
+}
