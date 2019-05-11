@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "author": "C J Silverio <ceejceej@gmail.com>",
   "bugs": {
-    "url": "https://github.com/ceejbot/entropic/issues"
+    "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
     "@hapi/iron": "^5.1.0",
@@ -47,7 +47,7 @@
     "prettier": "1.17.0",
     "test-listen": "^1.1.0"
   },
-  "homepage": "https://github.com/ceejbot/entropic#readme",
+  "homepage": "https://github.com/entopic-dev/entropic#readme",
   "keywords": [
     "entropy",
     "heat death"
@@ -57,7 +57,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/ceejbot/entropic.git"
+    "url": "git://github.com/entopic-dev/entropic.git"
   },
   "scripts": {
     "coverage": "nyc mocha -R spec",
