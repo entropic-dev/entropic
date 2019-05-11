@@ -37,3 +37,35 @@ Here are the config values and what they mean:
 ## whitelisting
 
 You may optionally whitelist legacy packages allowed to be installed through entropic. To enable this feature, set the `WHITELIST` env var to point to a text file. Name allowed packages one per line. You do not need to url encode the names.
+
+## The API
+
+Registry routes:
+
+* `GET /ping`: responds with 200 & a short text string if we are listening
+* `PUT /packages/package/:namespace/:name`: create a package
+* `GET /packages/package/:namespace/:name`: get a package meta object
+* `DELETE /packages/package/:namespace/:name`: mark a package as abandonware
+* `PUT /packages/package/:namespace/:name/versions/:version`: create a new package-version
+* `GET /packages/package/:namespace/:name/versions/:version`: fetch meta information for a new package-version
+* `DELETE /packages/package/:namespace/:name/versions/:version`: deprecate a package-version
+* `GET /objects/object/:hashalgo/*`: fetch a specific content blob
+
+Website routes:
+
+* `GET /www/login/providers/:provider/callback`
+* `GET /www/login`
+* `GET /www/signup`
+* `POST /www/signup`
+* `GET /www/tokens`
+* `POST /www/tokens`
+
+Legacy registry API support:
+
+* `POST /-/v1/login` - log the legacy client in
+* `GET /-/v1/login/poll/:session` - poll for a session token as part of the login flow
+* `POST /-/npm/v1/security/audits` - run a full security audit
+* `POST /-/npm/v1/security/audits/quick` - run a quick security audit
+* `GET /-/whoami` - respond with the name of the logged-in user
+* `GET /:package` - fetch either an install document or a full meta document
+* `GET /:package/-/:package-:version.tgz` - fetch a tarball
