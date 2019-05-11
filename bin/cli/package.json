@@ -1,16 +1,14 @@
 {
   "name": "ds",
-  "version": "1.0.0",
   "description": "ds: entropy delta; the entropic client",
-  "main": "index.js",
-  "bin": "./lib/main.js",
-  "scripts": {
-    "lint": "prettier -c --single-quote '**/*.js'",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
+  "version": "1.0.0",
   "author": "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)",
-  "license": "Apache-2.0",
+  "bin": {
+    "ds": "./lib/main.js"
+  },
+  "bugs": {
+    "url": "https://github.com/entropic-dev/entropic/issues"
+  },
   "dependencies": {
     "@iarna/toml": "^2.2.3",
     "figgy-pudding": "^3.5.1",
@@ -26,5 +24,20 @@
   },
   "devDependencies": {
     "prettier": "^1.17.0"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "homepage": "https://github.com/entopic-dev/entropic#readme",
+  "keywords": [],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/entopic-dev/entropic.git"
+  },
+  "scripts": {
+    "lint": "prettier -c --single-quote '**/*.js'",
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
