@@ -49,7 +49,7 @@ describe('entropic', () => {
         response.status.must.eql(403);
         const data = await response.json();
         data.must.eql('You are not a member of "any-namespace"');
-      }).middleware([require('../registry/middleware/bearer-auth')()])
+      }).middleware([require('../middleware/bearer-auth')()])
     )
   );
 
@@ -79,7 +79,7 @@ describe('entropic', () => {
           versions: {},
           tags: {}
         });
-      }).middleware([require('../registry/middleware/bearer-auth')()])
+      }).middleware([require('../middleware/bearer-auth')()])
     )
   );
 });

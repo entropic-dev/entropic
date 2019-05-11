@@ -1,0 +1,26 @@
+{
+  "name": "entropic-monorepo",
+  "description": "community package manager",
+  "version": "1.0.0",
+  "author": "C J Silverio <ceejceej@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/entropic-dev/entropic/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+  },
+  "homepage": "https://github.com/entopic-dev/entropic#readme",
+  "keywords": [
+    "entropy",
+    "heat death"
+  ],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/entopic-dev/entropic.git"
+  },
+  "scripts": {
+  }
+}

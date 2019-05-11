@@ -85,12 +85,16 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
   }
 
   if (namespaceName !== 'legacy' && name[0] === '@') {
-    return response.error(`Invalid package name "${name}": name cannot be scoped`);
+    return response.error(
+      `Invalid package name "${name}": name cannot be scoped`
+    );
   }
 
-  const validated = validatePackage(name)
+  const validated = validatePackage(name);
   if (!validated.validForNewPackages) {
-    return response.error(`Invalid package name "${name}": ${validated.errors.join(', ')}`);
+    return response.error(
+      `Invalid package name "${name}": ${validated.errors.join(', ')}`
+    );
   }
 
   const { require_tfa = null } = await json(context.request);
