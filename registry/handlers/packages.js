@@ -340,7 +340,8 @@ async function versionCreate(context, { namespace, name, version }) {
     );
   }
 
-  const form = new Form();
+  // Ceej notes this generosity as a potential memory usage problem down the road.
+  const form = new Form({ maxFields: 2 * MAX_FILES });
   let validationError = null;
 
   const oncomplete = new Promise((resolve, reject) => {
