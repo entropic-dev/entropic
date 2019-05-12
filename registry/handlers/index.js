@@ -44,7 +44,7 @@ async function version() {
   const data = {
     server: 'entropic',
     version: pkg.version,
-    message: 'generating waste heat since 2019'
+    message: ship
   };
   return response.json(data);
 }

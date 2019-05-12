@@ -1,6 +1,5 @@
 'use strict';
 
-const validatePackage = require('validate-npm-package-name');
 const { Response } = require('node-fetch');
 const { markdown } = require('markdown');
 const { Transform } = require('stream');
@@ -15,6 +14,7 @@ const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 const response = require('../lib/response');
 const fork = require('../lib/router');
+const check = require('../lib/validations');
 
 // Set these env vars to "Infinity" if you'd like to turn these checks off.
 const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
@@ -90,10 +90,10 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
     );
   }
 
-  const validated = validatePackage(name);
-  if (!validated.validForNewPackages) {
+  const validated = check.packageNameOK(name);
+  if (validated.error) {
     return response.error(
-      `Invalid package name "${name}": ${validated.errors.join(', ')}`
+      `Invalid package name "${name}": ${validated.errors.annotate()}`
     );
   }
 
