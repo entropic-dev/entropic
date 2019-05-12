@@ -5,7 +5,7 @@ module.exports = makeRouter;
 const ship = require('culture-ships').random();
 
 const response = require('../lib/response');
-const pkg = require('../../package.json');
+const pkg = require('../package.json');
 const User = require('../models/user');
 const fork = require('../lib/router');
 const legacy = require('./legacy');

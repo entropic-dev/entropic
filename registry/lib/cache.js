@@ -34,7 +34,9 @@ function initialize() {
     if (data.length > 0) {
       ALLOWLIST = new Set(data.split(/\r?\n/));
     }
-    logger.info(`${ALLOWLIST ? ALLOWLIST.size : 0} legacy packages in our allowed list`);
+    logger.info(
+      `${ALLOWLIST ? ALLOWLIST.size : 0} legacy packages in our allowed list`
+    );
   }
 }
 
