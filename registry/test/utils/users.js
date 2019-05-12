@@ -5,8 +5,8 @@ module.exports = {
   createToken
 };
 
-const Token = require('../../registry/models/token');
-const User = require('../../registry/models/user');
+const Token = require('../../models/token');
+const User = require('../../models/user');
 
 async function createUser(username, email = `${username}@entropic.dev`) {
   return await User.signup(username, email, null);

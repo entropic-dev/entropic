@@ -5,8 +5,8 @@ module.exports = provideRegistry;
 const listen = require('test-listen');
 const micro = require('micro');
 
-const { makeRequestHandler } = require('../../registry/lib/request-handler');
-const registry = require('../../registry/handlers');
+const { makeRequestHandler } = require('../../lib/request-handler');
+const registry = require('../../handlers');
 
 function provideRegistry(to) {
   let middleware = [];

@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${USER}
   redis:
     image: redis:alpine
-    expose:
-      - 6379
+    ports:
+      - "6379:6379"
 volumes:
   postgres_data:
