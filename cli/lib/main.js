@@ -1,14 +1,16 @@
-'use strict';
+#!/usr/bin/env node
+
+"use strict";
 
 module.exports = main;
 
-const minimist = require('minimist');
+const minimist = require("minimist");
 
-const { load } = require('./config');
+const { load } = require("./config");
 
 async function main(argv) {
   if (!argv[0]) {
-    argv[0] = 'help';
+    argv[0] = "help";
   }
 
   try {
@@ -19,7 +21,7 @@ async function main(argv) {
     const { _, ...rest } = args;
     const env = {};
     for (var key in process.env) {
-      if (key.startsWith('ent_')) {
+      if (key.startsWith("ent_")) {
         env[key.slice(4)] = process.env[key];
       }
     }
@@ -28,7 +30,7 @@ async function main(argv) {
       args.registry ||
       config.registry ||
       env.registry ||
-      'https://entropic.dev';
+      "https://entropic.dev";
 
     const registryConfig = (config.registries || {})[registry] || {};
 
