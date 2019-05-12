@@ -136,6 +136,8 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
     });
   }
 
+  context.logger.info(`${namespace}/${name} created by ${context.user.name}`);
+
   return response.json(await result.serialize());
 }
 
@@ -189,6 +191,10 @@ async function packageDelete(context, { namespace, name }) {
     }),
     package: context.pkg
   });
+
+  context.logger.info(
+    `${namespace}/${name} marked as abandonware by ${context.user.name}`
+  );
 
   return response.text('', 204);
 }
@@ -485,6 +491,10 @@ async function versionCreate(context, { namespace, name, version }) {
     tags: { ...(context.pkg.tags || {}), latest: version },
     version_integrities: await context.pkg.versions()
   });
+
+  context.logger.info(
+    `${namespace}/${name}@${version} published by ${context.user.name}`
+  );
 
   return response.json(await pkgVersion.serialize(), 201);
 }

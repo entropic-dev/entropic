@@ -5,13 +5,10 @@ const validate = require('npm-user-validate');
 const querystring = require('querystring');
 const escapeHtml = require('escape-html');
 const fetch = require('node-fetch');
-const iron = require('@hapi/iron');
 const { text } = require('micro');
 const cookie = require('cookie');
-const logger = require('pino')();
 const { URL } = require('url');
 const CSRF = require('csrf');
-const uuid = require('uuid');
 
 const Authentication = require('../models/authentication');
 const response = require('../lib/response');
@@ -221,6 +218,8 @@ async function signupAction(context) {
     throw err;
   }
 
+  context.logger.info(`successful signup: ${username} <${email}>`);
+
   context.session.delete('remoteAuth');
   context.session.set('user', user.name);
   return response.redirect('/www/tokens');
@@ -340,6 +339,9 @@ async function handleTokenAction(context) {
         5000,
         JSON.stringify({ value: tokenValue })
       );
+      context.logger.info(
+        `${user.name} created a token in a cli login session`
+      );
     } else {
       context.session.set(
         'banner',
@@ -352,6 +354,7 @@ async function handleTokenAction(context) {
         <hr />
       `
       );
+      context.logger.info(`${user.name} created a token to be copied`);
     }
 
     return response.redirect('/www/tokens');
@@ -370,6 +373,7 @@ async function handleTokenAction(context) {
       .update({ active: false });
 
     context.session.set('banner', 'Successfully deleted 1 token.');
+    context.logger.info(`${user.name} deleted a token`);
     return response.redirect('/www/tokens');
   }
 }
@@ -440,7 +444,7 @@ function seasurf(next) {
 
       const okay = TOKENS.verify(secret, csrf_token);
       if (!okay) {
-        logger.warn('csrf token mismatch!', { bad: csrf_token });
+        context.logger.warn({ msg: 'csrf token mismatch!', bad: csrf_token });
         return response.redirect('/www/login');
       }
     }

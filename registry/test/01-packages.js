@@ -7,6 +7,7 @@ const demand = require('must');
 const { createUser, createToken } = require('./utils/users');
 const providePostgres = require('./utils/postgres');
 const provideRegistry = require('./utils/registry');
+const provideLogger = require('./utils/logger');
 
 describe('entropic', () => {
   it(
@@ -79,7 +80,10 @@ describe('entropic', () => {
           versions: {},
           tags: {}
         });
-      }).middleware([require('../middleware/bearer-auth')()])
+      }).middleware([
+        require('../middleware/bearer-auth')(),
+        require('./utils/logger')()
+      ])
     )
   );
 });
