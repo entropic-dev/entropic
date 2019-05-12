@@ -24,6 +24,8 @@ async function whoami(context) {
 }
 
 async function audit(context) {
+  const start = Date.now();
+
   const headers = {
     'content-type': 'application/json',
     'content-encoding': 'gzip',
@@ -38,10 +40,14 @@ async function audit(context) {
     }
   );
   const body = await result.json();
+  context.logger.info(`fetched legacy full audit in ${Date.now() - start}ms`);
+
   return response.json(body);
 }
 
 async function quickAudit(context) {
+  const start = Date.now();
+
   const headers = {
     'content-type': 'application/json',
     'content-encoding': 'gzip',
@@ -56,6 +62,8 @@ async function quickAudit(context) {
     }
   );
   const body = await result.json();
+  context.logger.info(`fetched legacy quick audit in ${Date.now() - start}ms`);
+
   return response.json(body);
 }
 
