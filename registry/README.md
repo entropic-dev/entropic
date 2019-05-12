@@ -29,14 +29,14 @@ Here are the config values and what they mean:
 * `OAUTH_PASSWORD=pw_for_encrypting_tokens_here`: a password with lots of entropy for encrypting oauth access tokens at rest in the db
 * `EXTERNAL_HOST=http://localhost:3000`: the web host to advertise to the npm cli
 * `TARBALL_HOST=localhost:3000`: the hostname to use to rewrite tarball files are; should be the same as the host the registry is running on
-* `WHITELIST=/path/to/file`: if you wish to enable whitelisting, set this to the path to your whitelist file
+* `ALLOWLIST=/path/to/file`: if you wish to allow only certain packages from the legacy registry, set this to the path to your allow-list file
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
 
-## whitelisting
+## Allow list
 
-You may optionally whitelist legacy packages allowed to be installed through entropic. To enable this feature, set the `WHITELIST` env var to point to a text file. Name allowed packages one per line. You do not need to url encode the names.
+You may optionally control the legacy packages allowed to be installed through entropic using an allow list. To enable this feature, set the `ALLOWLIST` env var to point to a text file. List allowed packages by one per line. You do not need to url encode the names.
 
 ## The API
 

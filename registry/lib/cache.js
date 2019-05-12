@@ -13,7 +13,7 @@ const CACHE_DIR = path.resolve(process.env.CACHE_DIR || '../../legacy-cache');
 const OPTS = {
   cache: CACHE_DIR
 };
-let WHITELIST;
+let ALLOWLIST;
 
 module.exports = {
   initialize,
@@ -25,21 +25,21 @@ module.exports = {
 
 function initialize() {
   // We do not catch exceptions here because we want to crash if we can't operate.
-  if (process.env.WHITELIST) {
-    logger.info(`reading whitelist from ${process.env.WHITELIST}`);
+  if (process.env.ALLOWLIST) {
+    logger.info(`reading allowed-list from ${process.env.ALLOWLIST}`);
     const data = fs
-      .readFileSync(process.env.WHITELIST)
+      .readFileSync(process.env.ALLOWLIST)
       .toString()
       .trim();
     if (data.length > 0) {
-      WHITELIST = new Set(data.split(/\r?\n/));
+      ALLOWLIST = new Set(data.split(/\r?\n/));
     }
-    logger.info(`${WHITELIST ? WHITELIST.size : 0} packages in our whitelist`);
+    logger.info(`${ALLOWLIST ? ALLOWLIST.size : 0} legacy packages in our allowed list`);
   }
 }
 
 function allowed(spec) {
-  if (WHITELIST && !WHITELIST.has(spec)) {
+  if (ALLOWLIST && !ALLOWLIST.has(spec)) {
     return false;
   }
   return true;

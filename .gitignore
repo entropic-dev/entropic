@@ -4,4 +4,4 @@ node_modules
 .nyc_output
 coverage
 legacy-cache
-whitelist
+allowed-list
