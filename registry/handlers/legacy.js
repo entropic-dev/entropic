@@ -4,6 +4,7 @@ const logger = require('pino')();
 const fetch = require('node-fetch');
 const cache = require('../lib/cache');
 const response = require('../lib/response');
+const pkgNameOK = require('validate-npm-package-name');
 
 module.exports = {
   audit,
@@ -15,6 +16,12 @@ module.exports = {
   rewriteTarballUrls,
   namespacedPackument
 };
+
+// We only worry about whether a given string might ever be a legacy package.
+function nameValid(name) {
+  const { validForOldPackages } = pkgNameOK(name);
+  return validForOldPackages;
+}
 
 async function whoami(context) {
   if (!context.user) {
@@ -86,6 +93,9 @@ async function packument(context, { pkg }) {
   } else {
     [name, version] = pkg.split('@');
   }
+  if (!nameValid(name)) {
+    return response.error(`"${name}" is not a valid legacy package name`, 400);
+  }
   if (!cache.allowed(name)) {
     return response.error(`legacy package ${name} is not allowed`, 403);
   }
@@ -113,6 +123,9 @@ async function namespacedPackument(context, { encodedspec }) {
 
 //  /${pkg}/-/${name}-${version}.tgz
 async function tarball(context, { pkg, mess }) {
+  if (!nameValid(name)) {
+    return response.error(`"${pkg}" is not a valid legacy package name`, 400);
+  }
   if (!cache.allowed(pkg)) {
     return response.error(`legacy package ${pkg} is not allowed`, 403);
   }
@@ -135,6 +148,9 @@ async function tarball(context, { pkg, mess }) {
 //  /@${namespace}/${pkg}/-/${name}-${version}.tgz
 async function namespacedTarball(context, { namespace, pkg, mess }) {
   const name = `@${namespace}/${pkg}`;
+  if (!nameValid(name)) {
+    return response.error(`"${name}" is not a valid legacy package name`, 400);
+  }
   if (!cache.allowed(name)) {
     return response.error(`legacy package ${name} is not allowed`, 403);
   }

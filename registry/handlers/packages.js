@@ -1,6 +1,5 @@
 'use strict';
 
-const validatePackage = require('validate-npm-package-name');
 const { Response } = require('node-fetch');
 const { markdown } = require('markdown');
 const { Transform } = require('stream');
@@ -15,6 +14,7 @@ const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 const response = require('../lib/response');
 const fork = require('../lib/router');
+const check = require('../lib/validations');
 
 // Set these env vars to "Infinity" if you'd like to turn these checks off.
 const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
@@ -90,11 +90,9 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
     );
   }
 
-  const validated = validatePackage(name);
-  if (!validated.validForNewPackages) {
-    return response.error(
-      `Invalid package name "${name}": ${validated.errors.join(', ')}`
-    );
+  const error = check.packageNameOK(name, namespace);
+  if (Boolean(error)) {
+    return response.error(`Invalid package name "${name}": ${error}`);
   }
 
   const { require_tfa = null } = await json(context.request);
@@ -340,7 +338,8 @@ async function versionCreate(context, { namespace, name, version }) {
     );
   }
 
-  const form = new Form();
+  // Ceej notes this generosity as a potential memory usage problem down the road.
+  const form = new Form({ maxFields: 2 * MAX_FILES });
   let validationError = null;
 
   const oncomplete = new Promise((resolve, reject) => {

@@ -1,6 +1,7 @@
 'use strict';
 
 const { json } = require('micro');
+const joi = require('@hapi/joi');
 const uuid = require('uuid');
 
 const response = require('../lib/response');
@@ -29,6 +30,16 @@ async function login(context) {
 }
 
 async function poll(context, { session }) {
+  const { error } = joi.validate(
+    session,
+    joi
+      .string()
+      .uuid()
+      .required()
+  );
+  if (error) {
+    return response.error('invalid request', 400);
+  }
   const result = JSON.parse(
     (await context.redis.getAsync(`cli_${session}`)) || '{}'
   );
