@@ -90,11 +90,9 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
     );
   }
 
-  const validated = check.packageNameOK(name);
-  if (validated.error) {
-    return response.error(
-      `Invalid package name "${name}": ${validated.errors.annotate()}`
-    );
+  const error = check.packageNameOK(name, namespace);
+  if (Boolean(error)) {
+    return response.error(`Invalid package name "${name}": ${error}`);
   }
 
   const { require_tfa = null } = await json(context.request);

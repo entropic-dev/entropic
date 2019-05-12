@@ -23,14 +23,27 @@ function validLegacyPackage(input) {
 // This right here is an opinion. Discuss.
 const nameSchema = joi
   .string()
-  .lowercase()
   .regex(/^[a-z0-9\-]+$/, { name: 'alphanumeric plus hyphen' })
   .min(2)
   .max(256)
   .required();
 
-function packageNameOK(input) {
-  return joi.validate(input, nameSchema);
+// Returns an error message if the validation failed.
+function packageNameOK(name, namespace) {
+  if (namespace === 'legacy') {
+    const result = validateLegacy(name);
+    // All names ok by the old rules are okay by the new ones.
+    // Some legacy packages will use the old rules.
+    if (!result.validForOldPackages) {
+      return result.errors.join(', ');
+    }
+    return; // null response means no error
+  }
+
+  const validated = joi.validate(name, nameSchema);
+  if (validated.error) {
+    return validated.error.annotate();
+  }
 }
 
 function nameOK(input) {
