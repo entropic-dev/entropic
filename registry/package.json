@@ -62,10 +62,10 @@
     "lint": "prettier -c --single-quote '**/*.js'",
     "lint-fix": "prettier --single-quote --write '**/*.js'",
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
-    "posttest": "true || npm run lint",
+    "posttest": "npm run lint",
     "prestart": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",
     "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
     "start": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
-    "test": "PGUSER=postgres PGDATABASE=entropic_test mocha -R spec"
+    "test": "NODE_ENV=test PGUSER=postgres PGDATABASE=entropic_test mocha -R spec"
   }
 }

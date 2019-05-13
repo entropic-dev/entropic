@@ -9,12 +9,13 @@ const semver = require('semver');
 const ssri = require('ssri');
 
 const PackageVersion = require('../models/package-version');
+const canWrite = require('../middleware/can-write');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 const response = require('../lib/response');
-const fork = require('../lib/router');
 const check = require('../lib/validations');
+const fork = require('../lib/router');
 
 // Set these env vars to "Infinity" if you'd like to turn these checks off.
 const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
@@ -195,82 +196,6 @@ async function packageDelete(context, { namespace, name }) {
   );
 
   return response.text('', 204);
-}
-
-function canWrite(next) {
-  // is there a current user?
-  // does the package exist?
-  // -> YES
-  //    is the current user a maintainer or a member of a namespace that is a maintainer of package?
-  //    does the package require 2fa to be enabled to change?
-  //    -> YES
-  //      did the user authenticate with 2fa?
-  //    are we enabling 2fa?
-  //    -> YES
-  //      does the current user have 2fa enabled? (if not 400)
-  // -> NO
-  //    is the current user a member of namespace?
-
-  return async (context, params) => {
-    const { namespace, name } = params;
-    if (!context.user) {
-      return response.error('You must be logged in to create a package', 403);
-    }
-
-    const pkg = await Package.objects
-      .get({
-        active: true,
-        name,
-        'namespace.active': true,
-        'namespace.name': namespace
-      })
-      .catch(Package.objects.NotFound, () => null);
-
-    if (pkg) {
-      const [any = null] = await Maintainer.objects
-        .filter({
-          package: pkg,
-          active: true,
-          'namespace.active': true,
-          'namespace.name': namespace,
-          'namespace.namespace_members.active': true,
-          'namespace.namespace_members.user_id': context.user.id
-        })
-        .values('id')
-        .slice(0, 1)
-        .then();
-
-      if (!any) {
-        return response.error(
-          `You are not a maintainer of "${namespace}/${name}"`,
-          403
-        );
-      }
-
-      if (pkg.require_tfa && !user.tfa_active) {
-        return response.error(
-          `You must enable 2FA to edit "${namespace}/${name}"`,
-          403
-        );
-      }
-    } else {
-      const [any = null] = await Namespace.objects
-        .filter({
-          active: true,
-          name: namespace,
-          'namespace_members.active': true,
-          'namespace_members.user_id': context.user.id
-        })
-        .then();
-
-      if (!any) {
-        return response.error(`You are not a member of "${namespace}"`, 403);
-      }
-    }
-
-    context.pkg = pkg;
-    return next(context, params);
-  };
 }
 
 async function versionDetail(context, { namespace, name, version }) {

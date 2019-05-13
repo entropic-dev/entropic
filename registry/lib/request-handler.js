@@ -44,6 +44,11 @@ function makeRequestHandler(router, middleware) {
 
     await send(res, response.status, response.body);
 
+    // Don't log in tests.
+    if (/^test$/.test(process.env.NODE_ENV)) {
+      return;
+    }
+
     try {
       // Now we log the request. We need to do it here, after the response is
       // written in stone. Note that the moment we do a second thing here

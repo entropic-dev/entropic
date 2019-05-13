@@ -14,7 +14,7 @@ function router(options) {
     routes.forEach(rt => wayfinder.on(...rt));
 
     // If we're in development mode, dump our routes.
-    if (/^dev/.test(process.env.NODE_ENV)) {
+    if (false && /^dev/.test(process.env.NODE_ENV)) {
       console.log('Routes:');
       console.log(wayfinder.prettyPrint());
     }

@@ -17,12 +17,6 @@ module.exports = {
   namespacedPackument
 };
 
-// We only worry about whether a given string might ever be a legacy package.
-function nameValid(name) {
-  const { validForOldPackages } = pkgNameOK(name);
-  return validForOldPackages;
-}
-
 async function whoami(context) {
   if (!context.user) {
     return response.json({ error: 'You are not logged in' });

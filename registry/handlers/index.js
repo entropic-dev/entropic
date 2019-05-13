@@ -16,6 +16,7 @@ function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
     ...require('./packages'),
+    ...require('./maintainers'),
 
     fork.get('/-/v1/login/poll/:session', auth.poll),
     fork.post('/-/v1/login', auth.login),
