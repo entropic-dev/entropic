@@ -1,9 +1,5 @@
 'use strict';
 
-// Not mountable middleware exactly. Intended use is wrapping
-// handler functions that must enforce authorization.
-// See usage in the packages handlers.
-
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
@@ -26,9 +22,13 @@ function canWrite(next) {
   //    is the current user a member of namespace?
 
   return async (context, params) => {
-    const { namespace, name } = params;
+    const { host, namespace, name } = params;
     if (!context.user) {
       return response.error('You must be logged in to create a package', 403);
+    }
+
+    if (host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')) {
+      return response.error(`Cannot create package for remote host "${host}"`, 403);
     }
 
     const pkg = await Package.objects
@@ -36,7 +36,9 @@ function canWrite(next) {
         active: true,
         name,
         'namespace.active': true,
-        'namespace.name': namespace
+        'namespace.name': namespace,
+        'namespace.host.name': host,
+        'namespace.host.active': true
       })
       .catch(Package.objects.NotFound, () => null);
 
@@ -56,14 +58,14 @@ function canWrite(next) {
 
       if (!any && context.user.name !== 'ceejbot') {
         return response.error(
-          `You are not a maintainer of "${namespace}/${name}"`,
+          `You are not a maintainer of "${namespace}@${host}/${name}"`,
           403
         );
       }
 
       if (pkg.require_tfa && !user.tfa_active) {
         return response.error(
-          `You must enable 2FA to edit "${namespace}/${name}"`,
+          `You must enable 2FA to edit "${namespace}@${host}/${name}"`,
           403
         );
       }
@@ -72,6 +74,8 @@ function canWrite(next) {
         .filter({
           active: true,
           name: namespace,
+          'host.name': host,
+          'host.active': true,
           'namespace_members.active': true,
           'namespace_members.user_id': context.user.id
         })

@@ -9,7 +9,7 @@ const semver = require('semver');
 const ssri = require('ssri');
 
 const PackageVersion = require('../models/package-version');
-const canWrite = require('../middleware/can-write');
+const canWrite = require('../decorators/can-write-package');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
@@ -23,20 +23,20 @@ const MAX_FILES = Number(process.env.MAX_FILES) || 2000000;
 
 module.exports = [
   fork.get('/packages', packageList),
-  fork.get('/packages/package/:namespace/:name', packageDetail),
-  fork.put('/packages/package/:namespace/:name', canWrite(packageCreate)),
-  fork.del('/packages/package/:namespace/:name', canWrite(packageDelete)),
+  fork.get('/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
+  fork.put('/packages/package/:namespace([^@]+)@:host/:name', canWrite(packageCreate)),
+  fork.del('/packages/package/:namespace([^@]+)@:host/:name', canWrite(packageDelete)),
 
   fork.get(
-    '/packages/package/:namespace/:name/versions/:version',
+    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     versionDetail
   ),
   fork.put(
-    '/packages/package/:namespace/:name/versions/:version',
+    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     canWrite(versionCreate)
   ),
   fork.del(
-    '/packages/package/:namespace/:name/versions/:version',
+    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     canWrite(versionDelete)
   ),
 
@@ -56,27 +56,31 @@ async function packageList(context) {
   return response.json({ objects });
 }
 
-async function packageDetail(context, { namespace, name }) {
+async function packageDetail(context, { host, namespace, name }) {
   const pkg = await Package.objects
     .get({
       active: true,
       name,
+      'namespace.host.name': host,
+      'namespace.host.active': true,
       'namespace.active': true,
       'namespace.name': namespace
     })
     .catch(Package.objects.NotFound, () => null);
 
   if (!pkg) {
-    return response.error(`Could not find "${namespace}/${name}"`, 404);
+    return response.error(`Could not find "${namespace}@${host}/${name}"`, 404);
   }
 
   return response.json(await pkg.serialize());
 }
 
-async function packageCreate(context, { namespace: namespaceName, name }) {
+async function packageCreate(context, { host, namespace: namespaceName, name }) {
   const namespace = await Namespace.objects
     .get({
       name: namespaceName,
+      'host.name': host,
+      'host.active': true,
       active: true
     })
     .catch(Namespace.objects.NotFound, () => null);
@@ -135,12 +139,12 @@ async function packageCreate(context, { namespace: namespaceName, name }) {
     });
   }
 
-  context.logger.info(`${namespace}/${name} created by ${context.user.name}`);
+  context.logger.info(`${namespace}@${host}/${name} created by ${context.user.name}`);
 
   return response.json(await result.serialize());
 }
 
-async function packageDelete(context, { namespace, name }) {
+async function packageDelete(context, { host, namespace, name }) {
   // yank the package. Transfer it to "abandonware" and mark it yanked. A
   // yanked package can still be downloaded, but it won't be displayed in any
   // lists, and should emit a warning when people use it.
@@ -148,7 +152,7 @@ async function packageDelete(context, { namespace, name }) {
   // Support users can transfer the package to a new user using the usual
   // package transfer machinery.
   if (!context.pkg) {
-    return response.error(`"${namespace}/${name}" does not exist.`, 404);
+    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
   }
 
   const modified = new Date();
@@ -192,15 +196,17 @@ async function packageDelete(context, { namespace, name }) {
   });
 
   context.logger.info(
-    `${namespace}/${name} marked as abandonware by ${context.user.name}`
+    `${namespace}@${host}/${name} marked as abandonware by ${context.user.name}`
   );
 
   return response.text('', 204);
 }
 
-async function versionDetail(context, { namespace, name, version }) {
+async function versionDetail(context, { host, namespace, name, version }) {
   const v = await PackageVersion.objects
     .get({
+      'parent.namespace.host.name': host,
+      'parent.namespace.host.active': true,
       'parent.namespace.name': namespace,
       'parent.namespace.active': true,
       'parent.active': true,
@@ -212,7 +218,7 @@ async function versionDetail(context, { namespace, name, version }) {
 
   if (!v) {
     return response.error(
-      `Could not find "${namespace}/${name}@${version}"`,
+      `Could not find "${namespace}@${host}/${name} at ${version}"`,
       404
     );
   }
@@ -220,13 +226,13 @@ async function versionDetail(context, { namespace, name, version }) {
   return response.json(await v.serialize());
 }
 
-async function versionCreate(context, { namespace, name, version }) {
+async function versionCreate(context, { host, namespace, name, version }) {
   // does a package with this version currently exist?
   // if it does, that's a 409
   // is the version valid semver? if not, that's a 400
   if (!context.pkg) {
     return response.error(
-      `"${namespace}/${name}" does not exist. Create it!`,
+      `"${namespace}@${host}/${name} does not exist. Create it!`,
       404
     );
   }
@@ -258,7 +264,7 @@ async function versionCreate(context, { namespace, name, version }) {
 
   if (any) {
     return response.error(
-      `Cannot publish over previously-published "${namespace}/${name}@${version}".`,
+      `Cannot publish over previously-published "${namespace}@${host}/${name} at ${version}".`,
       409
     );
   }
@@ -417,13 +423,13 @@ async function versionCreate(context, { namespace, name, version }) {
   });
 
   context.logger.info(
-    `${namespace}/${name}@${version} published by ${context.user.name}`
+    `${namespace}@${host}/${name} at ${version} published by ${context.user.name}`
   );
 
   return response.json(await pkgVersion.serialize(), 201);
 }
 
-async function versionDelete(context, { namespace, name, version }) {}
+async function versionDelete(context, { host, namespace, name, version }) {}
 
 async function getObject(context, { algo, '*': digest }) {
   return new Response(await context.storage.strategy.get(algo, digest), {

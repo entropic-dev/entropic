@@ -68,8 +68,14 @@ async function publish(opts) {
     return 1;
   }
 
-  if (packagejson.name.split('/').length !== 2) {
-    opts.log.error('Packages published to entropic MUST be namespaced."');
+  const bits = packagejson.name.split('/')
+  if (bits.length !== 2) {
+    opts.log.error('Packages published to entropic MUST be namespaced.');
+    return 1;
+  }
+
+  if (bits[0].split('@').length !== 2) {
+    opts.log.error('Expected the namespace portion of the package name to contain a hostname (e.g.: "carl@sagan.galaxy/billions")');
     return 1;
   }
 

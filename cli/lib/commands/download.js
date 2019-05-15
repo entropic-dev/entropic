@@ -30,29 +30,13 @@ async function download(opts) {
   const seenFiles = new Set();
   const now = Date.now();
 
-  const spec = opts.argv[0].split('@');
-  if (spec.length === 1 || (!spec[0] && spec.length === 2)) {
-    spec.push('latest');
-  }
-
-  const range = spec.pop();
-  const pkg = spec.join('@');
-
-  const result = await visitPackage(opts, pkg, now, range, seenFiles, fetching);
+  const { range, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''))
+  const result = await visitPackage(opts, parsed, now, range, seenFiles, fetching);
   await Promise.all(fetching);
 }
 
-async function visitPackage(opts, pkg, now, range, seenFiles, fetching) {
-  const name =
-    pkg[0] === '@'
-      ? `legacy/${encodeURIComponent(pkg)}`
-      : pkg.indexOf('/') === -1
-      ? `legacy/${encodeURIComponent(pkg)}`
-      : pkg
-          .split('/')
-          .slice(0, 2)
-          .map(xs => encodeURIComponent(xs))
-          .join('/');
+async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
+  const { canonical: name } = spec
 
   let meta = await cacache
     .get(opts.cache, `spackage:${name}`)
@@ -67,7 +51,7 @@ async function visitPackage(opts, pkg, now, range, seenFiles, fetching) {
     };
 
     if (pkgReq.status > 399) {
-      opts.log.error(`Failed to fetch package ${pkg}`);
+      opts.log.error(`Failed to fetch package ${spec.input}`);
       throw new Error();
     }
 
@@ -190,4 +174,47 @@ async function fetchPackageVersion(opts, name, version, integrity) {
   }
 
   return cacache.get.byDigest(opts.cache, integrity);
+}
+
+function parsePackageSpec (input, defaultHost) {
+  if (input[0] === '@') {
+    // it's a scoped package hosted by legacy.
+    const [, name, range = 'latest'] = input.split('@')
+
+    return {
+      canonical: `legacy@${defaultHost}/${encodeURIComponent(name)}`,
+      host: defaultHost,
+      name,
+      namespace: 'legacy',
+      range,
+      input
+    }
+  }
+
+  const [namespacehost, namerange] = input.split('/')
+
+  if (!namerange) {
+    const [name, range = 'latest'] = namespacehost.split('@')
+
+    return {
+      canonical: `legacy@${defaultHost}/${name}`,
+      host: defaultHost,
+      name,
+      namespace: 'legacy',
+      range,
+      input
+    }
+  }
+
+  const [namespace, host = defaultHost] = namespacehost.split('@')
+  const [name, range = 'latest'] = namerange.split('@')
+
+  return {
+    canonical: `${namespace}@${host}/${name}`,
+    host,
+    name,
+    namespace,
+    range,
+    input
+  }
 }
