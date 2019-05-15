@@ -1,10 +1,9 @@
 'use strict';
 
-const logger = require('pino')();
 const fetch = require('node-fetch');
 const cache = require('../lib/cache');
 const response = require('../lib/response');
-const pkgNameOK = require('validate-npm-package-name');
+const { validLegacyPackage } = require('../lib/validations');
 
 module.exports = {
   audit,
@@ -87,7 +86,7 @@ async function packument(context, { pkg }) {
   } else {
     [name, version] = pkg.split('@');
   }
-  if (!nameValid(name)) {
+  if (!validLegacyPackage(name)) {
     return response.error(`"${name}" is not a valid legacy package name`, 400);
   }
   if (!cache.allowed(name)) {
@@ -117,7 +116,7 @@ async function namespacedPackument(context, { encodedspec }) {
 
 //  /${pkg}/-/${name}-${version}.tgz
 async function tarball(context, { pkg, mess }) {
-  if (!nameValid(name)) {
+  if (!validLegacyPackage(name)) {
     return response.error(`"${pkg}" is not a valid legacy package name`, 400);
   }
   if (!cache.allowed(pkg)) {
@@ -142,7 +141,7 @@ async function tarball(context, { pkg, mess }) {
 //  /@${namespace}/${pkg}/-/${name}-${version}.tgz
 async function namespacedTarball(context, { namespace, pkg, mess }) {
   const name = `@${namespace}/${pkg}`;
-  if (!nameValid(name)) {
+  if (!validLegacyPackage(name)) {
     return response.error(`"${name}" is not a valid legacy package name`, 400);
   }
   if (!cache.allowed(name)) {
