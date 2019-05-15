@@ -1,6 +1,8 @@
 /* eslint-env node, mocha */
 'use strict';
 
+process.env.EXTERNAL_HOST = 'http://localhost:3000'
+
 const fetch = require('node-fetch');
 const demand = require('must');
 
@@ -14,7 +16,7 @@ describe('entropic', () => {
     providePostgres(
       provideRegistry(async url => {
         const response = await fetch(
-          `${url}/packages/package/any-namespace/any-name`,
+          `${url}/packages/package/any-namespace@localhost:3000/any-name`,
           {
             method: 'PUT',
             body: '{}'
@@ -36,7 +38,7 @@ describe('entropic', () => {
         const token = await createToken('malfoy');
 
         const response = await fetch(
-          `${url}/packages/package/any-namespace/any-name`,
+          `${url}/packages/package/any-namespace@localhost:3000/any-name`,
           {
             method: 'PUT',
             body: '{}',
@@ -60,7 +62,7 @@ describe('entropic', () => {
         await createUser('malfoy');
         const token = await createToken('malfoy');
 
-        const response = await fetch(`${url}/packages/package/malfoy/draco`, {
+        const response = await fetch(`${url}/packages/package/malfoy@localhost:3000/draco`, {
           method: 'PUT',
           body: '{}',
           headers: {

@@ -50,7 +50,8 @@ module.exports = class User {
       });
     }
 
-    const namespace = await Namespace.objects.create({ name });
+    const host = await Host.objects.get({id: 1})
+    const namespace = await Namespace.objects.create({ name, host });
     await NamespaceMember.objects.create({
       namespace,
       user
@@ -63,6 +64,7 @@ module.exports = class User {
 const NamespaceMember = require('./namespace-member');
 const Authentication = require('./authentication');
 const Namespace = require('./namespace');
+const Host = require('./host');
 
 module.exports.objects = orm(module.exports, {
   id: joi

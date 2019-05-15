@@ -1,15 +1,14 @@
-'use strict';
+'use strict'
 
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const Host = require('./host');
-
-module.exports = class Namespace {
-  constructor({ id, name, host, created, modified, active }) {
+module.exports = class Host {
+  constructor({ id, name, created, modified, active }) {
     this.id = id;
+
+    // XXX: note that this name is NOT UNIQUE.
     this.name = name;
-    this.host = host;
     this.created = created;
     this.modified = modified;
     this.active = active;
@@ -23,7 +22,6 @@ module.exports.objects = orm(module.exports, {
     .greater(-1)
     .required(),
   name: joi.string().min(1),
-  host: orm.fk(Host),
   created: joi.date(),
   modified: joi.date(),
   active: joi.boolean().default(true)

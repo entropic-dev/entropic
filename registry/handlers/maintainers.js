@@ -1,6 +1,6 @@
 'use strict';
 
-const canWrite = require('../middleware/can-write');
+const canWrite = require('../decorators/can-write-package');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
