@@ -1,7 +1,7 @@
 /* eslint-env node, mocha */
 'use strict';
 
-process.env.EXTERNAL_HOST = 'http://localhost:3000'
+process.env.EXTERNAL_HOST = 'http://localhost:3000';
 
 const fetch = require('node-fetch');
 const demand = require('must');
@@ -62,13 +62,16 @@ describe('entropic', () => {
         await createUser('malfoy');
         const token = await createToken('malfoy');
 
-        const response = await fetch(`${url}/packages/package/malfoy@localhost:3000/draco`, {
-          method: 'PUT',
-          body: '{}',
-          headers: {
-            authorization: `Bearer ${token}`
+        const response = await fetch(
+          `${url}/packages/package/malfoy@localhost:3000/draco`,
+          {
+            method: 'PUT',
+            body: '{}',
+            headers: {
+              authorization: `Bearer ${token}`
+            }
           }
-        });
+        );
 
         response.status.must.eql(200);
         const data = await response.json();

@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');

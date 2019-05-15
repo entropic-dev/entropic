@@ -24,8 +24,14 @@ const MAX_FILES = Number(process.env.MAX_FILES) || 2000000;
 module.exports = [
   fork.get('/packages', packageList),
   fork.get('/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
-  fork.put('/packages/package/:namespace([^@]+)@:host/:name', canWrite(packageCreate)),
-  fork.del('/packages/package/:namespace([^@]+)@:host/:name', canWrite(packageDelete)),
+  fork.put(
+    '/packages/package/:namespace([^@]+)@:host/:name',
+    canWrite(packageCreate)
+  ),
+  fork.del(
+    '/packages/package/:namespace([^@]+)@:host/:name',
+    canWrite(packageDelete)
+  ),
 
   fork.get(
     '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
@@ -75,7 +81,10 @@ async function packageDetail(context, { host, namespace, name }) {
   return response.json(await pkg.serialize());
 }
 
-async function packageCreate(context, { host, namespace: namespaceName, name }) {
+async function packageCreate(
+  context,
+  { host, namespace: namespaceName, name }
+) {
   const namespace = await Namespace.objects
     .get({
       name: namespaceName,
@@ -139,7 +148,9 @@ async function packageCreate(context, { host, namespace: namespaceName, name }) 
     });
   }
 
-  context.logger.info(`${namespace}@${host}/${name} created by ${context.user.name}`);
+  context.logger.info(
+    `${namespace}@${host}/${name} created by ${context.user.name}`
+  );
 
   return response.json(await result.serialize());
 }
@@ -152,7 +163,10 @@ async function packageDelete(context, { host, namespace, name }) {
   // Support users can transfer the package to a new user using the usual
   // package transfer machinery.
   if (!context.pkg) {
-    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
+    return response.error(
+      `"${namespace}@${host}/${name}" does not exist.`,
+      404
+    );
   }
 
   const modified = new Date();
@@ -423,7 +437,9 @@ async function versionCreate(context, { host, namespace, name, version }) {
   });
 
   context.logger.info(
-    `${namespace}@${host}/${name} at ${version} published by ${context.user.name}`
+    `${namespace}@${host}/${name} at ${version} published by ${
+      context.user.name
+    }`
   );
 
   return response.json(await pkgVersion.serialize(), 201);

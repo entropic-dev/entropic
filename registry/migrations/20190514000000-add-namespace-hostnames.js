@@ -24,7 +24,10 @@ exports.up = async function(db) {
       active BOOLEAN DEFAULT TRUE
     );
 
-    insert into "hosts" (name) values ('${process.env.EXTERNAL_HOST.replace(/^https?:\/\//, '')}');
+    insert into "hosts" (name) values ('${process.env.EXTERNAL_HOST.replace(
+      /^https?:\/\//,
+      ''
+    )}');
 
     alter table "namespaces" add column "host_id" integer references "hosts" ("id") not null default 1;
 

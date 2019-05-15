@@ -27,8 +27,13 @@ function canWrite(next) {
       return response.error('You must be logged in to create a package', 403);
     }
 
-    if (host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')) {
-      return response.error(`Cannot create package for remote host "${host}"`, 403);
+    if (
+      host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')
+    ) {
+      return response.error(
+        `Cannot create package for remote host "${host}"`,
+        403
+      );
     }
 
     const pkg = await Package.objects

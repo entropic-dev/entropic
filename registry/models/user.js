@@ -50,7 +50,7 @@ module.exports = class User {
       });
     }
 
-    const host = await Host.objects.get({id: 1})
+    const host = await Host.objects.get({ id: 1 });
     const namespace = await Namespace.objects.create({ name, host });
     await NamespaceMember.objects.create({
       namespace,
