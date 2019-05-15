@@ -9,6 +9,7 @@ const pacote = require('pacote')
 const tar = require('tar')
 
 const REG = process.env.REGISTRY_URL || 'http://localhost:3000'
+const HOST = REG.replace(/^https?:\/\//, '')
 const enc = encodeURIComponent
 
 async function syncVersion (token, pkg, version, packumentVersion, progress) {
@@ -41,7 +42,7 @@ async function syncVersion (token, pkg, version, packumentVersion, progress) {
       .on('error', reject)
   })
 
-  const createPackageVersion = await fetch(`${REG}/packages/package/legacy/${enc(pkg)}/versions/${enc(version)}`, {
+  const createPackageVersion = await fetch(`${REG}/packages/package/legacy@${HOST}/${enc(pkg)}/versions/${enc(version)}`, {
     method: 'PUT',
     body: form,
     headers: {
@@ -70,7 +71,7 @@ async function syncPackage (token, pkg, progress) {
   progress(`${pkg} start`)
   const json = await pacote.packument(pkg)
 
-  const createPackage = await fetch(`${REG}/packages/package/legacy/${enc(pkg)}`, {
+  const createPackage = await fetch(`${REG}/packages/package/legacy@${HOST}/${enc(pkg)}`, {
     method: 'PUT',
     body: '{}',
     headers: {

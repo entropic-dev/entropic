@@ -74,6 +74,8 @@ function canWrite(next) {
         .filter({
           active: true,
           name: namespace,
+          'host.name': host,
+          'host.active': true,
           'namespace_members.active': true,
           'namespace_members.user_id': context.user.id
         })
