@@ -151,6 +151,10 @@ async function packageDelete(context, { host, namespace, name }) {
   //
   // Support users can transfer the package to a new user using the usual
   // package transfer machinery.
+  if (!context.pkg) {
+    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
+  }
+
   const modified = new Date();
 
   await Maintainer.objects
