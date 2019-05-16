@@ -9,6 +9,19 @@
   "bugs": {
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
+  "bundledDependencies": [
+    "@iarna/toml",
+    "figgy-pudding",
+    "form-data",
+    "minimist",
+    "node-fetch",
+    "npm-packlist",
+    "npm-profile",
+    "npmlog",
+    "opener",
+    "ssri",
+    "user-home"
+  ],
   "dependencies": {
     "@iarna/toml": "^2.2.3",
     "figgy-pudding": "^3.5.1",
