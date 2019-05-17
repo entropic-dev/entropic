@@ -96,11 +96,10 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
       const version = semver.maxSatisfying(Object.keys(pkg.versions), range)
       const integrity = pkg.versions[version]
 
-
       const stack = { installed: {}, parent: lastWithout }
       lastWithout.installed[dep] = { version, integrity, stack }
 
-      const data = JSON.parse(String(await fetchPackageVersion(opts, dep, version, integrity)))
+      const data = JSON.parse(String(await fetchPackageVersion(opts, canonical, version, integrity)))
 
       for (const [dep, range] of Object.entries(data.dependencies)) {
         todo.push([dep, range, stack])

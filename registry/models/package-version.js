@@ -2,6 +2,7 @@
 
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
+const ssri = require('ssri');
 
 module.exports = class PackageVersion {
   #parent = null;
@@ -44,6 +45,18 @@ module.exports = class PackageVersion {
     this.active = active;
     this.created = created;
     this.modified = modified;
+  }
+
+  async toSSRI() {
+    const {
+      created,
+      modified,
+      derivedFiles,
+      ...content
+    } = await this.serialize();
+
+    const json = JSON.stringify(content);
+    return String(ssri.fromData(json));
   }
 
   async serialize() {

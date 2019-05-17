@@ -19,10 +19,10 @@ async function fetchPackageVersion({ registry, cache }, name, version, integrity
   let destIntegrity = null;
   const dest = cacache.put.stream(cache, integrity);
   dest.on('integrity', i => (destIntegrity = i));
+
   await pipeline(response.body, dest);
 
   if (!parsed.match(destIntegrity)) {
-    console.log(integrity, destIntegrity, name)
     throw new Error('integrity mismatch!');
   }
 
