@@ -430,10 +430,12 @@ async function versionCreate(context, { host, namespace, name, version }) {
     parent: context.pkg
   });
 
+  const versions = await context.pkg.versions();
+
   await Package.objects.filter({ id: context.pkg.id }).update({
     modified: pkgVersion.modified,
     tags: { ...(context.pkg.tags || {}), latest: version },
-    version_integrities: await context.pkg.versions()
+    version_integrities: versions
   });
 
   context.logger.info(

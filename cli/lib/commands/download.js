@@ -13,6 +13,11 @@ const semver = require('semver');
 const path = require('path');
 const ssri = require('ssri');
 
+const fetchPackageVersion = require('../fetch-package-version');
+const parsePackageSpec = require('../canonicalize-spec');
+const fetchPackage = require('../fetch-package');
+const fetchObject = require('../fetch-object');
+
 const pipeline = promisify(_);
 
 const downloadOpts = figgy({
@@ -38,28 +43,9 @@ async function download(opts) {
 async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
   const { canonical: name } = spec
 
-  let meta = await cacache
-    .get(opts.cache, `spackage:${name}`)
-    .then(xs => JSON.parse(String(xs.data)))
-    .catch(() => null);
-
-  if (!meta || now - Date.parse(meta.date) > Number(opts.expires)) {
-    const pkgReq = await fetch(`${opts.registry}/packages/package/${name}`);
-    meta = {
-      date: Date.parse(pkgReq.headers.date),
-      data: await pkgReq.json()
-    };
-
-    if (pkgReq.status > 399) {
-      opts.log.error(`Failed to fetch package ${spec.input}`);
-      throw new Error();
-    }
-
-    await cacache.put(opts.cache, `spackage:${name}`, JSON.stringify(meta));
-  }
-
+  const data = await fetchPackage(opts, name, now)
   if (!semver.validRange(range)) {
-    const version = meta.data.tags[range];
+    const version = data.tags[range];
     if (!version) {
       opts.log.error(`Failed to fetch resolve range for ${pkg}: ${range}`);
       throw new Error();
@@ -68,7 +54,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
   }
 
   const checks = [];
-  for (const [version, integrity] of Object.entries(meta.data.versions)) {
+  for (const [version, integrity] of Object.entries(data.versions)) {
     if (!semver.satisfies(version, range)) {
       continue;
     }
@@ -104,11 +90,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
 
       seenFiles.add(versiondata.files[filename]);
 
-      const loading = cacache.get
-        .hasContent(opts.cache, versiondata.files[filename])
-        .then(has => {
-          if (!has) fetchObject(opts, versiondata.files[filename]);
-        });
+      const loading = fetchObject(opts, versiondata.files[filename]);
 
       loading.catch(() => {});
       fetching.push(loading);
@@ -132,89 +114,4 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
   }
 
   return [...deps];
-}
-
-async function fetchObject(opts, integrity) {
-  const parsed = ssri.parse(integrity);
-  const algo = parsed.pickAlgorithm();
-  const [{ digest }] = parsed[algo];
-
-  const response = await fetch(
-    `${opts.registry}/objects/object/${algo}/${encodeURIComponent(digest)}`
-  );
-
-  if (response.status > 399) {
-    throw new Error('error fetching object');
-  }
-
-  let destIntegrity = null;
-  const dest = cacache.put.stream(opts.cache, integrity);
-  dest.on('integrity', i => (destIntegrity = i));
-  await pipeline(response.body, dest);
-
-  if (!parsed.match(destIntegrity)) {
-    throw new Error('file integrity mismatch!');
-  }
-}
-
-async function fetchPackageVersion(opts, name, version, integrity) {
-  opts.log.info(`fetching ${name}@${version}`);
-  const response = await fetch(
-    `${opts.registry}/packages/package/${name}/versions/${version}`
-  );
-  const parsed = ssri.parse(integrity);
-
-  let destIntegrity = null;
-  const dest = cacache.put.stream(opts.cache, integrity);
-  dest.on('integrity', i => (destIntegrity = i));
-  await pipeline(response.body, dest);
-
-  if (!parsed.match(destIntegrity)) {
-    throw new Error('integrity mismatch!');
-  }
-
-  return cacache.get.byDigest(opts.cache, integrity);
-}
-
-function parsePackageSpec (input, defaultHost) {
-  if (input[0] === '@') {
-    // it's a scoped package hosted by legacy.
-    const [, name, range = 'latest'] = input.split('@')
-
-    return {
-      canonical: `legacy@${defaultHost}/${encodeURIComponent(name)}`,
-      host: defaultHost,
-      name,
-      namespace: 'legacy',
-      range,
-      input
-    }
-  }
-
-  const [namespacehost, namerange] = input.split('/')
-
-  if (!namerange) {
-    const [name, range = 'latest'] = namespacehost.split('@')
-
-    return {
-      canonical: `legacy@${defaultHost}/${name}`,
-      host: defaultHost,
-      name,
-      namespace: 'legacy',
-      range,
-      input
-    }
-  }
-
-  const [namespace, host = defaultHost] = namespacehost.split('@')
-  const [name, range = 'latest'] = namerange.split('@')
-
-  return {
-    canonical: `${namespace}@${host}/${name}`,
-    host,
-    name,
-    namespace,
-    range,
-    input
-  }
 }

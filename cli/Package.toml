@@ -1,0 +1,5 @@
+name = "ds"
+
+[dependencies]
+"legacy@localhost:3000/lodash" = "^2.0.0"
+"legacy@localhost:3000/sonic-boom" = "^0.7.3"
