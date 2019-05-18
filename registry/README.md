@@ -23,13 +23,11 @@ Here are the config values and what they mean:
 * `PORT=3000`: the port for the registry service to listen on
 * `PGUSER=postgres`: the postgres user
 * `PGDATABASE=entropic_dev`: the name of the postgres database to use
-* `CACHE_DIR=../legacy-cache`: where to cache package data read from the legacy public registry
+* `CACHE_DIR=../entropic-cache`: where to store package data
 * `OAUTH_GITHUB_CLIENT=gh_client_id_here`: the client id you created above
 * `OAUTH_GITHUB_SECRET=gh_secret_here`: the oauth client secret you created above
 * `OAUTH_PASSWORD=pw_for_encrypting_tokens_here`: a password with lots of entropy for encrypting oauth access tokens at rest in the db
 * `EXTERNAL_HOST=http://localhost:3000`: the web host to advertise to the npm cli
-* `TARBALL_HOST=localhost:3000`: the hostname to use to rewrite tarball files are; should be the same as the host the registry is running on
-* `ALLOWLIST=/path/to/file`: if you wish to allow only certain packages from the legacy registry, set this to the path to your allow-list file
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
