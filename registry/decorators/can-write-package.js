@@ -61,7 +61,7 @@ function canWrite(next) {
         .slice(0, 1)
         .then();
 
-      if (!any && context.user.name !== 'ceejbot') {
+      if (!any) {
         return response.error(
           `You are not a maintainer of "${namespace}@${host}/${name}"`,
           403
@@ -86,7 +86,7 @@ function canWrite(next) {
         })
         .then();
 
-      if (!any && context.user.name !== 'ceejbot') {
+      if (!any) {
         return response.error(`You are not a member of "${namespace}"`, 403);
       }
     }
