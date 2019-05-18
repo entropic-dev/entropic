@@ -6,7 +6,6 @@ const querystring = require('querystring');
 const escapeHtml = require('escape-html');
 const fetch = require('node-fetch');
 const { text } = require('micro');
-const cookie = require('cookie');
 const { URL } = require('url');
 const CSRF = require('csrf');
 
@@ -14,19 +13,21 @@ const Authentication = require('../models/authentication');
 const response = require('../lib/response');
 const Token = require('../models/token');
 const User = require('../models/user');
-
-const { Response } = require('node-fetch');
+const fork = require('../lib/router');
 
 const TOKENS = new CSRF();
 
-module.exports = {
-  login: handleCLISession(redirectAuthenticated(login)),
-  oauthCallback: redirectAuthenticated(oauthCallback),
-  signup: redirectAuthenticated(signup),
-  signupAction: redirectAuthenticated(signupAction),
-  tokens: seasurf(redirectUnauthenticated(tokens)),
-  handleTokenAction: seasurf(redirectUnauthenticated(handleTokenAction))
-};
+module.exports = [
+  fork.get(
+    '/www/login/providers/:provider/callback',
+    redirectAuthenticated(oauthCallback)
+  ),
+  fork.get('/www/login', handleCLISession(redirectAuthenticated(login))),
+  fork.get('/www/signup', redirectAuthenticated(signup)),
+  fork.post('/www/signup', redirectAuthenticated(signupAction)),
+  fork.get('/www/tokens', seasurf(redirectUnauthenticated(tokens))),
+  fork.post('/www/tokens', seasurf(redirectUnauthenticated(handleTokenAction)))
+];
 
 async function login(context) {
   const state = String(Math.random());
