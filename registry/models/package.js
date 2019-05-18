@@ -52,7 +52,7 @@ module.exports = class Package {
         active: true,
         parent: this
       })
-      .then();
+      .then(x => x);
 
     const acc = {};
     for (const version of versions) {

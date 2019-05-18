@@ -2,8 +2,6 @@
 
 module.exports = dev;
 
-const logger = require('pino')();
-
 const hangWarning = Symbol('hang-stall');
 const hangError = Symbol('hang-error');
 
@@ -19,12 +17,12 @@ function dev(
         clearTimeout(context[hangWarning]);
       }
       context[hangWarning] = setTimeout(() => {
-        logger.error(
+        console.error(
           `⚠️ Response from ${nextName} > ${warnAt}ms fetching "${req.method} ${
             req.url
           }".`
         );
-        logger.error(
+        console.error(
           `\x1b[0;37m - (Tune timeout using DEV_LATENCY_WARNING_MS env variable.)\x1b[0;0m`
         );
       }, warnAt);
@@ -33,12 +31,12 @@ function dev(
         clearTimeout(context[hangError]);
       }
       context[hangError] = setTimeout(() => {
-        logger.error(
+        console.error(
           `🛑 STALL: Response from ${nextName} > ${errorAt}ms: "${req.method} ${
             req.url
           }". (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)`
         );
-        logger.error(
+        console.error(
           `\x1b[0;37m - (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)\x1b[0;0m`
         );
       }, errorAt);

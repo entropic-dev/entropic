@@ -33,7 +33,7 @@ async function clone (pkg, storage) {
   // Maybe we should only sync the most recent N versions before returning
   // a temporary "yes here are the newest items" response?
   const result = await Package.objects.create({
-    name: encodeURIComponent(pkg),
+    name: pkg,
     namespace,
     require_tfa: false
   });
@@ -61,44 +61,52 @@ async function clone (pkg, storage) {
   });
 }
 
+const { getNamespace } = require('cls-hooked');
+
 async function syncVersion (storage, parent, pkg, version, data) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`)
   const untar = new tar.Parse()
   const files = {}
+  const pending = []
 
   untar.on('entry', entry => {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
-      files[filename] = storage.add(entry.pipe(new PassThrough()), { hint: entry })
-      files[filename].catch(() => {})
+      const stream = entry.pipe(new PassThrough())
+      const addFile = storage.add(stream).then(r => {
+        files[filename] = r
+      })
+      addFile.catch(() => {})
+      pending.push(addFile)
     } else {
       entry.resume()
     }
   })
 
-  await new Promise((resolve, reject) => {
-    tarball.on('error', reject)
-    untar.on('end', resolve)
-      .on('error', reject)
-    tarball.pipe(untar)
-  })
+  const ns = getNamespace('postgres')
+  await ns.run(async () => {
+    await new Promise((resolve, reject) => {
+      tarball.on('error', reject)
+      untar.on('end', resolve)
+        .on('error', reject)
+      tarball.pipe(untar)
+    })
 
-  for (const key in files) {
-    files[key] = await files[key]
-  }
+    await Promise.all(pending)
 
-  const pkgVersion = await PackageVersion.objects.create({
-    parent,
-    version,
-    signatures: [],
-    dependencies: data.dependencies || {},
-    devDependencies: data.devDependencies || {},
-    optionalDependencies: data.optionalDependencies || {},
-    peerDependencies: data.peerDependencies || {},
-    bundledDependencies: data.bundledDependencies || {},
-    files,
-    derivedFiles: {}
+    const pkgVersion = await PackageVersion.objects.create({
+      parent,
+      version,
+      signatures: [],
+      dependencies: data.dependencies || {},
+      devDependencies: data.devDependencies || {},
+      optionalDependencies: data.optionalDependencies || {},
+      peerDependencies: data.peerDependencies || {},
+      bundledDependencies: data.bundledDependencies || {},
+      files,
+      derivedFiles: {}
+    })
+    const [integrity, versiondata] = await pkgVersion.toSSRI();
+    await storage.addBuffer(integrity, Buffer.from(versiondata));
   })
-  const [integrity, versiondata] = await pkgVersion.toSSRI();
-  await storage.addBuffer(integrity, Buffer.from(versiondata));
 }

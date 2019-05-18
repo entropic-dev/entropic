@@ -82,7 +82,8 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
   //          add that dep to that level.
   //          add that target to the install list
   next:
-  for (const [dep, range, tier] of todo) {
+  while (todo.length) {
+    const [dep, range, tier] = todo.pop()
     let current = tier
     let lastWithout = current
     while (current) {
@@ -98,7 +99,7 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
       }
 
       // dep is satisfied. go to the next todo list item.
-      break next
+      continue next
     }
     // fetch the dep, resolve the maxSatisfying version, add it to lastWithout.dependencies[dep]
     // add the dep's deps to the todo list, with a new tier
@@ -115,13 +116,11 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
     const newTier = { installed: {}, parent: lastWithout, name: `tree of ${dep}` }
 
     lastWithout.installed[dep] = { version, range, integrity, tier: newTier }
-    if (lastWithout.name !== 'root') {
-      console.log(lastWithout.name)
-    }
     const data = await fetchPackageVersion(opts, dep, version, integrity)
 
-    for (const [dep, range] of Object.entries(data.dependencies)) {
-      todo.push([parsePackageSpec(dep, defaultHost).canonical, range, newTier])
+    for (const [child, range] of Object.entries(data.dependencies).reverse()) {
+      const { canonical } = parsePackageSpec(child, defaultHost)
+      todo.push([canonical, range, newTier])
     }
   }
 
