@@ -430,6 +430,9 @@ async function versionCreate(context, { host, namespace, name, version }) {
     parent: context.pkg
   });
 
+  const [integrity, data] = await pkgVersion.toSSRI();
+  context.storage.addBuffer(integrity, Buffer.from(data));
+
   const versions = await context.pkg.versions();
 
   await Package.objects.filter({ id: context.pkg.id }).update({
