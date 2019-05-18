@@ -98,6 +98,15 @@ async function syncPackage (token, pkg, progress) {
     versions[idx] = tmp
   }
 
+  if (createPackage.status === 200) {
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())]
+  }
+
+  if (createPackage.status > 399) {
+    progress(`package failed with ${createPackage.status}: ${await createPackage.text()}`)
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())]
+  }
+
   progress(`${pkg}: versions "${versions.join('", "')}"`)
   const deps = []
   for (const version of versions) {

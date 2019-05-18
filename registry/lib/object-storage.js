@@ -22,8 +22,8 @@ module.exports = class ObjectStore {
       algorithms: this.algorithms
     });
     const data = Buffer.concat(chunks);
-
-    return this.addBuffer(integrity, data, { hint });
+    const result = await this.addBuffer(integrity, data, { hint });
+    return result
   }
 
   async addBuffer (integrity, data, { hint = null } = {}) {
