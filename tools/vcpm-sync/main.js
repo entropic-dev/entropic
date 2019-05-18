@@ -81,6 +81,11 @@ async function syncPackage (token, pkg, progress) {
     }
   })
 
+  if (createPackage.status > 399) {
+    progress(`${pkg} saw ${createPackage.status}: ${await createPackage.text()}`)
+    return
+  }
+
   const versions = Object.keys(json.versions)
   const latest = json['dist-tags'].latest
 
