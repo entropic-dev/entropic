@@ -1,5 +1,8 @@
 name = "ds"
 
 [dependencies]
-"legacy@localhost:3000/lodash" = "^2.0.0"
+"legacy@localhost:3000/lodash" = "^4.0.0"
+"legacy@localhost:3000/git-object-tag" = "0.0.1"
 "legacy@localhost:3000/sonic-boom" = "^0.7.3"
+"legacy@localhost:3000/git-to-js" = "*"
+"legacy@localhost:3000/cacache" = "*"
