@@ -21,7 +21,8 @@ function makeRouter() {
     fork.get('/-/v1/login/poll/:session', auth.poll),
     fork.post('/-/v1/login', auth.login),
     fork.get('/hello', greeting),
-    fork.get('/ping', ping)
+    fork.get('/ping', ping),
+    fork.get('/-/whoami', whoami)
   );
 
   return router;
@@ -43,4 +44,11 @@ async function greeting() {
 
 async function ping() {
   return response.text(ship);
+}
+
+async function whoami(context) {
+  if (!context.user) {
+    return response.json({ error: 'You are not logged in' });
+  }
+  return response.json({ username: context.user.name });
 }

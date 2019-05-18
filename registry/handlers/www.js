@@ -6,7 +6,6 @@ const querystring = require('querystring');
 const escapeHtml = require('escape-html');
 const fetch = require('node-fetch');
 const { text } = require('micro');
-const cookie = require('cookie');
 const { URL } = require('url');
 const CSRF = require('csrf');
 
@@ -15,8 +14,6 @@ const response = require('../lib/response');
 const Token = require('../models/token');
 const User = require('../models/user');
 const fork = require('../lib/router');
-
-const { Response } = require('node-fetch');
 
 const TOKENS = new CSRF();
 

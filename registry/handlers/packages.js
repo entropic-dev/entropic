@@ -6,7 +6,6 @@ const { Transform } = require('stream');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
-const ssri = require('ssri');
 
 const PackageVersion = require('../models/package-version');
 const canWrite = require('../decorators/can-write-package');
