@@ -2,7 +2,7 @@
 
 module.exports = clone
 
-const { pipeline } = require('stream')
+const { PassThrough, pipeline } = require('stream')
 const minimist = require('minimist')
 const fetch = require('node-fetch')
 const orm = require('ormnomnom')
@@ -29,8 +29,9 @@ async function clone (pkg, storage) {
     active: true
   })
 
-  // TODO: start a transaction.
-  // TODO: mark the package as "syncing."
+  // TODO: mark the package as "syncing." Syncs can take up to 30s or more.
+  // Maybe we should only sync the most recent N versions before returning
+  // a temporary "yes here are the newest items" response?
   const result = await Package.objects.create({
     name: encodeURIComponent(pkg),
     namespace,
@@ -43,13 +44,15 @@ async function clone (pkg, storage) {
   });
 
   const versions = Object.keys(json.versions)
+  const syncing = []
   for (const version of versions) {
-    console.log('start', pkg, version)
-    const sync = await syncVersion(storage, result, pkg, version, json.versions[version])
-    console.log('finish', pkg, version)
+    const sync = syncVersion(storage, result, pkg, version, json.versions[version])
+    sync.catch(() => {})
+    syncing.push(sync)
   }
 
-  console.log(result)
+  await Promise.all(syncing)
+
   const versionIntegrities = await result.versions();
   await Package.objects.filter({ id: result.id }).update({
     modified: new Date(),
@@ -60,14 +63,16 @@ async function clone (pkg, storage) {
 
 async function syncVersion (storage, parent, pkg, version, data) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`)
-  const untar = tar.t()
+  const untar = new tar.Parse()
   const files = {}
 
   untar.on('entry', entry => {
-    console.log(entry)
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
-      files[filename] = storage.add(entry, { hint: entry })
+      files[filename] = storage.add(entry.pipe(new PassThrough()), { hint: entry })
+      files[filename].catch(() => {})
+    } else {
+      entry.resume()
     }
   })
 
