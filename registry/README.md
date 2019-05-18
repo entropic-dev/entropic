@@ -31,11 +31,6 @@ Here are the config values and what they mean:
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
-
-## Allow list
-
-You may optionally control the legacy packages allowed to be installed through entropic using an allow list. To enable this feature, set the `ALLOWLIST` env var to point to a text file. List allowed packages by one per line. You do not need to url encode the names.
-
 ## The API
 
 Registry routes:
@@ -58,12 +53,8 @@ Website routes:
 * `GET /www/tokens`
 * `POST /www/tokens`
 
-Legacy registry API support:
+These endpoints do not follow the entropic API conventions, but instead use the legacy endpoints for convenience:
 
-* `POST /-/v1/login` - log the legacy client in
+* `POST /-/v1/login` - log your client in
 * `GET /-/v1/login/poll/:session` - poll for a session token as part of the login flow
-* `POST /-/npm/v1/security/audits` - run a full security audit
-* `POST /-/npm/v1/security/audits/quick` - run a quick security audit
 * `GET /-/whoami` - respond with the name of the logged-in user
-* `GET /:package` - fetch either an install document or a full meta document
-* `GET /:package/-/:package-:version.tgz` - fetch a tarball

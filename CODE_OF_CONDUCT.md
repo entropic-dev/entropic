@@ -55,8 +55,6 @@ Depending on the violation, the maintainers may decide that violations of this c
 
 As a project on GitHub, this project is additionally covered by the [GitHub Community Guidelines](https://help.github.com/articles/github-community-guidelines/).
 
-Additionally, as a project hosted on npm, is is covered by [npm, Inc's Code of Conduct](https://www.npmjs.com/policies/conduct).
-
 Enforcement of those guidelines after violations overlapping with the above are the responsibility of the entities, and enforcement may happen in any or all of the services/communities.
 
 ## Maintainer Enforcement Process
