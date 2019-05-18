@@ -3,6 +3,7 @@
 module.exports = clone
 
 const { PassThrough, pipeline } = require('stream')
+const { getNamespace } = require('cls-hooked');
 const minimist = require('minimist')
 const fetch = require('node-fetch')
 const orm = require('ormnomnom')
@@ -61,8 +62,6 @@ async function clone (pkg, storage) {
   });
 }
 
-const { getNamespace } = require('cls-hooked');
-
 async function syncVersion (storage, parent, pkg, version, data) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`)
   const untar = new tar.Parse()
@@ -83,30 +82,27 @@ async function syncVersion (storage, parent, pkg, version, data) {
     }
   })
 
-  const ns = getNamespace('postgres')
-  await ns.run(async () => {
-    await new Promise((resolve, reject) => {
-      tarball.on('error', reject)
-      untar.on('end', resolve)
-        .on('error', reject)
-      tarball.pipe(untar)
-    })
-
-    await Promise.all(pending)
-
-    const pkgVersion = await PackageVersion.objects.create({
-      parent,
-      version,
-      signatures: [],
-      dependencies: data.dependencies || {},
-      devDependencies: data.devDependencies || {},
-      optionalDependencies: data.optionalDependencies || {},
-      peerDependencies: data.peerDependencies || {},
-      bundledDependencies: data.bundledDependencies || {},
-      files,
-      derivedFiles: {}
-    })
-    const [integrity, versiondata] = await pkgVersion.toSSRI();
-    await storage.addBuffer(integrity, Buffer.from(versiondata));
+  await new Promise((resolve, reject) => {
+    tarball.on('error', reject)
+    untar.on('end', resolve)
+      .on('error', reject)
+    tarball.pipe(untar)
   })
+
+  await Promise.all(pending)
+
+  const pkgVersion = await PackageVersion.objects.create({
+    parent,
+    version,
+    signatures: [],
+    dependencies: data.dependencies || {},
+    devDependencies: data.devDependencies || {},
+    optionalDependencies: data.optionalDependencies || {},
+    peerDependencies: data.peerDependencies || {},
+    bundledDependencies: data.bundledDependencies || {},
+    files,
+    derivedFiles: {}
+  })
+  const [integrity, versiondata] = await pkgVersion.toSSRI();
+  await storage.addBuffer(integrity, Buffer.from(versiondata));
 }
