@@ -56,7 +56,7 @@ module.exports = class Package {
 
     const acc = {};
     for (const version of versions) {
-      acc[version.version] = await version.toSSRI()
+      acc[version.version] = await version.toSSRI();
     }
 
     return acc;
