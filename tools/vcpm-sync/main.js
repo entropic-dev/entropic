@@ -38,6 +38,7 @@ async function syncVersion (token, pkg, version, packumentVersion, progress) {
   })
 
   await new Promise((resolve, reject) => {
+    tarball.on('error', reject)
     untar.on('end', resolve)
       .on('error', reject)
   })
@@ -95,10 +96,11 @@ async function syncPackage (token, pkg, progress) {
   progress(`${pkg}: versions "${versions.join('", "')}"`)
   const deps = []
   for (const version of versions) {
-    deps.push(await syncVersion(token, pkg, version, json.versions[version], progress))
+    deps.push(await syncVersion(token, pkg, version, json.versions[version], progress).catch(err => {
+      progress(`could not sync ${pkg}@${version}: ${err.message}`)
+    }))
   }
 
-  console.log({deps})
   progress(`${pkg} done`)
 
   return [...new Set(deps.flat())]
