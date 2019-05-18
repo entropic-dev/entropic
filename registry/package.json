@@ -9,6 +9,7 @@
   "dependencies": {
     "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
+    "bole": "~3.0.2",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
     "csrf": "~3.1.0",
@@ -26,7 +27,6 @@
     "ormnomnom": "^5.2.2",
     "pacote": "~9.5.0",
     "pg": "~7.4.0",
-    "pino": "^5.12.3",
     "redis": "^2.8.0",
     "semver": "^6.0.0",
     "ssri": "^6.0.1",
@@ -34,13 +34,13 @@
     "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
+    "bistre": "~1.0.1",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.5.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.1.1",
     "pgtools": "^0.3.0",
-    "pino-pretty": "~3.0.0",
     "prettier": "1.17.0",
     "test-listen": "^1.1.0"
   },
@@ -59,8 +59,9 @@
   "scripts": {
     "coverage": "nyc mocha -R spec",
     "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
-    "lint": "prettier -c --single-quote '**/*.js'",
-    "lint-fix": "prettier --single-quote --write '**/*.js'",
+    "dev": "NODE_ENV=dev PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
+    "lint": "prettier -c '**/*.js'",
+    "lint-fix": "prettier --write '**/*.js'",
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
     "posttest": "npm run lint",
     "prestart": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",

@@ -24,6 +24,9 @@ Implement new commands as files in `lib/commands/`. Commands implemented as of t
 * __whoami__: respond with the name of the authenticated user
 * __publish__: publish a new package-version, creating a package as a side effect if necessary
 * __download__: fetch & insert into cache the content blobs for the named package-version
+* __invite__: `invite [name] --to pkg` invites the namespace to join the maintainers list
+* __join__: list invitations or accept a specific one
+* __decline__: decline an invitation to join a namespace or package maintainers list
 
 Commands that should exist:
 

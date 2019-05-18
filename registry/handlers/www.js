@@ -445,7 +445,7 @@ function seasurf(next) {
 
       const okay = TOKENS.verify(secret, csrf_token);
       if (!okay) {
-        context.logger.warn({ msg: 'csrf token mismatch!', bad: csrf_token });
+        context.logger.warn(`csrf token mismatch! bad: ${csrf_token}`);
         return response.redirect('/www/login');
       }
     }

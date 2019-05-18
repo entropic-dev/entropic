@@ -48,7 +48,11 @@ async function ping() {
 
 async function whoami(context) {
   if (!context.user) {
-    return response.json({ error: 'You are not logged in' });
+    return response.error({
+      message: 'You are not logged in',
+      CODE: 'ENOTLOGGEDIN'
+    });
   }
+  // This isn't to spec but is what vcpm does. Consider changing it.
   return response.json({ username: context.user.name });
 }

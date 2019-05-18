@@ -26,7 +26,7 @@ function router(options) {
       const match = wayfinder.find(request.method, pathname);
 
       if (!match) {
-        return response.json({ message: 'Not found' }, 404);
+        return response.error({ message: 'Not found', code: 'ENOTFOUND' }, 404);
       }
 
       return match.handler(context, match.params, match.store);

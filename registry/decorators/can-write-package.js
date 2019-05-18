@@ -24,14 +24,17 @@ function canWrite(next) {
   return async (context, params) => {
     const { host, namespace, name } = params;
     if (!context.user) {
-      return response.error('You must be logged in to create a package', 403);
+      return response.error(
+        'You must be logged in to perform this action',
+        403
+      );
     }
 
     if (
       host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')
     ) {
       return response.error(
-        `Cannot create package for remote host "${host}"`,
+        `Cannot modify packages for remote host "${host}"`,
         403
       );
     }

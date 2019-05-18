@@ -1,6 +1,6 @@
 'use strict';
 
-const logger = require('pino')();
+const bole = require('bole');
 const uuid = require('uuid');
 
 module.exports = createRequestId;
@@ -12,7 +12,7 @@ function createRequestId(
     return async function inner(context) {
       const request = context.request;
       context.id = request.headers[requestIdHeader] || uuid.v1();
-      context.logger = logger.child({ id: context.id });
+      context.logger = bole(context.id);
       const response = await next(context);
 
       return response;
