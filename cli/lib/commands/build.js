@@ -69,11 +69,6 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
   const metadata = toml.parse(src);
 
   const defaultHost = opts.registry.replace(/^https?:\/\//, '');
-  const toplevel = { installed: {}, parent: null };
-  const todo = Object.entries(metadata.dependencies).map(xs => [
-    ...xs,
-    toplevel
-  ]);
 
   const toplevel = { installed: {}, parent: null, name: 'root' };
 
@@ -100,9 +95,6 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
         lastWithout = current;
         current = current.parent;
         continue;
-        lastWithout = lastWithout || current;
-        current = current.parent;
-        continue;
       }
 
       // needs to be added to lastWithout
@@ -111,7 +103,6 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
       }
 
       // dep is satisfied. go to the next todo list item.
-      current = current.parent;
       continue next;
     }
     // fetch the dep, resolve the maxSatisfying version, add it to lastWithout.dependencies[dep]
@@ -122,7 +113,6 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
 
     if (version === null) {
       throw new Error(`Could not satisfy ${dep} at ${range}`);
-      const version = semver.maxSatisfying(Object.keys(pkg.versions), range);
     }
 
     const integrity = pkg.versions[version];

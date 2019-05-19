@@ -10,26 +10,20 @@ const ssri = require('ssri');
 
 const pipeline = promisify(_);
 
+const fetchObject = require('./fetch-object');
+
+// This used to be a different endpoint.
 async function fetchPackageVersion(
   { registry, cache },
   name,
   version,
   integrity
 ) {
-  const response = await fetch(
-    `${registry}/packages/package/${name}/versions/${version}`
+  const data = await fetchObject(
+    { registry, cache },
+    integrity,
+    'please load it'
   );
-  const parsed = ssri.parse(integrity);
 
-  let destIntegrity = null;
-  const dest = cacache.put.stream(cache, integrity);
-  dest.on('integrity', i => (destIntegrity = i));
-
-  await pipeline(response.body, dest);
-
-  if (!parsed.match(destIntegrity)) {
-    throw new Error('integrity mismatch!');
-  }
-
-  return cacache.get.byDigest(cache, integrity);
+  return JSON.parse(String(data.data));
 }
