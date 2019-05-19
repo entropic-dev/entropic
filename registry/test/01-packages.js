@@ -26,8 +26,8 @@ describe('entropic', () => {
         response.status.must.eql(403);
         const data = await response.json();
         data.must.be.an.object();
-        data.must.have.property('error');
-        data.error.must.match('You must be logged in');
+        data.must.have.property('message');
+        data.message.must.match('You must be logged in');
       })
     )
   );
@@ -53,8 +53,8 @@ describe('entropic', () => {
         response.status.must.eql(403);
         const data = await response.json();
         data.must.be.an.object();
-        data.must.have.property('error');
-        data.error.must.eql('You are not a member of "any-namespace"');
+        data.must.have.property('message');
+        data.message.must.eql('You are not a member of "any-namespace"');
       }).middleware([require('../middleware/bearer-auth')()])
     )
   );
