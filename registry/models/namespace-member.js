@@ -18,7 +18,8 @@ module.exports = class NamespaceMember {
     namespace,
     created,
     modified,
-    active
+    active,
+    accepted
   }) {
     this.id = id;
     this.user_id = user_id;
@@ -28,6 +29,7 @@ module.exports = class NamespaceMember {
     this.created = created;
     this.modified = modified;
     this.active = active;
+    this.accepted = accepted;
   }
 
   get user() {
@@ -69,5 +71,6 @@ module.exports.objects = orm(module.exports, {
   namespace: orm.fk(Namespace),
   created: joi.date(),
   modified: joi.date(),
-  active: joi.boolean().default(true)
+  active: joi.boolean().default(true),
+  accepted: joi.boolean().default(false)
 });

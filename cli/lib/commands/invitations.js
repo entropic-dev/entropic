@@ -18,41 +18,55 @@ const invitationsOpts = figgy({
 async function invitations(opts) {
   opts = invitationsOpts(opts);
 
-  const invitee = opts.argv[0];
-  const uri = `${
-    opts.registry
-  }/namespace/${invitee}/maintainerships?accepted=false`;
-  const response = await fetch(uri, {
-    headers: {
-      authorization: `Bearer ${opts.token}`
+  let invitee = opts.argv[0];
+  if (!invitee.includes('@')) {
+    invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
+  }
+
+  const response = await fetch(
+    `${
+      opts.registry
+    }/namespaces/namespace/${invitee}/maintainerships?accepted=false`,
+    {
+      headers: { authorization: `Bearer ${opts.token}` }
     }
-  });
+  );
 
-  const body = await response.json();
-  if (body.error) {
-    console.error(body.error);
-    return 1;
-  }
-  if (!Array.isArray(body.objects)) {
-    return 0;
+  const pkg = await response.json();
+  const result = [];
+  if (Array.isArray(pkg.objects)) {
+    result.concat(pkg.objects.length);
   }
 
-  if (body.objects.length === 0) {
+  const response2 = await fetch(
+    `${
+      opts.registry
+    }/namespaces/namespace/${invitee}/memberships?accepted=false`,
+    {
+      headers: { authorization: `Bearer ${opts.token}` }
+    }
+  );
+  const ns = await response2.json();
+  if (Array.isArray(ns.objects)) {
+    result.concat(ns.objects.length);
+  }
+
+  if (result.length === 0) {
     console.log(`${invitee} has no invitations.`);
     return 0;
   }
 
   console.log(
     `${invitee} has ` +
-      (body.objects.length === 1
+      (result.length === 1
         ? 'one invitation.'
-        : `${body.objects.length} invitations.`) +
+        : `${result.length} invitations.`) +
       '\nTo accept:\n'
   );
 
-  body.objects.forEach(dest => {
+  result.forEach(dest => {
     console.log(`  ds join ${dest.name} --as ${invitee}`);
   });
 
-  console.log(`\nTo decline an invitation: ds decline <pkg> --as ${invitee}`);
+  console.log(`\nTo decline an invitation: ds decline <group> --as ${invitee}`);
 }

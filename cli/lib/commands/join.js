@@ -24,16 +24,24 @@ async function join(opts) {
     return 1;
   }
 
-  const { _, ...parsed } = parsePackageSpec(
-    opts.argv[0],
-    opts.registry.replace(/^https?:\/\//, '')
-  );
-
+  const host = opts.registry.replace(/^https?:\/\//, '');
   const invitee = opts.as;
+  let uri;
 
-  const uri = `${opts.registry}/packages/package/${
-    parsed.canonical
-  }/maintainers/${invitee}/invitation`;
+  if (opts.argv[0].includes('/')) {
+    const { _, ...parsed } = parsePackageSpec(
+      opts.argv[0],
+      opts.registry.replace(/^https?:\/\//, '')
+    );
+    uri = `${opts.registry}/packages/package/${
+      parsed.canonical
+    }/maintainers/${invitee}/invitation`;
+  } else {
+    const ns = opts.argv[0] + (opts.argv[0].includes('@') ? '' : `@${host}`);
+    uri = `${
+      opts.registry
+    }/namespaces/namespace/${ns}/members/${invitee}/invitation`;
+  }
 
   const response = await fetch(uri, {
     method: 'POST',

@@ -2,60 +2,38 @@
 
 const isNamespaceMember = require('../decorators/is-namespace-member');
 const packageExists = require('../decorators/package-exists');
+const findInvitee = require('../decorators/find-invitee');
 const canWrite = require('../decorators/can-write-package');
-const isLoggedIn = require('../decorators/is-logged-in');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 const response = require('../lib/response');
 const fork = require('../lib/router');
-const qs = require('querystring');
-const url = require('url');
 
 module.exports = [
   fork.get(
     '/packages/package/:namespace([^@]+)@:host/:name/maintainers',
-    packageMaintainers
+    maintainers
   ),
   fork.post(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:maintainer',
-    findMaintainerNamespace(canWrite(inviteMaintainer))
+    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
+    findInvitee(canWrite(invite))
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:maintainer',
-    findMaintainerNamespace(canWrite(removeMaintainer))
+    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
+    findInvitee(canWrite(remove))
   ),
   fork.post(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:maintainer/invitation',
-    packageExists(isNamespaceMember(acceptInvitation))
+    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    packageExists(isNamespaceMember(accept))
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:maintainer/invitation',
-    packageExists(isNamespaceMember(declineInvitation))
-  ),
-  fork.get(
-    '/namespace/:maintainer/maintainerships',
-    isLoggedIn(isNamespaceMember(listMaintainerships))
+    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    packageExists(isNamespaceMember(decline))
   )
 ];
 
-function findMaintainerNamespace(next) {
-  return async (context, params) => {
-    const ns = await Namespace.objects
-      .get({
-        active: true,
-        name: params.maintainer,
-        'host.name': params.host,
-        'host.active': true
-      })
-      .catch(Namespace.objects.NotFound, () => null);
-
-    context.maintainer = ns;
-    return next(context, params);
-  };
-}
-
-async function packageMaintainers(context, { namespace, host, name }) {
+async function maintainers(context, { namespace, host, name }) {
   const pkg = await Package.objects
     .get({
       active: true,
@@ -85,61 +63,55 @@ async function packageMaintainers(context, { namespace, host, name }) {
 
 // Invite a maintainer. Maintainers are namespaces, which might be a single user or a group of users.
 // More correctly: maintainership is a relationship between a namespace and a package.
-async function inviteMaintainer(
-  context,
-  { namespace, host, name, maintainer }
-) {
+async function invite(context, { namespace, host, name, invitee }) {
   if (!context.pkg) {
     return response.error(`"${namespace}@${host}/${name}" not found.`, 404);
   }
 
-  if (!context.maintainer) {
-    return response.error(`${maintainer} not found.`, 404);
+  if (!context.invitee) {
+    return response.error(`${invitee} not found.`, 404);
   }
 
   const found = await Namespace.objects
     .filter({
       'maintainers.package_id': context.pkg.id,
       'maintainers.active': true,
-      'maintainers.namespace_id': context.maintainer.id
+      'maintainers.namespace_id': context.invitee.id
     })
     .then();
   if (Boolean(found.length > 0)) {
     return response.message(
-      `${maintainer} was already a maintainer of ${namespace}@${host}/${name}.`
+      `${invitee} was already a maintainer of ${namespace}@${host}/${name}.`
     );
   }
 
   const existing = await Maintainer.objects
-    .get({ namespace: context.maintainer, package: context.pkg })
+    .get({ namespace: context.invitee, package: context.pkg })
     .catch(Maintainer.objects.NotFound, () => null);
   if (existing) {
     return response.message(
-      `${maintainer} has already been invited to maintain ${namespace}@${host}/${name}.`
+      `${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`
     );
   }
 
   await Maintainer.objects.create({
-    namespace: context.maintainer,
+    namespace: context.invitee,
     package: context.pkg,
     accepted: false,
     active: false
   });
 
   context.logger.info(
-    `${maintainer} invited to join the maintainers of ${namespace}@${host}/${name} by ${
+    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${
       context.user.name
     }`
   );
   return response.message(
-    `${maintainer} invited to join the maintainers of ${namespace}@${host}/${name}.`
+    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name}.`
   );
 }
 
-async function removeMaintainer(
-  context,
-  { namespace, host, name, maintainer }
-) {
+async function remove(context, { namespace, host, name, invitee }) {
   if (!context.pkg) {
     return response.error(
       `"${namespace}@${host}/${name}" does not exist.`,
@@ -147,14 +119,14 @@ async function removeMaintainer(
     );
   }
 
-  if (!context.maintainer) {
-    return response.error(`${maintainer} does not exist.`, 404);
+  if (!context.invitee) {
+    return response.error(`${invitee} does not exist.`, 404);
   }
 
   const maintainership = await Maintainer.objects
     .filter({
       package_id: context.pkg.id,
-      namespace_id: context.maintainer.id,
+      namespace_id: context.invitee.id,
       active: true
     })
     .slice(0, 1)
@@ -166,27 +138,24 @@ async function removeMaintainer(
 
   if (maintainership.length === 0) {
     return response.message(
-      `${maintainer} was not a maintainer of ${namespace}@${host}/${name}.`
+      `${invitee} was not a maintainer of ${namespace}@${host}/${name}.`
     );
   }
   context.logger.info(
-    `${maintainer} removed as maintainer of ${namespace}@${host}/${name} by ${
+    `${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${
       context.user.name
     }`
   );
 
   return response.message(
-    `${maintainer} removed as maintainer of ${namespace}@${host}/${name}.`
+    `${invitee} removed as maintainer of ${namespace}@${host}/${name}.`
   );
 }
 
-async function acceptInvitation(
-  context,
-  { namespace, host, name, maintainer, guid }
-) {
+async function accept(context, { namespace, host, name, member }) {
   const invitation = await Maintainer.objects
     .filter({
-      namespace_id: context.maintainer.id,
+      namespace_id: context.member.id,
       package_id: context.pkg.id
     })
     .update({
@@ -209,13 +178,10 @@ async function acceptInvitation(
   );
 }
 
-async function declineInvitation(
-  context,
-  { namespace, host, name, maintainer, guid }
-) {
+async function decline(context, { namespace, host, name, member }) {
   const invitation = await Maintainer.objects
     .get({
-      namespace_id: context.maintainer.id,
+      namespace_id: context.member.id,
       package_id: context.pkg.id
     })
     .catch(Maintainer.objects.NotFound, () => null);
@@ -236,28 +202,4 @@ async function declineInvitation(
   return response.message(
     `You have declined the invitation for ${maintainer} to join ${namespace}@${host}/${name}`
   );
-}
-
-async function listMaintainerships(context, { maintainer }) {
-  const parsed = url.parse(context.request.url);
-  const { accepted } = qs.parse(parsed.query);
-  const flag = accepted !== 'false';
-
-  const pkgInvitations = await Package.objects
-    .filter({
-      'maintainers.accepted': flag,
-      'maintainers.active': flag,
-      'maintainers.namespace_id': context.maintainer.id,
-      active: true,
-      'namespace.active': true,
-      'namespace.host.active': true
-    })
-    .then();
-
-  const objects = [];
-  for (const pkg of pkgInvitations) {
-    objects.push(await pkg.serialize());
-  }
-
-  return response.json({ objects });
 }
