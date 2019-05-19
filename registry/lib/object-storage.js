@@ -22,7 +22,11 @@ module.exports = class ObjectStore {
       algorithms: this.algorithms
     });
     const data = Buffer.concat(chunks);
+    const result = await this.addBuffer(integrity, data, { hint });
+    return result;
+  }
 
+  async addBuffer(integrity, data, { hint = null } = {}) {
     const targets = [];
     for (const algo of this.algorithms) {
       for (const { digest } of integrity[algo] || []) {

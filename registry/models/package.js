@@ -52,11 +52,12 @@ module.exports = class Package {
         active: true,
         parent: this
       })
-      .then();
+      .then(x => x);
 
     const acc = {};
     for (const version of versions) {
-      acc[version.version] = await version.toSSRI();
+      const [integrity, _] = await version.toSSRI();
+      acc[version.version] = String(integrity);
     }
 
     return acc;

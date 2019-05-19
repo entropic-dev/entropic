@@ -1,5 +1,14 @@
 name = "ds"
 
 [dependencies]
-"legacy@localhost:3000/lodash" = "^2.0.0"
-"legacy@localhost:3000/sonic-boom" = "^0.7.3"
+"legacy@localhost:3000/figgy-pudding" = "^3.5.1"
+"legacy@localhost:3000/form-data" = "^2.3.3"
+"legacy@localhost:3000/minimist" = "^1.2.0"
+"legacy@localhost:3000/node-fetch" = "^2.5.0"
+"legacy@localhost:3000/npm-packlist" = "^1.4.1"
+"legacy@localhost:3000/npm-profile" = "^4.0.1"
+"legacy@localhost:3000/npmlog" = "^4.1.2"
+"legacy@localhost:3000/opener" = "^1.5.1"
+"legacy@localhost:3000/read-package-tree" = "^5.2.2"
+"legacy@localhost:3000/ssri" = "^6.0.1"
+"legacy@localhost:3000/user-home" = "^2.0.0"

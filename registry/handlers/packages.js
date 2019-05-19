@@ -9,6 +9,7 @@ const semver = require('semver');
 
 const PackageVersion = require('../models/package-version');
 const canWrite = require('../decorators/can-write-package');
+const clone = require('../lib/clone-legacy-package');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
@@ -61,7 +62,10 @@ async function packageList(context) {
   return response.json({ objects });
 }
 
-async function packageDetail(context, { host, namespace, name }) {
+async function packageDetail(
+  context,
+  { host, namespace, name, retry = false }
+) {
   const pkg = await Package.objects
     .get({
       active: true,
@@ -74,6 +78,24 @@ async function packageDetail(context, { host, namespace, name }) {
     .catch(Package.objects.NotFound, () => null);
 
   if (!pkg) {
+    if (
+      namespace === 'legacy' &&
+      host === process.env.EXTERNAL_HOST.replace(/^https?:\/\//, '') &&
+      !retry
+    ) {
+      const client = await context.getPostgresClient();
+
+      await client.query('BEGIN');
+      try {
+        await clone(name, context.storage);
+        await client.query('COMMIT');
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      }
+      return packageDetail(context, { host, namespace, name, retry: true });
+    }
+
     return response.error(`Could not find "${namespace}@${host}/${name}"`, 404);
   }
 
@@ -103,7 +125,7 @@ async function packageCreate(
     );
   }
 
-  const error = check.packageNameOK(name, namespace);
+  const error = check.packageNameOK(name, namespaceName);
   if (Boolean(error)) {
     return response.error(`Invalid package name "${name}": ${error}`);
   }
@@ -151,7 +173,7 @@ async function packageCreate(
     `${namespace}@${host}/${name} created by ${context.user.name}`
   );
 
-  return response.json(await result.serialize());
+  return response.json(await result.serialize(), context.pkg ? 200 : 201);
 }
 
 async function packageDelete(context, { host, namespace, name }) {
@@ -428,6 +450,9 @@ async function versionCreate(context, { host, namespace, name, version }) {
     version,
     parent: context.pkg
   });
+
+  const [integrity, data] = await pkgVersion.toSSRI();
+  await context.storage.addBuffer(integrity, Buffer.from(data));
 
   const versions = await context.pkg.versions();
 

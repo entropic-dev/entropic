@@ -38,6 +38,7 @@ async function syncVersion (token, pkg, version, packumentVersion, progress) {
   })
 
   await new Promise((resolve, reject) => {
+    tarball.on('error', reject)
     untar.on('end', resolve)
       .on('error', reject)
   })
@@ -80,6 +81,11 @@ async function syncPackage (token, pkg, progress) {
     }
   })
 
+  if (createPackage.status > 399) {
+    progress(`${pkg} saw ${createPackage.status}: ${await createPackage.text()}`)
+    return
+  }
+
   const versions = Object.keys(json.versions)
   const latest = json['dist-tags'].latest
 
@@ -92,13 +98,23 @@ async function syncPackage (token, pkg, progress) {
     versions[idx] = tmp
   }
 
+  if (createPackage.status === 200) {
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())]
+  }
+
+  if (createPackage.status > 399) {
+    progress(`package failed with ${createPackage.status}: ${await createPackage.text()}`)
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())]
+  }
+
   progress(`${pkg}: versions "${versions.join('", "')}"`)
   const deps = []
   for (const version of versions) {
-    deps.push(await syncVersion(token, pkg, version, json.versions[version], progress))
+    deps.push(await syncVersion(token, pkg, version, json.versions[version], progress).catch(err => {
+      progress(`could not sync ${pkg}@${version}: ${err.message}`)
+    }))
   }
 
-  console.log({deps})
   progress(`${pkg} done`)
 
   return [...new Set(deps.flat())]

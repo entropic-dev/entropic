@@ -56,7 +56,7 @@ module.exports = class PackageVersion {
     } = await this.serialize();
 
     const json = JSON.stringify(content);
-    return String(ssri.fromData(json));
+    return [ssri.fromData(json), json];
   }
 
   async serialize() {
