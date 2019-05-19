@@ -73,7 +73,7 @@ describe('entropic', () => {
           }
         );
 
-        response.status.must.eql(200);
+        response.status.must.eql(201);
         const data = await response.json();
         data.must.eql({
           name: 'malfoy/draco',
