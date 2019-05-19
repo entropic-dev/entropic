@@ -2,7 +2,7 @@
 
 module.exports = build;
 
-const { promises: fs } = require('fs');
+const { promises: fs } = require('graceful-fs');
 const figgy = require('figgy-pudding');
 const toml = require('@iarna/toml');
 const home = require('user-home');
@@ -41,17 +41,51 @@ async function loadTree(opts, where) {
   const lock = path.join(where, 'Package.lock');
   const loadingFiles = [];
 
-  const tree = await loadLock(where)
+  const tier = await loadLock(where)
     .catch(() => null)
     .then(xs => xs || buildFromMeta(opts, meta, loadingFiles));
 
   await Promise.all(loadingFiles);
 
   const dirc = {};
-  unfurlTree(tree, dirc);
+  await unfurlTree(opts, ['ds_modules'], {tier, files: {}}, dirc);
 }
 
-async function unfurlTree(tree) {}
+async function unfurlTree(opts, dir, tree, dirc) {
+  dir.push(undefined)
+  for (const dep in tree.tier.installed) {
+    dir[dir.length - 1] = dep
+    await unfurlTree(opts, dir, tree.tier.installed[dep], dirc)
+  }
+  dir.pop()
+
+  const fetching = []
+  for (const file in tree.files) {
+    const [,, ...rest] = file.split('/')
+    const filename = rest.pop()
+    const fullpath = [...dir, ...rest]
+    await mkdirs(fullpath, dirc)
+    fullpath.push(filename)
+
+    fetchObject(opts, tree.files[file], true).then(({data}) => {
+      return fs.writeFile(path.join(...fullpath), data)
+    }).catch(err => {
+      return fs.writeFile(path.join(...fullpath), '')
+    })
+  }
+}
+
+async function mkdirs (dir, dirc) {
+  for (var i = 0; i < dir.length; ++i) {
+    const check = path.join(...dir.slice(0, i + 1))
+    if (dirc[check]) {
+      continue
+    }
+
+    dirc[check] = true
+    await fs.mkdir(check, { recursive: true })
+  }
+}
 
 function printTree(tree, level = 0) {
   let saw = 0;
@@ -126,7 +160,7 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
     const data = await fetchPackageVersion(opts, dep, version, integrity);
 
     for (const file in data.files) {
-      const fetcher = fetchObject(opts, data.files[file]).catch(console.error);
+      const fetcher = fetchObject(opts, data.files[file]).catch(() => {});
       loadingFiles.push(fetcher);
     }
 
