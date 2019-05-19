@@ -3,7 +3,6 @@
 module.exports = clone;
 
 const { PassThrough, pipeline } = require('stream');
-const { getNamespace } = require('cls-hooked');
 const minimist = require('minimist');
 const fetch = require('node-fetch');
 const orm = require('ormnomnom');
@@ -45,20 +44,30 @@ async function clone(pkg, storage) {
   });
 
   const versions = Object.keys(json.versions);
-  const syncing = [];
+  const pending = [];
   for (const version of versions) {
-    const sync = syncVersion(
+    const versionData = syncVersion(
       storage,
-      result,
       pkg,
       version,
       json.versions[version]
     );
-    sync.catch(() => {});
-    syncing.push(sync);
+    versionData.catch(() => {});
+    pending.push(versionData);
   }
 
-  await Promise.all(syncing);
+  const versionData = (await Promise.all(pending)).filter(Boolean).map(xs => {
+    return {
+      parent: result,
+      ...xs
+    };
+  });
+
+  const pkgversions = await PackageVersion.objects.create(versionData);
+  for (const pkgVersion of pkgversions) {
+    const [integrity, versiondata] = await pkgVersion.toSSRI();
+    await storage.addBuffer(integrity, Buffer.from(versiondata));
+  }
 
   const versionIntegrities = await result.versions();
   await Package.objects.filter({ id: result.id }).update({
@@ -68,7 +77,7 @@ async function clone(pkg, storage) {
   });
 }
 
-async function syncVersion(storage, parent, pkg, version, data) {
+async function syncVersion(storage, pkg, version, data) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`);
   const untar = new tar.Parse();
   const files = {};
@@ -77,7 +86,10 @@ async function syncVersion(storage, parent, pkg, version, data) {
   untar.on('entry', entry => {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
-      const stream = entry.pipe(new PassThrough());
+      const passthrough = new PassThrough();
+      passthrough.pause();
+
+      const stream = entry.pipe(passthrough);
       const addFile = storage.add(stream).then(r => {
         files[filename] = r;
       });
@@ -88,16 +100,19 @@ async function syncVersion(storage, parent, pkg, version, data) {
     }
   });
 
-  await new Promise((resolve, reject) => {
-    tarball.on('error', reject);
-    untar.on('end', resolve).on('error', reject);
-    tarball.pipe(untar);
-  });
+  try {
+    await new Promise((resolve, reject) => {
+      tarball.on('error', reject);
+      untar.on('end', resolve).on('error', reject);
+      tarball.pipe(untar);
+    });
+  } catch {
+    return;
+  }
 
   await Promise.all(pending);
 
-  const pkgVersion = await PackageVersion.objects.create({
-    parent,
+  return {
     version,
     signatures: [],
     dependencies: data.dependencies || {},
@@ -107,7 +122,5 @@ async function syncVersion(storage, parent, pkg, version, data) {
     bundledDependencies: data.bundledDependencies || {},
     files,
     derivedFiles: {}
-  });
-  const [integrity, versiondata] = await pkgVersion.toSSRI();
-  await storage.addBuffer(integrity, Buffer.from(versiondata));
+  };
 }

@@ -17,6 +17,7 @@
     "dotenv": "~8.0.0",
     "escape-html": "^1.0.3",
     "find-my-way": "~2.0.1",
+    "graceful-fs": "^4.1.15",
     "is-email-maybe": "^1.0.1",
     "markdown": "^0.5.0",
     "micro": "~9.3.4",

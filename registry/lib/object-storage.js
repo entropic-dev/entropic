@@ -1,6 +1,6 @@
 'use strict';
 
-const { promises: fs } = require('fs');
+const { promises: fs } = require('graceful-fs');
 const { promisify } = require('util');
 const mkdirp = promisify(require('mkdirp'));
 const ssri = require('ssri');
@@ -16,6 +16,7 @@ module.exports = class ObjectStore {
   }
 
   async add(stream, { hint = null } = {}) {
+    stream.resume();
     const chunks = [];
     stream.on('data', chunk => chunks.push(chunk));
     const integrity = await ssri.fromStream(stream, {
