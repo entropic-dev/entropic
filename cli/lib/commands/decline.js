@@ -44,10 +44,6 @@ async function decline(opts) {
     }
   });
   const body = await response.json();
-  if (body.error) {
-    console.error(body.error);
-    return 1;
-  }
   console.log(body.message ? body.message : body);
   return 0;
 }

@@ -79,7 +79,7 @@ async function packageMaintainers(context, { namespace, host, name }) {
   return response.json({ objects });
 }
 
-// Add a maintainer. Maintainers are namespaces, which might be a single user or a group of users.
+// Invite a maintainer. Maintainers are namespaces, which might be a single user or a group of users.
 // More correctly: maintainership is a relationship between a namespace and a package.
 async function inviteMaintainer(
   context,
@@ -238,7 +238,11 @@ async function listInvitations(context, { maintainer }) {
   const pkgInvitations = await Package.objects
     .filter({
       'maintainers.accepted': false,
-      'maintainers.namespace_id': context.maintainer.id
+      'maintainers.active': false,
+      'maintainers.namespace_id': context.maintainer.id,
+      active: true,
+      'namespace.active': true,
+      'namespace.host.active': true
     })
     .then();
 
