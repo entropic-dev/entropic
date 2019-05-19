@@ -19,9 +19,7 @@ async function invitations(opts) {
   opts = invitationsOpts(opts);
 
   const invitee = opts.argv[0];
-  const uri = `${
-    opts.registry
-  }/namespace/${invitee}/maintainerships?accepted=false`;
+  const uri = `${opts.registry}/namespace/${invitee}/maintainerships`;
   const response = await fetch(uri, {
     headers: {
       authorization: `Bearer ${opts.token}`
@@ -38,21 +36,19 @@ async function invitations(opts) {
   }
 
   if (body.objects.length === 0) {
-    console.log(`${invitee} has no invitations.`);
+    console.log(`${invitee} maintains no packages.`);
     return 0;
   }
 
   console.log(
-    `${invitee} has ` +
-      (body.objects.length === 1
-        ? 'one invitation.'
-        : `${body.objects.length} invitations.`) +
-      '\nTo accept:\n'
+    `${invitee} maintains ` +
+      (body.objects.length == 1
+        ? 'one package'
+        : `${body.objects.length} packages`) +
+      ':'
   );
 
-  body.objects.forEach(dest => {
-    console.log(`  ds join ${dest.name} --as ${invitee}`);
+  body.objects.forEach(p => {
+    console.log(`    ${p.name}`);
   });
-
-  console.log(`\nTo decline an invitation: ds decline <pkg> --as ${invitee}`);
 }

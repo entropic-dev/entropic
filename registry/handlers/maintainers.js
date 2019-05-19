@@ -9,6 +9,8 @@ const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 const response = require('../lib/response');
 const fork = require('../lib/router');
+const qs = require('querystring');
+const url = require('url');
 
 module.exports = [
   fork.get(
@@ -32,8 +34,8 @@ module.exports = [
     packageExists(isNamespaceMember(declineInvitation))
   ),
   fork.get(
-    '/namespace/:maintainer/invitations',
-    isLoggedIn(isNamespaceMember(listInvitations))
+    '/namespace/:maintainer/maintainerships',
+    isLoggedIn(isNamespaceMember(listMaintainerships))
   )
 ];
 
@@ -234,11 +236,15 @@ async function declineInvitation(
   );
 }
 
-async function listInvitations(context, { maintainer }) {
+async function listMaintainerships(context, { maintainer }) {
+  const parsed = url.parse(context.request.url);
+  const { accepted } = qs.parse(parsed.query);
+  const flag = accepted !== 'false';
+
   const pkgInvitations = await Package.objects
     .filter({
-      'maintainers.accepted': false,
-      'maintainers.active': false,
+      'maintainers.accepted': flag,
+      'maintainers.active': flag,
       'maintainers.namespace_id': context.maintainer.id,
       active: true,
       'namespace.active': true,
