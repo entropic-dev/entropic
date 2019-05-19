@@ -48,46 +48,48 @@ async function loadTree(opts, where) {
   await Promise.all(loadingFiles);
 
   const dirc = {};
-  await unfurlTree(opts, ['ds'], {tier, files: {}}, dirc);
-  await printTree(tier)
+  await unfurlTree(opts, ['ds'], { tier, files: {} }, dirc);
+  await printTree(tier);
 }
 
-const MODULES = 'node_modules'
+const MODULES = 'node_modules';
 async function unfurlTree(opts, dir, tree, dirc) {
-  dir.push(MODULES)
-  dir.push(undefined)
+  dir.push(MODULES);
+  dir.push(undefined);
   for (const dep in tree.tier.installed) {
-    dir[dir.length - 1] = dep
-    await unfurlTree(opts, dir, tree.tier.installed[dep], dirc)
+    dir[dir.length - 1] = dep;
+    await unfurlTree(opts, dir, tree.tier.installed[dep], dirc);
   }
-  dir.pop()
-  dir.pop()
+  dir.pop();
+  dir.pop();
 
-  const fetching = []
+  const fetching = [];
   for (const file in tree.files) {
-    const [,, ...rest] = file.split('/')
-    const filename = rest.pop()
-    const fullpath = [...dir, ...rest]
-    await mkdirs(fullpath, dirc)
-    fullpath.push(filename)
+    const [, , ...rest] = file.split('/');
+    const filename = rest.pop();
+    const fullpath = [...dir, ...rest];
+    await mkdirs(fullpath, dirc);
+    fullpath.push(filename);
 
-    fetchObject(opts, tree.files[file], true).then(({data}) => {
-      return fs.writeFile(path.join(...fullpath), data)
-    }).catch(err => {
-      return fs.writeFile(path.join(...fullpath), '')
-    })
+    fetchObject(opts, tree.files[file], true)
+      .then(({ data }) => {
+        return fs.writeFile(path.join(...fullpath), data);
+      })
+      .catch(err => {
+        return fs.writeFile(path.join(...fullpath), '');
+      });
   }
 }
 
-async function mkdirs (dir, dirc) {
+async function mkdirs(dir, dirc) {
   for (var i = 0; i < dir.length; ++i) {
-    const check = path.join(...dir.slice(0, i + 1))
+    const check = path.join(...dir.slice(0, i + 1));
     if (dirc[check]) {
-      continue
+      continue;
     }
 
-    dirc[check] = true
-    await fs.mkdir(check, { recursive: true })
+    dirc[check] = true;
+    await fs.mkdir(check, { recursive: true });
   }
 }
 
@@ -164,7 +166,12 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
 
     const integrity = pkg.versions[version];
 
-    const data = await fetchPackageVersion(opts, dep.canonical, version, integrity);
+    const data = await fetchPackageVersion(
+      opts,
+      dep.canonical,
+      version,
+      integrity
+    );
 
     for (const file in data.files) {
       const fetcher = fetchObject(opts, data.files[file]).catch(() => {});
