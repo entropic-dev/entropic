@@ -17,6 +17,9 @@ const Package = require('../models/package');
 
 const enc = encodeURIComponent;
 
+// are we doing something like: 1 version fails,
+// but the rest don't know this. because the rest don't know,
+// they continue on to try and create package-versions.
 async function clone(pkg, storage) {
   const json = await pacote.packument(pkg).catch(() => null);
   if (json === null) {
@@ -44,21 +47,20 @@ async function clone(pkg, storage) {
     package: result
   });
 
+  const cls = getNamespace('postgres')
+
   const versions = Object.keys(json.versions);
   const syncing = [];
   for (const version of versions) {
-    const sync = syncVersion(
+    await syncVersion(
       storage,
       result,
       pkg,
       version,
-      json.versions[version]
+      json.versions[version],
+      cls
     );
-    sync.catch(() => {});
-    syncing.push(sync);
   }
-
-  await Promise.all(syncing);
 
   const versionIntegrities = await result.versions();
   await Package.objects.filter({ id: result.id }).update({
@@ -68,16 +70,20 @@ async function clone(pkg, storage) {
   });
 }
 
-async function syncVersion(storage, parent, pkg, version, data) {
+async function syncVersion(storage, parent, pkg, version, data, cls) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`);
   const untar = new tar.Parse();
   const files = {};
   const pending = [];
 
+  const { active } = cls
+
   untar.on('entry', entry => {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
-      const stream = entry.pipe(new PassThrough());
+      const passthrough = new PassThrough();
+
+      const stream = entry.pipe(passthrough);
       const addFile = storage.add(stream).then(r => {
         files[filename] = r;
       });
@@ -88,13 +94,19 @@ async function syncVersion(storage, parent, pkg, version, data) {
     }
   });
 
-  await new Promise((resolve, reject) => {
-    tarball.on('error', reject);
-    untar.on('end', resolve).on('error', reject);
-    tarball.pipe(untar);
-  });
+  try {
+    await new Promise((resolve, reject) => {
+      tarball.on('error', reject);
+      untar.on('end', resolve).on('error', reject);
+      tarball.pipe(untar);
+    });
+  } catch {
+    return
+  }
 
-  await Promise.all(pending);
+  for (const xs of pending) {
+    await xs
+  }
 
   const pkgVersion = await PackageVersion.objects.create({
     parent,

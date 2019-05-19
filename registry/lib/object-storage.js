@@ -1,6 +1,6 @@
 'use strict';
 
-const { promises: fs } = require('fs');
+const { promises: fs } = require('graceful-fs');
 const { promisify } = require('util');
 const mkdirp = promisify(require('mkdirp'));
 const ssri = require('ssri');
