@@ -3,7 +3,6 @@
 module.exports = clone;
 
 const { PassThrough, pipeline } = require('stream');
-const { getNamespace } = require('cls-hooked');
 const minimist = require('minimist');
 const fetch = require('node-fetch');
 const orm = require('ormnomnom');
@@ -17,9 +16,6 @@ const Package = require('../models/package');
 
 const enc = encodeURIComponent;
 
-// are we doing something like: 1 version fails,
-// but the rest don't know this. because the rest don't know,
-// they continue on to try and create package-versions.
 async function clone(pkg, storage) {
   const json = await pacote.packument(pkg).catch(() => null);
   if (json === null) {
@@ -47,19 +43,30 @@ async function clone(pkg, storage) {
     package: result
   });
 
-  const cls = getNamespace('postgres')
-
   const versions = Object.keys(json.versions);
-  const syncing = [];
+  const pending = []
   for (const version of versions) {
-    await syncVersion(
+    const versionData = syncVersion(
       storage,
-      result,
       pkg,
       version,
-      json.versions[version],
-      cls
+      json.versions[version]
     );
+    versionData.catch(() => {})
+    pending.push(versionData)
+  }
+
+  const versionData = (await Promise.all(pending)).filter(Boolean).map(xs => {
+    return {
+      parent: result,
+      ...xs
+    }
+  })
+
+  const pkgversions = await PackageVersion.objects.create(versionData);
+  for (const pkgVersion of pkgversions) {
+    const [integrity, versiondata] = await pkgVersion.toSSRI();
+    await storage.addBuffer(integrity, Buffer.from(versiondata));
   }
 
   const versionIntegrities = await result.versions();
@@ -70,18 +77,17 @@ async function clone(pkg, storage) {
   });
 }
 
-async function syncVersion(storage, parent, pkg, version, data, cls) {
+async function syncVersion(storage, pkg, version, data) {
   const tarball = pacote.tarball.stream(`${pkg}@${version}`);
   const untar = new tar.Parse();
   const files = {};
   const pending = [];
 
-  const { active } = cls
-
   untar.on('entry', entry => {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
       const passthrough = new PassThrough();
+      passthrough.pause()
 
       const stream = entry.pipe(passthrough);
       const addFile = storage.add(stream).then(r => {
@@ -104,12 +110,9 @@ async function syncVersion(storage, parent, pkg, version, data, cls) {
     return
   }
 
-  for (const xs of pending) {
-    await xs
-  }
+  await Promise.all(pending)
 
-  const pkgVersion = await PackageVersion.objects.create({
-    parent,
+  return {
     version,
     signatures: [],
     dependencies: data.dependencies || {},
@@ -119,7 +122,5 @@ async function syncVersion(storage, parent, pkg, version, data, cls) {
     bundledDependencies: data.bundledDependencies || {},
     files,
     derivedFiles: {}
-  });
-  const [integrity, versiondata] = await pkgVersion.toSSRI();
-  await storage.addBuffer(integrity, Buffer.from(versiondata));
+  }
 }

@@ -36,15 +36,22 @@ async function build(opts) {
   // ds clean / ds troy
 }
 
-async function loadTree(opts, where) {
-  const meta = path.join(where, 'Package.toml');
-  const lock = path.join(where, 'Package.lock');
+async function loadTree (opts, where) {
+  const meta = path.join(where, 'Package.toml')
+  const lock = path.join(where, 'Package.lock')
+  const loadingFiles = []
 
   const tree = await loadLock(where)
     .catch(() => null)
-    .then(xs => xs || buildFromMeta(opts, meta));
+    .then(xs => xs || buildFromMeta(opts, meta, loadingFiles))
 
-  printTree(tree);
+  await Promise.all(loadingFiles)
+
+  const dirc = {}
+  unfurlTree(tree, dirc)
+}
+
+async function unfurlTree (tree) {
 }
 
 function printTree(tree, level = 0) {
@@ -64,9 +71,9 @@ async function loadLock() {
   throw new Error('Not implemented.');
 }
 
-async function buildFromMeta(opts, meta, now = Date.now()) {
-  const src = await fs.readFile(meta, 'utf8');
-  const metadata = toml.parse(src);
+async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
+  const src = await fs.readFile(meta, 'utf8')
+  const metadata = toml.parse(src)
 
   const defaultHost = opts.registry.replace(/^https?:\/\//, '');
 
@@ -117,15 +124,15 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
 
     const integrity = pkg.versions[version];
 
-    const newTier = {
-      installed: {},
-      parent: lastWithout,
-      name: `tree of ${dep}`
-    };
+    const data = await fetchPackageVersion(opts, dep, version, integrity)
 
-    lastWithout.installed[dep] = { version, range, integrity, tier: newTier };
-    const data = await fetchPackageVersion(opts, dep, version, integrity);
+    for (const file in data.files) {
+      const fetcher = fetchObject(opts, data.files[file]).catch(console.error)
+      loadingFiles.push(fetcher)
+    }
 
+    const newTier = { installed: {}, parent: lastWithout, name: `tree of ${dep}` }
+    lastWithout.installed[dep] = { version, range, integrity, files: data.files, tier: newTier }
     for (const [child, range] of Object.entries(data.dependencies).reverse()) {
       const { canonical } = parsePackageSpec(child, defaultHost);
       todo.push([canonical, range, newTier]);
@@ -134,6 +141,3 @@ async function buildFromMeta(opts, meta, now = Date.now()) {
 
   return toplevel;
 }
-
-// name of package: [range, range, range]
-// range: points at parent

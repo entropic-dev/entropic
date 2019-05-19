@@ -16,6 +16,7 @@ module.exports = class ObjectStore {
   }
 
   async add(stream, { hint = null } = {}) {
+    stream.resume()
     const chunks = [];
     stream.on('data', chunk => chunks.push(chunk));
     const integrity = await ssri.fromStream(stream, {
