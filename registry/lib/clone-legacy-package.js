@@ -44,7 +44,7 @@ async function clone(pkg, storage) {
   });
 
   const versions = Object.keys(json.versions);
-  const pending = []
+  const pending = [];
   for (const version of versions) {
     const versionData = syncVersion(
       storage,
@@ -52,16 +52,16 @@ async function clone(pkg, storage) {
       version,
       json.versions[version]
     );
-    versionData.catch(() => {})
-    pending.push(versionData)
+    versionData.catch(() => {});
+    pending.push(versionData);
   }
 
   const versionData = (await Promise.all(pending)).filter(Boolean).map(xs => {
     return {
       parent: result,
       ...xs
-    }
-  })
+    };
+  });
 
   const pkgversions = await PackageVersion.objects.create(versionData);
   for (const pkgVersion of pkgversions) {
@@ -87,7 +87,7 @@ async function syncVersion(storage, pkg, version, data) {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
       const passthrough = new PassThrough();
-      passthrough.pause()
+      passthrough.pause();
 
       const stream = entry.pipe(passthrough);
       const addFile = storage.add(stream).then(r => {
@@ -107,10 +107,10 @@ async function syncVersion(storage, pkg, version, data) {
       tarball.pipe(untar);
     });
   } catch {
-    return
+    return;
   }
 
-  await Promise.all(pending)
+  await Promise.all(pending);
 
   return {
     version,
@@ -122,5 +122,5 @@ async function syncVersion(storage, pkg, version, data) {
     bundledDependencies: data.bundledDependencies || {},
     files,
     derivedFiles: {}
-  }
+  };
 }
