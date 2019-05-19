@@ -1,26 +1,26 @@
-'use strict'
+'use strict';
 
-module.exports = clone
+module.exports = clone;
 
-const { PassThrough, pipeline } = require('stream')
+const { PassThrough, pipeline } = require('stream');
 const { getNamespace } = require('cls-hooked');
-const minimist = require('minimist')
-const fetch = require('node-fetch')
-const orm = require('ormnomnom')
-const pacote = require('pacote')
-const tar = require('tar')
+const minimist = require('minimist');
+const fetch = require('node-fetch');
+const orm = require('ormnomnom');
+const pacote = require('pacote');
+const tar = require('tar');
 
 const PackageVersion = require('../models/package-version');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
 
-const enc = encodeURIComponent
+const enc = encodeURIComponent;
 
-async function clone (pkg, storage) {
-  const json = await pacote.packument(pkg).catch(() => null)
+async function clone(pkg, storage) {
+  const json = await pacote.packument(pkg).catch(() => null);
   if (json === null) {
-    return
+    return;
   }
 
   const namespace = await Namespace.objects.get({
@@ -28,7 +28,7 @@ async function clone (pkg, storage) {
     'host.name': process.env.EXTERNAL_HOST.replace(/^https?:\/\//g, ''),
     'host.active': true,
     active: true
-  })
+  });
 
   // TODO: mark the package as "syncing." Syncs can take up to 30s or more.
   // Maybe we should only sync the most recent N versions before returning
@@ -44,15 +44,21 @@ async function clone (pkg, storage) {
     package: result
   });
 
-  const versions = Object.keys(json.versions)
-  const syncing = []
+  const versions = Object.keys(json.versions);
+  const syncing = [];
   for (const version of versions) {
-    const sync = syncVersion(storage, result, pkg, version, json.versions[version])
-    sync.catch(() => {})
-    syncing.push(sync)
+    const sync = syncVersion(
+      storage,
+      result,
+      pkg,
+      version,
+      json.versions[version]
+    );
+    sync.catch(() => {});
+    syncing.push(sync);
   }
 
-  await Promise.all(syncing)
+  await Promise.all(syncing);
 
   const versionIntegrities = await result.versions();
   await Package.objects.filter({ id: result.id }).update({
@@ -62,34 +68,33 @@ async function clone (pkg, storage) {
   });
 }
 
-async function syncVersion (storage, parent, pkg, version, data) {
-  const tarball = pacote.tarball.stream(`${pkg}@${version}`)
-  const untar = new tar.Parse()
-  const files = {}
-  const pending = []
+async function syncVersion(storage, parent, pkg, version, data) {
+  const tarball = pacote.tarball.stream(`${pkg}@${version}`);
+  const untar = new tar.Parse();
+  const files = {};
+  const pending = [];
 
   untar.on('entry', entry => {
     if (entry.type === 'File') {
       const filename = './' + String(entry.path).replace(/^\/+/g, '');
-      const stream = entry.pipe(new PassThrough())
+      const stream = entry.pipe(new PassThrough());
       const addFile = storage.add(stream).then(r => {
-        files[filename] = r
-      })
-      addFile.catch(() => {})
-      pending.push(addFile)
+        files[filename] = r;
+      });
+      addFile.catch(() => {});
+      pending.push(addFile);
     } else {
-      entry.resume()
+      entry.resume();
     }
-  })
+  });
 
   await new Promise((resolve, reject) => {
-    tarball.on('error', reject)
-    untar.on('end', resolve)
-      .on('error', reject)
-    tarball.pipe(untar)
-  })
+    tarball.on('error', reject);
+    untar.on('end', resolve).on('error', reject);
+    tarball.pipe(untar);
+  });
 
-  await Promise.all(pending)
+  await Promise.all(pending);
 
   const pkgVersion = await PackageVersion.objects.create({
     parent,
@@ -102,7 +107,7 @@ async function syncVersion (storage, parent, pkg, version, data) {
     bundledDependencies: data.bundledDependencies || {},
     files,
     derivedFiles: {}
-  })
+  });
   const [integrity, versiondata] = await pkgVersion.toSSRI();
   await storage.addBuffer(integrity, Buffer.from(versiondata));
 }

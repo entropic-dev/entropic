@@ -57,7 +57,7 @@ module.exports = class Package {
     const acc = {};
     for (const version of versions) {
       const [integrity, _] = await version.toSSRI();
-      acc[version.version] = String(integrity)
+      acc[version.version] = String(integrity);
     }
 
     return acc;

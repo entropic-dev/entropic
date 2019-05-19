@@ -63,7 +63,10 @@ async function packageList(context) {
   return response.json({ objects });
 }
 
-async function packageDetail(context, { host, namespace, name, retry = false }) {
+async function packageDetail(
+  context,
+  { host, namespace, name, retry = false }
+) {
   const pkg = await Package.objects
     .get({
       active: true,
@@ -81,17 +84,17 @@ async function packageDetail(context, { host, namespace, name, retry = false }) 
       host === process.env.EXTERNAL_HOST.replace(/^https?:\/\//, '') &&
       !retry
     ) {
-      const client = await context.getPostgresClient()
+      const client = await context.getPostgresClient();
 
-      await client.query('BEGIN')
+      await client.query('BEGIN');
       try {
-        await clone(name, context.storage)
-        await client.query('COMMIT')
+        await clone(name, context.storage);
+        await client.query('COMMIT');
       } catch (err) {
-        await client.query('ROLLBACK')
-        throw err
+        await client.query('ROLLBACK');
+        throw err;
       }
-      return packageDetail(context, { host, namespace, name, retry: true })
+      return packageDetail(context, { host, namespace, name, retry: true });
     }
 
     return response.error(`Could not find "${namespace}@${host}/${name}"`, 404);
