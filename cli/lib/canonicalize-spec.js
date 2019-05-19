@@ -10,7 +10,7 @@ function parsePackageSpec(input, defaultHost) {
     return {
       canonical: `legacy@${defaultHost}/${encodeURIComponent('@' + name)}`,
       host: defaultHost,
-      name,
+      name: `@${name}`,
       namespace: 'legacy',
       range,
       input
@@ -36,7 +36,7 @@ function parsePackageSpec(input, defaultHost) {
   const [name, range = 'latest'] = namerange.split('@');
 
   return {
-    canonical: `${namespace}@${host}/${name}`,
+    canonical: `${namespace}@${host}/${decodeURIComponent(name)}`,
     host,
     name,
     namespace,
