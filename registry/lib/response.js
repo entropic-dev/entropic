@@ -8,6 +8,7 @@ module.exports = {
   error,
   html,
   json,
+  message,
   redirect,
   text
 };
@@ -27,6 +28,20 @@ function text(body, status = 200, extraHeaders = {}) {
     ...extraHeaders
   });
   const r = new Response(body, { status, headers });
+  return r;
+}
+
+// Wrap a text messsage intended for the ds cli
+function message(msg, status = 200, extraHeaders = {}) {
+  const headers = new Headers({
+    'content-type': 'application/json',
+    ...extraHeaders
+  });
+  if (typeof msg === 'string') {
+    msg = { message: msg };
+  }
+
+  const r = new Response(JSON.stringify(msg), { status, headers });
   return r;
 }
 
@@ -57,8 +72,8 @@ function error(err, status = 500, extraHeaders = {}) {
     'content-type': 'application/json',
     ...extraHeaders
   });
-  if (err instanceof String) {
-    err = { error: err };
+  if (typeof err === 'string') {
+    err = { error: err, code: 'ENOTSUPPLIED' };
   }
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;
@@ -70,7 +85,7 @@ function authneeded(message, status = 401, extraHeaders = {}) {
     'content-type': 'application/json',
     ...extraHeaders
   });
-  if (message instanceof String) {
+  if (typeof message === 'string') {
     message = { error: message };
   }
   const r = new Response(JSON.stringify(message), status, headers);

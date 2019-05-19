@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-module.exports = fetchObject
+module.exports = fetchObject;
 
 const { pipeline: _ } = require('stream');
 const { promisify } = require('util');
@@ -12,7 +12,7 @@ const pipeline = promisify(_);
 
 async function fetchObject({ registry, cache }, integrity, load = false) {
   if (await cacache.get.hasContent(cache, integrity)) {
-    return load ? cacache.get(cache, integrity) : true
+    return load ? cacache.get(cache, integrity) : true;
   }
 
   const parsed = ssri.parse(integrity);
@@ -36,5 +36,5 @@ async function fetchObject({ registry, cache }, integrity, load = false) {
     throw new Error('file integrity mismatch!');
   }
 
-  return load ? cacache.get(cache, integrity) : true
+  return load ? cacache.get(cache, integrity) : true;
 }

@@ -35,15 +35,25 @@ async function download(opts) {
   const seenFiles = new Set();
   const now = Date.now();
 
-  const { range, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''))
-  const result = await visitPackage(opts, parsed, now, range, seenFiles, fetching);
+  const { range, ...parsed } = parsePackageSpec(
+    opts.argv[0],
+    opts.registry.replace(/^https?:\/\//, '')
+  );
+  const result = await visitPackage(
+    opts,
+    parsed,
+    now,
+    range,
+    seenFiles,
+    fetching
+  );
   await Promise.all(fetching);
 }
 
 async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
-  const { canonical: name } = spec
+  const { canonical: name } = spec;
 
-  const data = await fetchPackage(opts, name, now)
+  const data = await fetchPackage(opts, name, now);
   if (!semver.validRange(range)) {
     const version = data.tags[range];
     if (!version) {

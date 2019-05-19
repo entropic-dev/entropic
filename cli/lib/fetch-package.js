@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-module.exports = fetchPackage
+module.exports = fetchPackage;
 
 const { pipeline: _ } = require('stream');
 const { promisify } = require('util');
@@ -8,7 +8,11 @@ const fetch = require('node-fetch');
 const cacache = require('cacache');
 const ssri = require('ssri');
 
-async function fetchPackage ({ registry, cache, expires = 5 * 60  * 1000 }, name, now = Date.now()) {
+async function fetchPackage(
+  { registry, cache, expires = 5 * 60 * 1000 },
+  name,
+  now = Date.now()
+) {
   let meta = await cacache
     .get(cache, `spackage:${name}`)
     .then(xs => JSON.parse(String(xs.data)))
@@ -22,12 +26,12 @@ async function fetchPackage ({ registry, cache, expires = 5 * 60  * 1000 }, name
     };
 
     if (pkgReq.status > 399) {
-      console.log(name, meta.data)
+      console.log(name, meta.data);
       throw new Error();
     }
 
     await cacache.put(cache, `spackage:${name}`, JSON.stringify(meta));
   }
 
-  return meta.data
+  return meta.data;
 }

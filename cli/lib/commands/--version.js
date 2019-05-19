@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
 module.exports = version;
 
 async function version() {
-  const pkg = require("../../package.json");
+  const pkg = require('../../package.json');
   console.log(`v${pkg.version}`);
 }

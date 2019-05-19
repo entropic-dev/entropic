@@ -2,6 +2,7 @@
 
 This is the backend service for the Entropic package manager.
 
+##  Running your own registry
 
 Go to https://github.com/settings/developers and create a new oauth app. The authorization callback url will need to look like this:
 
@@ -10,8 +11,6 @@ http://localhost:3000/www/login/providers/github/callback
 ```
 
 Note the client id and the client secret.
-
-### Configuration
 
 Entropic reads all of its configuration from environment variables. You may provide these to the service any way you wish. For local development, you might find it most convenient to use a `.env` file in the registry root directory. To get started, copy `.env-example` into `.env` and edit to taste.
 
@@ -32,6 +31,8 @@ Here are the config values and what they mean:
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
 ## The API
+
+For a full description of the final API, see  [docs/README.md](../docs/README.md). This readme documents what's implemented currently.
 
 Registry routes:
 

@@ -165,7 +165,8 @@ async function packageCreate(
 
     await Maintainer.objects.create({
       namespace,
-      package: result
+      package: result,
+      accepted: true
     });
   }
 
@@ -227,7 +228,8 @@ async function packageDelete(context, { host, namespace, name }) {
       active: true,
       name: 'abandonware'
     }),
-    package: context.pkg
+    package: context.pkg,
+    accepted: true
   });
 
   context.logger.info(
@@ -337,7 +339,7 @@ async function versionCreate(context, { host, namespace, name, version }) {
       case 'devDependencies':
       case 'optionalDependencies':
       case 'peerDependencies':
-      case 'bundledDependencies':
+        //      case 'bundledDependencies':
         try {
           value = JSON.parse(value);
         } catch {

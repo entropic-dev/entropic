@@ -1,6 +1,5 @@
 'use strict';
 
-const logger = require('pino')();
 const Token = require('../models/token');
 const response = require('../lib/response');
 
@@ -42,7 +41,9 @@ function createBearerAuthMW() {
         }
       } catch (err) {
         // Consider responding with the 401 here.
-        logger.warn('unexpected error looking up user', { error: err.message });
+        context.logger.warn('unexpected error looking up user', {
+          error: err.message
+        });
       }
 
       return next(context);
