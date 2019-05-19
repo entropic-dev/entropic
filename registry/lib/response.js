@@ -41,7 +41,7 @@ function message(msg, status = 200, extraHeaders = {}) {
     msg = { message: msg };
   }
 
-  const r = new Response(msg, { status, headers });
+  const r = new Response(JSON.stringify(msg), { status, headers });
   return r;
 }
 

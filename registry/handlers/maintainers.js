@@ -44,7 +44,9 @@ function findMaintainerNamespace(next) {
     const ns = await Namespace.objects
       .get({
         active: true,
-        name: params.maintainer
+        name: params.maintainer,
+        'host.name': params.host,
+        'host.active': true
       })
       .catch(Namespace.objects.NotFound, () => null);
 
