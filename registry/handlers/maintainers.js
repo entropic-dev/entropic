@@ -180,17 +180,6 @@ async function acceptInvitation(
   context,
   { namespace, host, name, maintainer, guid }
 ) {
-  if (!context.pkg) {
-    return response.error(`${namespace}@${host}/${name} not found.`, 404);
-  }
-
-  if (!context.maintainer) {
-    return response.error(
-      `You cannot accept invitations on behalf of ${maintainer}.`,
-      404
-    );
-  }
-
   const invitation = await Maintainer.objects
     .filter({
       namespace_id: context.maintainer.id,
