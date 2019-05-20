@@ -3,6 +3,7 @@
 
 require('dotenv').config();
 
+const isDev = require('are-we-dev');
 const bistre = require('bistre');
 const bole = require('bole');
 const micro = require('micro');
@@ -11,7 +12,7 @@ const middleware = require('./middleware');
 const { makeRequestHandler } = require('./lib/request-handler');
 
 const logger = bole('runner');
-if (/^dev/.test(process.env.NODE_ENV)) {
+if (isDev()) {
   const prettystream = bistre({ time: true });
   prettystream.pipe(process.stdout);
   bole.output({ level: 'debug', stream: prettystream });
