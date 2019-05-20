@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-module.exports = flush
+module.exports = flush;
 
 const { send } = require('micro');
 
-function flush () {
+function flush() {
   return next => {
     return async (context, ...args) => {
       const response = await next(context);
@@ -18,6 +18,6 @@ function flush () {
       await send(context.rawResponse, response.status, response.body);
 
       return response;
-    }
-  }
+    };
+  };
 }

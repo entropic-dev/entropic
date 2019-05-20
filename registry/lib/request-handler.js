@@ -36,8 +36,8 @@ function makeRequestHandler(router, middleware) {
     try {
       await handler(context);
     } catch (err) {
-      console.log(err)
-      res.end()
+      console.log(err);
+      res.end();
     }
   };
 }

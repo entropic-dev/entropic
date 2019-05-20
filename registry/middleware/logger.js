@@ -1,28 +1,31 @@
-'use strict'
+'use strict';
 
-module.exports = createLogger
+module.exports = createLogger;
 
 const isDev = require('are-we-dev');
 const logger = require('bole')('req');
 
-function createLogger () {
+function createLogger() {
   return next => {
-    return isDev() ? devLogger : prodLogger
+    return isDev() ? devLogger : prodLogger;
 
-    async function devLogger (context, ...params) {
+    async function devLogger(context, ...params) {
       const response = await next(context, params);
       logger.info(
         `${context.remote} ${response.status} ${context.request.method} ${
           context.request.url
-        } ${context.rawResponse.getHeader('Content-Length')} ${Date.now() - context.start}ms`
+        } ${context.rawResponse.getHeader('Content-Length')} ${Date.now() -
+          context.start}ms`
       );
       return response;
     }
 
-    async function prodLogger (context, ...params) {
+    async function prodLogger(context, ...params) {
       const response = await next(context, params);
       logger.info({
-        message: `${response.status} ${context.request.method} ${context.request.url}`,
+        message: `${response.status} ${context.request.method} ${
+          context.request.url
+        }`,
         id: context.id,
         ip: context.remote,
         host: context.host,
@@ -36,5 +39,5 @@ function createLogger () {
       });
       return response;
     }
-  }
+  };
 }
