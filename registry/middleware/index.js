@@ -1,6 +1,10 @@
 'use strict';
 
+const isDev = require('are-we-dev');
+
 const middleware = [
+  './logger',
+  './flush-request',
   './requestid',
   './postgres',
   './transaction',
@@ -10,7 +14,7 @@ const middleware = [
   './object-store'
 ];
 
-if (!['staging', 'production'].includes(process.env.NODE_ENV)) {
+if (isDev()) {
   const dev = require('./dev-only');
 
   // Add a middleware that runs between each middleware layer so we can detect

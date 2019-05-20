@@ -9,6 +9,7 @@
   "dependencies": {
     "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
+    "are-we-dev": "^1.0.0",
     "bole": "~3.0.2",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
