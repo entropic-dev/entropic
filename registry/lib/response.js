@@ -73,7 +73,7 @@ function error(err, status = 500, extraHeaders = {}) {
     ...extraHeaders
   });
   if (typeof err === 'string') {
-    err = { error: err, code: 'ENOTSUPPLIED' };
+    err = { message: err, code: 'ENOTSUPPLIED' };
   }
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;

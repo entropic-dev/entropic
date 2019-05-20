@@ -17,7 +17,7 @@ function isNamespaceMember(next) {
     const ns = await Namespace.objects
       .get({
         active: true,
-        name: params.maintainer,
+        name: params.member,
         'namespace_members.active': true,
         'namespace_members.user_id': context.user.id
       })
@@ -25,12 +25,12 @@ function isNamespaceMember(next) {
 
     if (!ns) {
       return response.error(
-        `You cannot act on behalf of ${params.maintainer}`,
+        `You cannot act on behalf of ${params.member}`,
         403
       );
     }
 
-    context.maintainer = ns;
+    context.member = ns;
     return next(context, params);
   };
 }

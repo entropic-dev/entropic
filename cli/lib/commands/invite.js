@@ -19,20 +19,24 @@ async function invite(opts) {
 
   // I do note that it would be nice to invite a list of people at once.
   const invitee = opts.argv[0];
-  const target = opts.to;
+  let uri;
 
-  if (!target.match(/\//)) {
-    console.log('Inviting to namespaces is not yet implemented.');
-    return;
+  if (opts.to.includes('/')) {
+    const { _, ...parsed } = parsePackageSpec(
+      opts.to,
+      opts.registry.replace(/^https?:\/\//, '')
+    );
+    uri = `${opts.registry}/packages/package/${
+      parsed.canonical
+    }/maintainers/${invitee}`;
+  } else {
+    let ns = opts.to;
+    if (!ns.includes('@')) {
+      ns += '@' + opts.registry.replace(/^https?:\/\//, '');
+    }
+
+    uri = `${opts.registry}/namespaces/namespace/${ns}/members/${invitee}`;
   }
-
-  const { _, ...parsed } = parsePackageSpec(
-    opts.to,
-    opts.registry.replace(/^https?:\/\//, '')
-  );
-  const uri = `${opts.registry}/packages/package/${
-    parsed.canonical
-  }/maintainers/${invitee}`;
 
   const response = await fetch(uri, {
     method: 'POST',
@@ -41,6 +45,10 @@ async function invite(opts) {
     }
   });
   const body = await response.json();
-  console.log(body.message);
-  return 0;
+  if (body.message) {
+    console.log(body.message);
+    return 0;
+  }
+  console.log(body);
+  return 1;
 }
