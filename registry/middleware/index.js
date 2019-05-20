@@ -33,6 +33,6 @@ if (isDev()) {
 } else {
   module.exports = middleware.map(xs => {
     const [mw, ...args] = Array.isArray(xs) ? xs : [xs];
-    require(xs);
+    return require(xs)(...args);
   });
 }
