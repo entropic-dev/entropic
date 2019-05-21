@@ -99,7 +99,7 @@ async function publish(opts) {
             : '{}',
         method: 'PUT',
         headers: {
-          authorization: `Bearer ${opts.token}`,
+          authorization: `Bearer ${token}`,
           'content-type': 'application/json'
         }
       }
@@ -144,27 +144,36 @@ async function publish(opts) {
       'package/' + file.split(path.sep).join('/')
     );
 
-    // XXX: this can quickly run us out of file descriptors, which will cause
-    // the DNS lookup for the publish request to fail.
-    form.append('entry[]', createReadStream(path.join(location, file)), {
+    // use append's ability to append a lazily evaluated function so we don't
+    // try to open, say, 10K fds at once.
+    form.append('entry[]', next => next(createReadStream(path.join(location, file))), {
       filename: encoded
     });
   }
+  form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
+
+  // CD: node-fetch attempts to use this getLengthSync() function to populate
+  // Content-Length. However, because we're building the form submission
+  // iteratively even as we send it, the total length cannot be known.
+  // HOWEVER THIS DOES NOT STOP getLengthSync() which dutifully returns a partial
+  // content length. This breaks downstream parsers. SO. We stub it out.
+  form.getLengthSync = null // I know why this happens but I am still sad.
 
   const request = await fetch(
-    `${host}/packages/package/${encodeURIComponent(spec.canonical)}/versions/${encodeURIComponent(content.version)}`,
+    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(content.version)}`,
     {
       method: 'PUT',
       body: form,
       headers: {
-        authorization: `Bearer ${opts.token}`,
+        'transfer-encoding': 'chunked',
+        authorization: `Bearer ${token}`,
         ...form.getHeaders()
       }
     }
   );
 
   const body = await request.json();
-  if (request.status > 399) {
+  if (!request.ok) {
     opts.log.error(body.message || body);
     return 1;
   }
