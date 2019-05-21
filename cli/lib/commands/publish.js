@@ -144,6 +144,8 @@ async function publish(opts) {
       'package/' + file.split(path.sep).join('/')
     );
 
+    // XXX: this can quickly run us out of file descriptors, which will cause
+    // the DNS lookup for the publish request to fail.
     form.append('entry[]', createReadStream(path.join(location, file)), {
       filename: encoded
     });
