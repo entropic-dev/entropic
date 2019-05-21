@@ -1,4 +1,5 @@
-name = "ds"
+name = "chrisdickinson@localhost:3000/ds"
+version = "1.0.0"
 
 [dependencies]
 "@iarna/toml" = "^2.2.3"
