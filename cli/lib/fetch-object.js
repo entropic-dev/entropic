@@ -10,14 +10,21 @@ const ssri = require('ssri');
 
 const pipeline = promisify(_);
 
-async function fetchObject({ registry, cache }, integrity, load = false) {
-  if (await cacache.get.hasContent(cache, integrity)) {
-    return load ? cacache.get(cache, integrity) : true;
-  }
+const EMPTY_HASH = 'z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg=='
+const EMPTY_BUF = Buffer.from([])
 
+async function fetchObject({ registry, cache }, integrity, load = false) {
   const parsed = ssri.parse(integrity);
   const algo = parsed.pickAlgorithm();
   const [{ digest }] = parsed[algo];
+
+  if (digest === EMPTY_HASH && algo === 'sha512') {
+    return load ? {data: EMPTY_BUF} : true;
+  }
+
+  if (await cacache.get.hasContent(cache, integrity)) {
+    return load ? cacache.get(cache, integrity) : true;
+  }
 
   const response = await fetch(
     `${registry}/objects/object/${algo}/${encodeURIComponent(digest)}`
