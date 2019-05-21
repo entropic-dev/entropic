@@ -23,5 +23,5 @@ if (isDev()) {
 const handler = makeRequestHandler(router, middleware);
 const server = micro((req, res) => handler(req, res));
 
-server.listen(process.env.PORT);
+server.listen(process.env.PORT, '0.0.0.0');
 logger.info(`listening on port: ${process.env.PORT}`);

@@ -171,7 +171,7 @@ async function packageCreate(
   }
 
   context.logger.info(
-    `${namespace}@${host}/${name} created by ${context.user.name}`
+    `${namespaceName}@${host}/${name} created by ${context.user.name}`
   );
 
   return response.json(await result.serialize(), context.pkg ? 200 : 201);
@@ -226,6 +226,8 @@ async function packageDelete(context, { host, namespace, name }) {
   await Maintainer.objects.create({
     namespace: await Namespace.objects.get({
       active: true,
+      'host.name': process.env.EXTERNAL_HOST.replace(/^https?:\/\//, ''),
+      'host.active': true,
       name: 'abandonware'
     }),
     package: context.pkg,

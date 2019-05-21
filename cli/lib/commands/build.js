@@ -11,6 +11,7 @@ const path = require('path');
 
 const fetchPackageVersion = require('../fetch-package-version');
 const parsePackageSpec = require('../canonicalize-spec');
+const loadPackageToml = require('../load-package-toml');
 const fetchPackage = require('../fetch-package');
 const fetchObject = require('../fetch-object');
 
@@ -37,13 +38,12 @@ async function build(opts) {
 }
 
 async function loadTree(opts, where) {
-  const meta = path.join(where, 'Package.toml');
   const lock = path.join(where, 'Package.lock');
   const loadingFiles = [];
 
   const tier = await loadLock(where)
     .catch(() => null)
-    .then(xs => xs || buildFromMeta(opts, meta, loadingFiles));
+    .then(xs => xs || buildFromMeta(opts, where, loadingFiles));
 
   await Promise.all(loadingFiles);
 
@@ -111,15 +111,13 @@ async function loadLock() {
 }
 
 async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
-  const src = await fs.readFile(meta, 'utf8');
-  const metadata = toml.parse(src);
-
+  const { location, content }= await loadPackageToml(meta);
   const defaultHost = opts.registry.replace(/^https?:\/\//, '');
 
   const toplevel = { installed: {}, parent: null, name: 'root' };
 
   // todo list of "canonical dep name", "range", tree tier
-  const todo = Object.entries(metadata.dependencies).map(xs => [
+  const todo = Object.entries(content.dependencies).map(xs => [
     parsePackageSpec(xs[0], defaultHost),
     xs[1],
     toplevel
