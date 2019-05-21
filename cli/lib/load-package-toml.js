@@ -19,7 +19,7 @@ async function load (dir) {
 
     const newDir = path.resolve(dir, '..');
     if (newDir === dir) {
-      throw new Error('Could not find package.json.');
+      throw new Error('Could not find Package.toml.');
     }
 
     dir = newDir;
