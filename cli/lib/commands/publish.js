@@ -150,7 +150,7 @@ async function publish(opts) {
   }
 
   const request = await fetch(
-    `${host}/packages/package/${spec.canonical}/versions/${content.version}`,
+    `${host}/packages/package/${encodeURIComponent(spec.canonical)}/versions/${encodeURIComponent(content.version)}`,
     {
       method: 'PUT',
       body: form,
