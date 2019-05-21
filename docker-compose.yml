@@ -12,5 +12,12 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+  queue:
+    image: schickling/beanstalkd
+    ports:
+      - "11300:11300"
+    volumes:
+      - beanstalk_wal:/var/lib/beanstalkd/
 volumes:
   postgres_data:
+  beanstalk_wal:

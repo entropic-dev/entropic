@@ -1,0 +1,15 @@
+{
+  "name": "workers",
+  "version": "1.0.0",
+  "description": "do work with beanstalkd",
+  "keywords": [],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "beanstalkd": "~2.2.1"
+  }
+}
