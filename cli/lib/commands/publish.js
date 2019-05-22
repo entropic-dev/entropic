@@ -9,6 +9,7 @@ const FormData = require('form-data');
 const fetch = require('node-fetch');
 const semver = require('semver');
 const path = require('path');
+const zlib = require('zlib');
 
 const loadPackageToml = require('../load-package-toml');
 const parseSpec = require('../canonicalize-spec');
@@ -136,6 +137,23 @@ async function publish(opts) {
     'bundledDependencies',
     JSON.stringify(content.bundledDependencies || {})
   );
+
+  const keyed = xs => {
+    const ext = path.extname(xs)
+    const basename = path.basename(xs).replace(ext, '')
+    const dirname = path.dirname(basename)
+    return `${ext || 'NUL'}${basename}${dirname}`
+  }
+
+  // CD: re-sort the list, putting files with the same extension nearby, then
+  // files with the same extension and basename, finally comparing directory
+  // names. Since we're shoving this through zlib, the closer we can put
+  // similar data, the better. Doing this on a sample package netted a 10%
+  // decrease in request body size. This is cribbed from git.
+  files.sort((lhs, rhs) => {
+    return keyed(lhs).localeCompare(keyed(rhs))
+  })
+
   for (const file of files) {
     const encoded = encodeURIComponent(
       'package/' + file.split(path.sep).join('/')
@@ -153,22 +171,16 @@ async function publish(opts) {
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
-  // CD: node-fetch attempts to use this getLengthSync() function to populate
-  // Content-Length. However, because we're building the form submission
-  // iteratively even as we send it, the total length cannot be known.
-  // HOWEVER THIS DOES NOT STOP getLengthSync() which dutifully returns a partial
-  // content length. This breaks downstream parsers. SO. We stub it out.
-  form.getLengthSync = null; // I know why this happens but I am still sad.
-
   const request = await fetch(
     `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(
       content.version
     )}`,
     {
       method: 'PUT',
-      body: form,
+      body: form.pipe(zlib.createDeflate()),
       headers: {
         'transfer-encoding': 'chunked',
+        'content-encoding': 'deflate',
         authorization: `Bearer ${token}`,
         ...form.getHeaders()
       }

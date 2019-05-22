@@ -6,6 +6,7 @@ const { Transform } = require('stream');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
+const zlib = require('zlib');
 
 const PackageVersion = require('../models/package-version');
 const canWrite = require('../decorators/can-write-package');
@@ -415,6 +416,13 @@ async function versionCreate(context, { host, namespace, name, version }) {
       );
     }
   });
+
+  if (context.request.headers['content-encoding'] === 'deflate') {
+    const pipe = context.request.pipe;
+    context.request.pipe = (...args) => {
+      return pipe.call(context.request, zlib.createInflate()).pipe(...args);
+    };
+  }
 
   form.parse(context.request);
   try {
