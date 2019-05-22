@@ -6,6 +6,7 @@ const { Transform } = require('stream');
 const { Form } = require('multiparty');
 const { json } = require('micro');
 const semver = require('semver');
+const zlib = require('zlib');
 
 const PackageVersion = require('../models/package-version');
 const canWrite = require('../decorators/can-write-package');
@@ -348,7 +349,16 @@ async function versionCreate(context, { host, namespace, name, version }) {
           validationError = new Error(`expected "${key}" to be JSON`);
         }
 
+        const outgoing = {};
         for (const dep in value) {
+          const warnings = [];
+          const validated = check.validDependencyName(dep, warnings);
+          if (!validated) {
+            validationError = new Error(warnings.join(', '));
+            break;
+          }
+          const { canonical } = validated;
+
           // XXX: how do we validate npm-style short deps like `github/bloo`?
           if (
             typeof value[dep] !== 'string' ||
@@ -358,9 +368,11 @@ async function versionCreate(context, { host, namespace, name, version }) {
               `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
             );
           }
+
+          outgoing[canonical] = value[dep];
         }
 
-        formdata[key] = value;
+        formdata[key] = outgoing;
         break;
     }
   });
@@ -404,6 +416,13 @@ async function versionCreate(context, { host, namespace, name, version }) {
       );
     }
   });
+
+  if (context.request.headers['content-encoding'] === 'deflate') {
+    const pipe = context.request.pipe;
+    context.request.pipe = (...args) => {
+      return pipe.call(context.request, zlib.createInflate()).pipe(...args);
+    };
+  }
 
   form.parse(context.request);
   try {

@@ -6,7 +6,7 @@ const { promises: fs } = require('graceful-fs');
 const toml = require('@iarna/toml');
 const path = require('path');
 
-async function load (dir) {
+async function load(dir) {
   do {
     try {
       const src = await fs.readFile(path.join(dir, 'Package.toml'), 'utf8');

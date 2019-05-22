@@ -9,6 +9,7 @@ const FormData = require('form-data');
 const fetch = require('node-fetch');
 const semver = require('semver');
 const path = require('path');
+const zlib = require('zlib');
 
 const loadPackageToml = require('../load-package-toml');
 const parseSpec = require('../canonicalize-spec');
@@ -28,21 +29,28 @@ async function publish(opts) {
   const { location, content } = await loadPackageToml(process.cwd());
   const spec = parseSpec(content.name, opts.registry);
 
-  const host = (
-    `https://${spec.host}` in opts.registries ? `https://${spec.host}` :
-    `http://${spec.host}` in opts.registries ? `http://${spec.host}` :
-    null
-  );
+  const host =
+    `https://${spec.host}` in opts.registries
+      ? `https://${spec.host}`
+      : `http://${spec.host}` in opts.registries
+      ? `http://${spec.host}`
+      : null;
 
   if (!host) {
-    opts.log.error(`You need to log in to "https://${spec.host}" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`);
+    opts.log.error(
+      `You need to log in to "https://${
+        spec.host
+      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
+    );
     return 1;
   }
 
   const { token } = opts.registries[host];
 
   if (!token) {
-    opts.log.error(`You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`);
+    opts.log.error(
+      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
+    );
     return 1;
   }
 
@@ -77,33 +85,26 @@ async function publish(opts) {
   }
 
   if (content.version !== semver.clean(content.version || '')) {
-    opts.log.error(
-      'Expected valid semver "version" field at top level.'
-    );
+    opts.log.error('Expected valid semver "version" field at top level.');
     return 1;
   }
 
-  const pkgReq = await fetch(
-    `${host}/packages/package/${spec.canonical}`
-  );
+  const pkgReq = await fetch(`${host}/packages/package/${spec.canonical}`);
 
   const mustCreate = pkgReq.status === 404;
 
   if (mustCreate) {
-    const request = await fetch(
-      `${host}/packages/package/${spec.canonical}`,
-      {
-        body:
-          opts.require2fa || opts.requiretfa || opts.tfa
-            ? '{"require_tfa": true}'
-            : '{}',
-        method: 'PUT',
-        headers: {
-          authorization: `Bearer ${token}`,
-          'content-type': 'application/json'
-        }
+    const request = await fetch(`${host}/packages/package/${spec.canonical}`, {
+      body:
+        opts.require2fa || opts.requiretfa || opts.tfa
+          ? '{"require_tfa": true}'
+          : '{}',
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json'
       }
-    );
+    });
 
     const body = await request.json();
     if (request.status > 399) {
@@ -114,8 +115,8 @@ async function publish(opts) {
   } else if (pkgReq.status < 300) {
     const result = await pkgReq.json();
     if (result.versions[content.version]) {
-      opts.log.warn('It looks like this version has already been published.')
-      opts.log.warn('Trying anyway, because hope springs eternal.')
+      opts.log.warn('It looks like this version has already been published.');
+      opts.log.warn('Trying anyway, because hope springs eternal.');
     }
   }
 
@@ -123,10 +124,7 @@ async function publish(opts) {
   const form = new FormData();
 
   form.append('dependencies', JSON.stringify(content.dependencies || {}));
-  form.append(
-    'devDependencies',
-    JSON.stringify(content.devDependencies || {})
-  );
+  form.append('devDependencies', JSON.stringify(content.devDependencies || {}));
   form.append(
     'optionalDependencies',
     JSON.stringify(content.optionalDependencies || {})
@@ -139,6 +137,23 @@ async function publish(opts) {
     'bundledDependencies',
     JSON.stringify(content.bundledDependencies || {})
   );
+
+  const keyed = xs => {
+    const ext = path.extname(xs)
+    const basename = path.basename(xs).replace(ext, '')
+    const dirname = path.dirname(basename)
+    return `${ext || 'NUL'}${basename}${dirname}`
+  }
+
+  // CD: re-sort the list, putting files with the same extension nearby, then
+  // files with the same extension and basename, finally comparing directory
+  // names. Since we're shoving this through zlib, the closer we can put
+  // similar data, the better. Doing this on a sample package netted a 10%
+  // decrease in request body size. This is cribbed from git.
+  files.sort((lhs, rhs) => {
+    return keyed(lhs).localeCompare(keyed(rhs))
+  })
+
   for (const file of files) {
     const encoded = encodeURIComponent(
       'package/' + file.split(path.sep).join('/')
@@ -146,26 +161,26 @@ async function publish(opts) {
 
     // use append's ability to append a lazily evaluated function so we don't
     // try to open, say, 10K fds at once.
-    form.append('entry[]', next => next(createReadStream(path.join(location, file))), {
-      filename: encoded
-    });
+    form.append(
+      'entry[]',
+      next => next(createReadStream(path.join(location, file))),
+      {
+        filename: encoded
+      }
+    );
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
-  // CD: node-fetch attempts to use this getLengthSync() function to populate
-  // Content-Length. However, because we're building the form submission
-  // iteratively even as we send it, the total length cannot be known.
-  // HOWEVER THIS DOES NOT STOP getLengthSync() which dutifully returns a partial
-  // content length. This breaks downstream parsers. SO. We stub it out.
-  form.getLengthSync = null // I know why this happens but I am still sad.
-
   const request = await fetch(
-    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(content.version)}`,
+    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(
+      content.version
+    )}`,
     {
       method: 'PUT',
-      body: form,
+      body: form.pipe(zlib.createDeflate()),
       headers: {
         'transfer-encoding': 'chunked',
+        'content-encoding': 'deflate',
         authorization: `Bearer ${token}`,
         ...form.getHeaders()
       }

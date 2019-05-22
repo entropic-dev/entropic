@@ -1,6 +1,8 @@
 'use strict';
 
 const validateLegacy = require('validate-npm-package-name');
+const validate = require('npm-user-validate');
+const { URL } = require('url');
 const joi = require('joi');
 
 // I'm wrapping this up in a little file module because I want to hide the implementation.
@@ -8,6 +10,7 @@ const joi = require('joi');
 // days of mixed case.
 
 module.exports = {
+  validDependencyName,
   validLegacyPackage,
   packageNameOK,
   nameOK
@@ -44,6 +47,55 @@ function packageNameOK(name, namespace) {
   if (validated.error) {
     return validated.error.annotate();
   }
+}
+
+function validDependencyName(
+  spec,
+  warnings = [],
+  defaultHost = process.env.EXTERNAL_HOST.replace(/https?:\/\//, '')
+) {
+  if (spec[0] === '@' && spec.split('/').length === 2) {
+    return validDependencyName(`legacy@${defaultHost}/${spec}`);
+  }
+
+  if (spec.split('/').length === 1) {
+    return validDependencyName(`legacy@${defaultHost}/${spec}`);
+  }
+
+  const { protocol, username, password, host, pathname } = new URL(
+    `ent://${spec}`
+  );
+
+  if (protocol !== 'ent:') {
+    warnings.push('Contained unexpected protocol portion');
+    return false;
+  }
+
+  if (password) {
+    warnings.push('Contained unexpected password in namespace portion');
+    return false;
+  }
+
+  try {
+    validate.username(username);
+  } catch (err) {
+    warnings.push('Username: ' + err.message);
+    return false;
+  }
+
+  const name = pathname.slice(1);
+  const errors = packageNameOK(name, username);
+  if (errors) {
+    warnings.push(String(errors));
+    return false;
+  }
+
+  return {
+    canonical: `${username}@${host}/${encodeURIComponent(name)}`,
+    namespace: username,
+    host: host,
+    name
+  };
 }
 
 function nameOK(input) {
