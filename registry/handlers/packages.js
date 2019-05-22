@@ -127,7 +127,7 @@ async function packageCreate(
   }
 
   const error = check.packageNameOK(name, namespaceName);
-  if (Boolean(error)) {
+  if (error) {
     return response.error(`Invalid package name "${name}": ${error}`);
   }
 

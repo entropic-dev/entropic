@@ -19,7 +19,7 @@ const declineOpts = figgy({
 async function decline(opts) {
   opts = declineOpts(opts);
 
-  if (opts.argv.length !== 1 || !Boolean(opts.as)) {
+  if (opts.argv.length !== 1 || !opts.as) {
     console.error(
       'Usage: ds decline <namespace|package> --as <namespace|user>'
     );

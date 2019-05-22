@@ -139,11 +139,11 @@ async function publish(opts) {
   );
 
   const keyed = xs => {
-    const ext = path.extname(xs)
-    const basename = path.basename(xs).replace(ext, '')
-    const dirname = path.dirname(basename)
-    return `${ext || 'NUL'}${basename}${dirname}`
-  }
+    const ext = path.extname(xs);
+    const basename = path.basename(xs).replace(ext, '');
+    const dirname = path.dirname(basename);
+    return `${ext || 'NUL'}${basename}${dirname}`;
+  };
 
   // CD: re-sort the list, putting files with the same extension nearby, then
   // files with the same extension and basename, finally comparing directory
@@ -151,8 +151,8 @@ async function publish(opts) {
   // similar data, the better. Doing this on a sample package netted a 10%
   // decrease in request body size. This is cribbed from git.
   files.sort((lhs, rhs) => {
-    return keyed(lhs).localeCompare(keyed(rhs))
-  })
+    return keyed(lhs).localeCompare(keyed(rhs));
+  });
 
   for (const file of files) {
     const encoded = encodeURIComponent(
