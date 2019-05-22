@@ -28,21 +28,28 @@ async function publish(opts) {
   const { location, content } = await loadPackageToml(process.cwd());
   const spec = parseSpec(content.name, opts.registry);
 
-  const host = (
-    `https://${spec.host}` in opts.registries ? `https://${spec.host}` :
-    `http://${spec.host}` in opts.registries ? `http://${spec.host}` :
-    null
-  );
+  const host =
+    `https://${spec.host}` in opts.registries
+      ? `https://${spec.host}`
+      : `http://${spec.host}` in opts.registries
+      ? `http://${spec.host}`
+      : null;
 
   if (!host) {
-    opts.log.error(`You need to log in to "https://${spec.host}" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`);
+    opts.log.error(
+      `You need to log in to "https://${
+        spec.host
+      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
+    );
     return 1;
   }
 
   const { token } = opts.registries[host];
 
   if (!token) {
-    opts.log.error(`You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`);
+    opts.log.error(
+      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
+    );
     return 1;
   }
 
@@ -77,33 +84,26 @@ async function publish(opts) {
   }
 
   if (content.version !== semver.clean(content.version || '')) {
-    opts.log.error(
-      'Expected valid semver "version" field at top level.'
-    );
+    opts.log.error('Expected valid semver "version" field at top level.');
     return 1;
   }
 
-  const pkgReq = await fetch(
-    `${host}/packages/package/${spec.canonical}`
-  );
+  const pkgReq = await fetch(`${host}/packages/package/${spec.canonical}`);
 
   const mustCreate = pkgReq.status === 404;
 
   if (mustCreate) {
-    const request = await fetch(
-      `${host}/packages/package/${spec.canonical}`,
-      {
-        body:
-          opts.require2fa || opts.requiretfa || opts.tfa
-            ? '{"require_tfa": true}'
-            : '{}',
-        method: 'PUT',
-        headers: {
-          authorization: `Bearer ${token}`,
-          'content-type': 'application/json'
-        }
+    const request = await fetch(`${host}/packages/package/${spec.canonical}`, {
+      body:
+        opts.require2fa || opts.requiretfa || opts.tfa
+          ? '{"require_tfa": true}'
+          : '{}',
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json'
       }
-    );
+    });
 
     const body = await request.json();
     if (request.status > 399) {
@@ -114,8 +114,8 @@ async function publish(opts) {
   } else if (pkgReq.status < 300) {
     const result = await pkgReq.json();
     if (result.versions[content.version]) {
-      opts.log.warn('It looks like this version has already been published.')
-      opts.log.warn('Trying anyway, because hope springs eternal.')
+      opts.log.warn('It looks like this version has already been published.');
+      opts.log.warn('Trying anyway, because hope springs eternal.');
     }
   }
 
@@ -123,10 +123,7 @@ async function publish(opts) {
   const form = new FormData();
 
   form.append('dependencies', JSON.stringify(content.dependencies || {}));
-  form.append(
-    'devDependencies',
-    JSON.stringify(content.devDependencies || {})
-  );
+  form.append('devDependencies', JSON.stringify(content.devDependencies || {}));
   form.append(
     'optionalDependencies',
     JSON.stringify(content.optionalDependencies || {})
@@ -146,9 +143,13 @@ async function publish(opts) {
 
     // use append's ability to append a lazily evaluated function so we don't
     // try to open, say, 10K fds at once.
-    form.append('entry[]', next => next(createReadStream(path.join(location, file))), {
-      filename: encoded
-    });
+    form.append(
+      'entry[]',
+      next => next(createReadStream(path.join(location, file))),
+      {
+        filename: encoded
+      }
+    );
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
@@ -157,10 +158,12 @@ async function publish(opts) {
   // iteratively even as we send it, the total length cannot be known.
   // HOWEVER THIS DOES NOT STOP getLengthSync() which dutifully returns a partial
   // content length. This breaks downstream parsers. SO. We stub it out.
-  form.getLengthSync = null // I know why this happens but I am still sad.
+  form.getLengthSync = null; // I know why this happens but I am still sad.
 
   const request = await fetch(
-    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(content.version)}`,
+    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(
+      content.version
+    )}`,
     {
       method: 'PUT',
       body: form,

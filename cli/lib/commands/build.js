@@ -111,7 +111,7 @@ async function loadLock() {
 }
 
 async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
-  const { location, content }= await loadPackageToml(meta);
+  const { location, content } = await loadPackageToml(meta);
   const defaultHost = opts.registry.replace(/^https?:\/\//, '');
 
   const toplevel = { installed: {}, parent: null, name: 'root' };
