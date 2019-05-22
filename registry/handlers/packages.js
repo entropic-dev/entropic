@@ -348,7 +348,16 @@ async function versionCreate(context, { host, namespace, name, version }) {
           validationError = new Error(`expected "${key}" to be JSON`);
         }
 
+        const outgoing = {};
         for (const dep in value) {
+          const warnings = [];
+          const validated = check.validDependencyName(dep, warnings);
+          if (!validated) {
+            validationError = new Error(warnings.join(', '));
+            break;
+          }
+          const { canonical } = validated;
+
           // XXX: how do we validate npm-style short deps like `github/bloo`?
           if (
             typeof value[dep] !== 'string' ||
@@ -358,9 +367,11 @@ async function versionCreate(context, { host, namespace, name, version }) {
               `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
             );
           }
+
+          outgoing[canonical] = value[dep];
         }
 
-        formdata[key] = value;
+        formdata[key] = outgoing;
         break;
     }
   });
