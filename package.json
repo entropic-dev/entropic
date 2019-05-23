@@ -10,6 +10,10 @@
     "C J Silverio <ceejceej@gmail.com>",
     "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)"
   ],
+  "dependencies": {},
+  "devDependencies": {
+    "prettier": "~1.17.1"
+  },
   "directories": {
     "doc": "docs"
   },
@@ -23,6 +27,10 @@
     "url": "git+https://github.com/entropic-dev/entropic.git"
   },
   "scripts": {
+    "lint": "npm run lint-registry && npm run lint-cli",
+    "lint-cli": "cd cli; npm run lint",
+    "lint-registry": "cd registry; npm run lint",
+    "lint-fix": "prettier --write '**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

@@ -135,7 +135,9 @@ async function signup(context) {
     try {
       username = remoteAuth.username;
       email = remoteAuth.email;
-    } catch (err) {}
+    } catch (err) {
+      /* no-op */
+    }
   }
 
   username = context.username || username;

@@ -57,7 +57,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
   if (!semver.validRange(range)) {
     const version = data.tags[range];
     if (!version) {
-      opts.log.error(`Failed to fetch resolve range for ${pkg}: ${range}`);
+      opts.log.error(`Failed to fetch resolve range for ${spec}: ${range}`);
       throw new Error();
     }
     range = version; // peg it to a version
@@ -84,7 +84,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
 
   if (!checks.length) {
     opts.log.error(
-      `Failed to fetch resolve range for ${pkg}: ${range} matched no versions!`
+      `Failed to fetch resolve range for ${name}: ${range} matched no versions!`
     );
     throw new Error();
   }

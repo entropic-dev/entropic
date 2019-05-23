@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  registry:
     docker:
       - image: circleci/node:latest
       - image: circleci/postgres:latest
@@ -23,3 +23,34 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run: npm test
+
+  cli:
+    docker:
+      - image: circleci/node:latest
+      - image: circleci/postgres:latest
+
+    working_directory: ~/repo/cli
+
+    steps:
+      - checkout:
+          path: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: npm test
+
+workflows:
+  version: 2
+  everything:
+    jobs:
+      - registry
+      - cli

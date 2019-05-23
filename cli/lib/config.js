@@ -24,7 +24,7 @@ async function load(filename = path.join(home, '.entropicrc')) {
   var parsed = null;
   try {
     parsed = toml.parse(content);
-  } catch {
+  } catch (e) {
     throw new errors.CouldNotParseConfigToml(filename, e);
   }
 

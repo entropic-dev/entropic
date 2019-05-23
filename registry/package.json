@@ -36,14 +36,18 @@
     "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
+    "babel-eslint": "~10.0.1",
     "bistre": "~1.0.1",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.5.0",
+    "eslint": "~5.16.0",
+    "eslint-config-prettier": "~4.3.0",
+    "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.1.1",
     "pgtools": "^0.3.0",
-    "prettier": "1.17.0",
+    "prettier": "~1.17.0",
     "test-listen": "^1.1.0"
   },
   "homepage": "https://github.com/entopic-dev/entropic#readme",
@@ -62,7 +66,7 @@
     "coverage": "nyc mocha -R spec",
     "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
     "dev": "NODE_ENV=dev PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
-    "lint": "prettier -c '**/*.js'",
+    "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
     "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
     "posttest": "npm run lint",

@@ -205,7 +205,7 @@ async function remove(context, { invitee, namespace, host }) {
   return response.message(`${invitee} removed from ${namespace}@${host}.`);
 }
 
-async function accept(context, {}) {
+async function accept(context, { namespace, host }) {
   const invitation = await NamespaceMember.objects
     .filter({
       namespace_id: context.namespace.id,
@@ -229,7 +229,7 @@ async function accept(context, {}) {
   );
 }
 
-async function decline(context, {}) {}
+async function decline(context, params) {}
 
 async function pendingMemberships(context, params) {
   const memberships = await Namespace.objects
@@ -249,16 +249,16 @@ async function pendingMemberships(context, params) {
   return response.json({ objects });
 }
 
-async function memberships(context, params) {
+async function memberships(context, { host, namespace }) {
   const user = await User.objects
     .get({
       active: true,
-      name: params.namespace
+      name: namespace
     })
     .catch(User.objects.NotFound, () => null);
 
   if (!user) {
-    return response.error(`${name}@${host} not found`, 404);
+    return response.error(`${namespace}@${host} not found`, 404);
   }
 
   const memberships = await Namespace.objects

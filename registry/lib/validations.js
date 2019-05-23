@@ -26,7 +26,7 @@ function validLegacyPackage(input) {
 // This right here is an opinion. Discuss.
 const nameSchema = joi
   .string()
-  .regex(/^[a-z0-9\-]+$/, { name: 'alphanumeric plus hyphen' })
+  .regex(/^[a-z0-9-]+$/, { name: 'alphanumeric plus hyphen' })
   .min(2)
   .max(256)
   .required();

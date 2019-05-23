@@ -71,7 +71,7 @@ function canWrite(next) {
         );
       }
 
-      if (pkg.require_tfa && !user.tfa_active) {
+      if (pkg.require_tfa && !context.user.tfa_active) {
         return response.error(
           `You must enable 2FA to edit "${namespace}@${host}/${name}"`,
           403

@@ -79,7 +79,7 @@ async function invite(context, { namespace, host, name, invitee }) {
       'maintainers.namespace_id': context.invitee.id
     })
     .then();
-  if (Boolean(found.length > 0)) {
+  if (found.length > 0) {
     return response.message(
       `${invitee} was already a maintainer of ${namespace}@${host}/${name}.`
     );
@@ -171,10 +171,10 @@ async function accept(context, { namespace, host, name, member }) {
   context.logger.info(
     `${
       context.user.name
-    } accepted the invitation for ${maintainer} to join ${namespace}@${host}/${name}`
+    } accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
   return response.message(
-    `${maintainer} is now a maintainer for ${namespace}@${host}/${name}`
+    `${member} is now a maintainer for ${namespace}@${host}/${name}`
   );
 }
 
@@ -197,9 +197,9 @@ async function decline(context, { namespace, host, name, member }) {
   context.logger.info(
     `${
       context.user.name
-    } declined the invitation for ${maintainer} to join ${namespace}@${host}/${name}`
+    } declined the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
   return response.message(
-    `You have declined the invitation for ${maintainer} to join ${namespace}@${host}/${name}`
+    `You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
 }
