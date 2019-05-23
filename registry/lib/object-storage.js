@@ -60,8 +60,9 @@ module.exports = class ObjectStore {
       return null;
     }
 
+    let stream;
     do {
-      const stream = await Promise.race(streams).catch(() => null);
+      stream = await Promise.race(streams).catch(() => null);
       streams.splice(streams.indexOf(stream), 1);
     } while (!stream);
 

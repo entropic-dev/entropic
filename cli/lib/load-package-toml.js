@@ -23,5 +23,5 @@ async function load(dir) {
     }
 
     dir = newDir;
-  } while (true);
+  } while (true); // eslint-disable-line no-constant-condition
 }

@@ -3,12 +3,15 @@
     "node": true,
     "es6": true
   },
+  "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 10
   },
   "extends": ["eslint:recommended" ],
   "rules": {
+      "strict": 0,
       "no-console": 0,
-      "no-unused-vars": 0
+      "no-unused-vars": 0,
+      "no-case-declarations": 0
   }
 }
