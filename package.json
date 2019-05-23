@@ -12,10 +12,6 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "babel-eslint": "~10.0.1",
-    "eslint": "~5.16.0",
-    "eslint-config-prettier": "~4.3.0",
-    "eslint-plugin-prettier": "~3.1.0",
     "prettier": "~1.17.1"
   },
   "directories": {
@@ -32,8 +28,8 @@
   },
   "scripts": {
     "lint": "npm run lint-registry && npm run lint-cli",
-    "lint-cli": "cd cli; eslint .",
-    "lint-registry": "cd registry; eslint .",
+    "lint-cli": "cd cli; npm run lint",
+    "lint-registry": "cd registry; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
