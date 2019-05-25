@@ -23,31 +23,31 @@ const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
 const MAX_FILES = Number(process.env.MAX_FILES) || 2000000;
 
 module.exports = [
-  fork.get('/packages', packageList),
-  fork.get('/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
+  fork.get('/v1/packages', packageList),
+  fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
   fork.put(
-    '/packages/package/:namespace([^@]+)@:host/:name',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name',
     canWrite(packageCreate)
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name',
     canWrite(packageDelete)
   ),
 
   fork.get(
-    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     versionDetail
   ),
   fork.put(
-    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     canWrite(versionCreate)
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     canWrite(versionDelete)
   ),
 
-  fork.get('/objects/object/:algo/*', getObject)
+  fork.get('/v1/objects/object/:algo/*', getObject)
 ];
 
 async function packageList(context) {
