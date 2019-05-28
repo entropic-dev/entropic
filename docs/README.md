@@ -348,23 +348,23 @@ The flow for syncing a dependency tree to local cache:
 
 ### Yank an entire package
 
-* * * 
+* * *
 
 ### Invite users to become maintainers of a package
 
-* * * 
+* * *
 
 ### Add or remove dist-tags of a package
 
-* * * 
+* * *
 
 ### Login to an existing account
 
-* * * 
+* * *
 
 ### Sign up for an account
 
-* * * 
+* * *
 
 ### Import account access from VCPM
 
@@ -376,36 +376,36 @@ New registry API Scheme:
 
 ```
 GET     /packages
-GET     /packages/authored-by/<scope>
-GET     /packages/maintained-by/<scope>
+GET     /packages/authored-by/<namespace>
+GET     /packages/maintained-by/<namespace>
 
-GET     /packages/package/<scope>/<name>
-GET     /packages/package/<scope>/<name>
-DELETE  /packages/package/<scope>/<name>                            # yank. still available, but not displayed anywhere. maintained only by "abandonware"
+GET     /packages/package/<namespace>/<name>
+GET     /packages/package/<namespace>/<name>
+DELETE  /packages/package/<namespace>/<name>                            # yank. still available, but not displayed anywhere. maintained only by "abandonware"
 
-GET     /packages/package/<scope>/<name>/dist-tags
-PUT     /packages/package/<scope>/<name>/dist-tags/latest           $DISALLOWED
-DELETE  /packages/package/<scope>/<name>/dist-tags/latest           $DISALLOWED
-PUT     /packages/package/<scope>/<name>/dist-tags/<tag>
-DELETE  /packages/package/<scope>/<name>/dist-tags/<tag>
+GET     /packages/package/<namespace>/<name>/dist-tags
+PUT     /packages/package/<namespace>/<name>/dist-tags/latest           $DISALLOWED
+DELETE  /packages/package/<namespace>/<name>/dist-tags/latest           $DISALLOWED
+PUT     /packages/package/<namespace>/<name>/dist-tags/<tag>
+DELETE  /packages/package/<namespace>/<name>/dist-tags/<tag>
 
-GET     /packages/package/<scope>/<name>/versions                   # version-list comes with hash of result of <files> call below
-PUT     /packages/package/<scope>/<name>/versions/<version>
-DELETE  /packages/package/<scope>/<name>/versions/<version>
+GET     /packages/package/<namespace>/<name>/versions                   # version-list comes with hash of result of <files> call below
+PUT     /packages/package/<namespace>/<name>/versions/<version>
+DELETE  /packages/package/<namespace>/<name>/versions/<version>
 
-GET     /packages/package/<scope>/<name>/maintainers
-POST    /packages/package/<scope>/<name>/maintainers/<scope>
-DELETE  /packages/package/<scope>/<name>/maintainers/<scope>
-POST    /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # accept invitation to join/leave
-DELETE  /packages/package/<scope>/<name>/maintainers/<scope>/<uuid> # decline invitation to join/leave
+GET     /packages/package/<namespace>/<name>/maintainers
+POST    /packages/package/<namespace>/<name>/maintainers/<namespace>
+DELETE  /packages/package/<namespace>/<name>/maintainers/<namespace>
+POST    /packages/package/<namespace>/<name>/maintainers/<namespace>/<uuid> # accept invitation to join/leave
+DELETE  /packages/package/<namespace>/<name>/maintainers/<namespace>/<uuid> # decline invitation to join/leave
 
-GET     /packages/package/<scope>/<name>/dependents
-GET     /packages/package/<scope>/<name>/dependents/range/<range>
-GET     /packages/package/<scope>/<name>/dependencies
+GET     /packages/package/<namespace>/<name>/dependents
+GET     /packages/package/<namespace>/<name>/dependents/range/<range>
+GET     /packages/package/<namespace>/<name>/dependencies
 
-GET     /packages/package/<scope>/<name>/versions/<version>/readme
+GET     /packages/package/<namespace>/<name>/versions/<version>/readme
 
-GET     /packages/package/<scope>/<name>/versions/<version>/files
+GET     /packages/package/<namespace>/<name>/versions/<version>/files
 GET     /objects/object/<oid>
 
 GET     /packages/search
@@ -436,17 +436,17 @@ GET     /login/-/from-github                      # oauth receiver for jthoobs
 GET     /signup
 POST    /signup
 POST    /logout
-GET     /settings/<scope>
-GET     /settings/<scope>/import
-POST    /settings/<scope>/import
-GET     /settings/<scope>/password
-POST    /settings/<scope>/password
-GET     /settings/<scope>/email
-POST    /settings/<scope>/email
-GET     /settings/<scope>/tfa
-POST    /settings/<scope>/tfa
-GET     /settings/<scope>/tokens
-POST    /settings/<scope>/tokens
+GET     /settings/<namespace>
+GET     /settings/<namespace>/import
+POST    /settings/<namespace>/import
+GET     /settings/<namespace>/password
+POST    /settings/<namespace>/password
+GET     /settings/<namespace>/email
+POST    /settings/<namespace>/email
+GET     /settings/<namespace>/tfa
+POST    /settings/<namespace>/tfa
+GET     /settings/<namespace>/tokens
+POST    /settings/<namespace>/tokens
 GET     /about
 GET     /legal
 GET     /support
@@ -455,10 +455,10 @@ GET     /search
 GET     /legacy
 GET     /legacy/<legacy scope>/<legacy package>   # special casing this for the website: @smallwins/slack is available as /legacy/smallwins/slack
 GET     /legacy/<legacy package>
-GET     /<scope>/<package>/accept/<uuid>          # accept invitation
-POST    /<scope>/<package>/accept/<uuid>
-GET     /<scope>/<package>
-GET     /<scope>                                  # display all non-yanked packages that the user currently maintains.
+GET     /<namespace>/<package>/accept/<uuid>          # accept invitation
+POST    /<namespace>/<package>/accept/<uuid>
+GET     /<namespace>/<package>
+GET     /<namespace>                                  # display all non-yanked packages that the user currently maintains.
 ```
 
 Website uses cookie-based auth.
