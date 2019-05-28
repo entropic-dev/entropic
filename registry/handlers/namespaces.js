@@ -230,7 +230,29 @@ async function accept(context, { namespace, host }) {
   );
 }
 
-async function decline(context, params) {}
+async function decline(context, { namespace, host }) {
+  const invitation = await NamespaceMember.objects
+    .filter({
+      namespace_id: context.namespace.id,
+      user_id: context.user.id
+    })
+    .catch(NamespaceMember.objects.NotFound, () => null);
+
+  if (!invitation) {
+    return response.error('invitation not found', 404);
+  }
+
+  await NamespaceMember.objects.delete({
+    id: invitation.id
+  });
+
+  context.logger.info(
+    `${context.user.name} declined the invitation to join ${namespace}@${host}`
+  );
+  return response.message(
+    `You have declined the invitation to join ${namespace}@${host}`
+  );
+}
 
 async function pendingMemberships(context, params) {
   const memberships = await Namespace.objects

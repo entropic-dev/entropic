@@ -32,7 +32,8 @@ async function version() {
   const data = {
     server: 'entropic',
     version: pkg.version,
-    message: ship
+    message: ship,
+    website: 'https://www.entropic.dev'
   };
   return response.json(data);
 }
