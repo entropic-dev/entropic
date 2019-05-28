@@ -39,9 +39,7 @@ async function invitations(opts) {
   }
 
   const response2 = await fetch(
-    `${
-      opts.registry
-    }/namespaces/namespace/${invitee}/memberships?accepted=false`,
+    `${opts.registry}/users/user/${invitee}/memberships?accepted=false`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }

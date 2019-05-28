@@ -28,11 +28,11 @@ module.exports = [
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/invitation',
     findNamespace(decline)
   ),
-  // these two probably belong in a users path space
   fork.get(
-    '/v1/namespaces/namespace/:namespace([^@]+)@:host/memberships/pending',
+    '/v1/users/user/:namespace([^@]+)@:host/memberships/pending',
     isLoggedIn(pendingMemberships)
   ),
+  fork.get('/users/user/:namespace([^@]+)@:host/memberships', memberships),
   fork.get(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/memberships',
     memberships
@@ -41,6 +41,7 @@ module.exports = [
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/pending',
     isLoggedIn(canChangeNamespace(pendingMaintainerships))
   ),
+  // probably belongs in the packages file, but whatever
   fork.get(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships',
     findNamespace(maintainerships)
@@ -140,7 +141,7 @@ async function members(context, { namespace, host }) {
     })
     .then();
 
-  const objects = namespaces.map(users => users.name).sort();
+  const objects = users.map(users => users.name).sort();
   return response.json({ objects });
 }
 

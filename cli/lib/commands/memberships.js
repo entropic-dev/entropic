@@ -22,9 +22,7 @@ async function maintainerships(opts) {
   if (!invitee.includes('@')) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
-  const uri = `${
-    opts.registry
-  }/namespaces/namespace/${invitee}/maintainerships`;
+  const uri = `${opts.registry}/packages/authored-by/${invitee}`;
   const response = await fetch(uri, {
     headers: {
       authorization: `Bearer ${opts.token}`
@@ -67,7 +65,7 @@ async function listNamespaceMemberships(opts) {
   if (!invitee.includes('@')) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
-  const uri = `${opts.registry}/namespaces/namespace/${invitee}/memberships`;
+  const uri = `${opts.registry}/users/user/${invitee}/memberships`;
   const response = await fetch(uri, {
     headers: {
       authorization: `Bearer ${opts.token}`
