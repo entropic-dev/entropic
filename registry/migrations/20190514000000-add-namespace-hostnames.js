@@ -3,7 +3,6 @@
 var dbm;
 var type;
 var seed;
-
 /**
  * We receive the dbmigrate dependency from dbmigrate initially.
  * This enables us to not have to rely on NODE_PATH.
@@ -13,6 +12,13 @@ exports.setup = function(options, seedLink) {
   type = dbm.dataType;
   seed = seedLink;
 };
+
+if (!process.env.EXTERNAL_HOST) {
+  console.log(
+    '\nYou must set up a .env file with "EXTERNAL_HOST" set to run this migration.\n'
+  );
+  process.exit(1);
+}
 
 exports.up = async function(db) {
   return await db.runSql(`
