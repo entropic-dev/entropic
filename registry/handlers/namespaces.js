@@ -1,6 +1,5 @@
 'use strict';
 
-const isNamespaceMember = require('../decorators/is-namespace-member');
 const NamespaceMember = require('../models/namespace-member');
 const isLoggedIn = require('../decorators/is-logged-in');
 const Namespace = require('../models/namespace');

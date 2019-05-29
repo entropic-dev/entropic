@@ -44,6 +44,7 @@ Registry routes:
 * `GET /packages/package/:namespace/:name/versions/:version`: fetch meta information for a new package-version
 * `DELETE /packages/package/:namespace/:name/versions/:version`: deprecate a package-version
 * `GET /objects/object/:hashalgo/*`: fetch a specific content blob
+* `GET /auth/whoami` - respond with the name of the logged-in user
 
 Website routes:
 
@@ -58,4 +59,3 @@ These endpoints do not follow the entropic API conventions, but instead use the 
 
 * `POST /-/v1/login` - log your client in
 * `GET /-/v1/login/poll/:session` - poll for a session token as part of the login flow
-* `GET /-/whoami` - respond with the name of the logged-in user

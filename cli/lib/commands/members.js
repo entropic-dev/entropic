@@ -31,7 +31,7 @@ async function members(opts) {
   if (!ns.includes('@')) {
     ns += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
-  const uri = `${opts.registry}/namespaces/namespace/${ns}/members`;
+  const uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members`;
   const response = await fetch(uri);
   const body = await response.json();
   if (!Array.isArray(body.objects) || body.objects.length === 0) {
@@ -58,7 +58,7 @@ async function listPackageMaintainers(opts) {
     opts.registry.replace(/^https?:\/\//, '')
   );
 
-  const uri = `${opts.registry}/packages/package/${
+  const uri = `${opts.registry}/v1/packages/package/${
     parsed.canonical
   }/maintainers`;
 

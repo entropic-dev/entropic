@@ -26,7 +26,7 @@ async function invitations(opts) {
   const response = await fetch(
     `${
       opts.registry
-    }/namespaces/namespace/${invitee}/maintainerships?accepted=false`,
+    }/v1/namespaces/namespace/${invitee}/maintainerships?accepted=false`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }
@@ -39,7 +39,7 @@ async function invitations(opts) {
   }
 
   const response2 = await fetch(
-    `${opts.registry}/users/user/${invitee}/memberships?accepted=false`,
+    `${opts.registry}/v1/users/user/${invitee}/memberships?accepted=false`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }
