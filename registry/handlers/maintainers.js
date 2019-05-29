@@ -12,23 +12,23 @@ const fork = require('../lib/router');
 
 module.exports = [
   fork.get(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers',
     maintainers
   ),
   fork.post(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
     findInvitee(canWrite(invite))
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
     findInvitee(canWrite(remove))
   ),
   fork.post(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
     packageExists(isNamespaceMember(accept))
   ),
   fork.del(
-    '/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
     packageExists(isNamespaceMember(decline))
   )
 ];

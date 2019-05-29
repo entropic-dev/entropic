@@ -16,7 +16,7 @@ describe('entropic', () => {
     providePostgres(
       provideRegistry(async url => {
         const response = await fetch(
-          `${url}/packages/package/any-namespace@localhost:3000/any-name`,
+          `${url}/v1/packages/package/any-namespace@localhost:3000/any-name`,
           {
             method: 'PUT',
             body: '{}'
@@ -40,7 +40,7 @@ describe('entropic', () => {
         const token = await createToken('malfoy');
 
         const response = await fetch(
-          `${url}/packages/package/any-namespace@localhost:3000/any-name`,
+          `${url}/v1/packages/package/any-namespace@localhost:3000/any-name`,
           {
             method: 'PUT',
             body: '{}',
@@ -67,7 +67,7 @@ describe('entropic', () => {
         const token = await createToken('malfoy');
 
         const response = await fetch(
-          `${url}/packages/package/malfoy@localhost:3000/draco`,
+          `${url}/v1/packages/package/malfoy@localhost:3000/draco`,
           {
             method: 'PUT',
             body: '{}',

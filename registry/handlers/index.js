@@ -21,9 +21,8 @@ function makeRouter() {
 
     fork.get('/-/v1/login/poll/:session', auth.poll),
     fork.post('/-/v1/login', auth.login),
-    fork.get('/hello', greeting),
-    fork.get('/ping', ping),
-    fork.get('/-/whoami', whoami)
+    fork.get('/-/whoami', whoami),
+    fork.get('/ping', ping)
   );
 
   return router;

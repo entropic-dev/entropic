@@ -10,39 +10,39 @@ const User = require('../models/user');
 const fork = require('../lib/router');
 
 module.exports = [
-  fork.get('/namespaces', namespaces),
-  fork.get('/namespaces/namespace/:namespace([^@]+)@:host/members', members),
+  fork.get('/v1/namespaces', namespaces),
+  fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', members),
   fork.post(
-    '/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
     findUser(canChangeNamespace(invite))
   ),
   fork.del(
-    '/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
     findUser(canChangeNamespace(remove))
   ),
   fork.post(
-    '/namespaces/namespace/:namespace([^@]+)@:host/members/invitation',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/invitation',
     findNamespace(accept)
   ),
   fork.del(
-    '/namespaces/namespace/:namespace([^@]+)@:host/members/invitation',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/invitation',
     findNamespace(decline)
   ),
   // these two probably belong in a users path space
   fork.get(
-    '/namespaces/namespace/:namespace([^@]+)@:host/memberships/pending',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/memberships/pending',
     isLoggedIn(pendingMemberships)
   ),
   fork.get(
-    '/namespaces/namespace/:namespace([^@]+)@:host/memberships',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/memberships',
     memberships
   ),
   fork.get(
-    '/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/pending',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/pending',
     isLoggedIn(canChangeNamespace(pendingMaintainerships))
   ),
   fork.get(
-    '/namespaces/namespace/:namespace([^@]+)@:host/maintainerships',
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships',
     findNamespace(maintainerships)
   )
 ];
