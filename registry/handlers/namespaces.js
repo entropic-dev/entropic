@@ -210,7 +210,8 @@ async function accept(context, { namespace, host }) {
   const invitation = await NamespaceMember.objects
     .filter({
       namespace_id: context.namespace.id,
-      user_id: context.user.id
+      user_id: context.user.id,
+      accepted: false
     })
     .update({
       active: true,
@@ -232,9 +233,10 @@ async function accept(context, { namespace, host }) {
 
 async function decline(context, { namespace, host }) {
   const invitation = await NamespaceMember.objects
-    .filter({
+    .get({
       namespace_id: context.namespace.id,
-      user_id: context.user.id
+      user_id: context.user.id,
+      accepted: false
     })
     .catch(NamespaceMember.objects.NotFound, () => null);
 

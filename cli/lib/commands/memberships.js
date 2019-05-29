@@ -22,7 +22,9 @@ async function maintainerships(opts) {
   if (!invitee.includes('@')) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
-  const uri = `${opts.registry}/packages/authored-by/${invitee}`;
+  const uri = `${
+    opts.registry
+  }//namespaces/namespace/${invitee}/maintainerships`;
   const response = await fetch(uri, {
     headers: {
       authorization: `Bearer ${opts.token}`
