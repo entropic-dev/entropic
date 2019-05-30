@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
-require('dotenv').config();
+require('dotenv').config({
+  PORT:3000,
+  EXTERNAL_HOST:"http://localhost:3000"
+});
 
 const isDev = require('are-we-dev');
 const bistre = require('bistre');
