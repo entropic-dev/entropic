@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-require('dotenv').config({
-  PORT:3000,
-  EXTERNAL_HOST:"http://localhost:3000"
-});
+require('./lib/config');
 
 const isDev = require('are-we-dev');
 const bistre = require('bistre');
@@ -26,5 +23,7 @@ if (isDev()) {
 const handler = makeRequestHandler(router, middleware);
 const server = micro((req, res) => handler(req, res));
 
-server.listen(process.env.PORT, '0.0.0.0');
-logger.info(`listening on port: ${process.env.PORT}`);
+server.listen(process.env.PORT, '0.0.0.0',()=>{
+  logger.info(`listening on port: ${server.address().port}`);
+});
+
