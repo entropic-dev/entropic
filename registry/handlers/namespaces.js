@@ -29,16 +29,16 @@ module.exports = [
   ),
   fork.get(
     '/v1/users/user/:namespace([^@]+)@:host/memberships/pending',
-    isLoggedIn(pendingMemberships)
+    findUser(pendingMemberships)
   ),
-  fork.get('/users/user/:namespace([^@]+)@:host/memberships', memberships),
+  fork.get('/v1/users/user/:namespace([^@]+)@:host/memberships', memberships),
   fork.get(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/memberships',
     memberships
   ),
   fork.get(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/pending',
-    isLoggedIn(canChangeNamespace(pendingMaintainerships))
+    findNamespace(pendingMaintainerships)
   ),
   // probably belongs in the packages file, but whatever
   fork.get(
@@ -124,6 +124,7 @@ async function members(context, { namespace, host }) {
   const ns = await Namespace.objects
     .get({
       active: true,
+      accepted: true,
       name: namespace,
       'host.name': host
     })
@@ -166,7 +167,7 @@ async function invite(context, { invitee, namespace, host }) {
     namespace: context.namespace,
     user: context.invitee,
     accepted: false,
-    active: false
+    active: true
   });
 
   context.logger.info(
@@ -210,10 +211,10 @@ async function accept(context, { namespace, host }) {
     .filter({
       namespace_id: context.namespace.id,
       user_id: context.user.id,
-      accepted: false
+      accepted: false,
+      active: true
     })
     .update({
-      active: true,
       accepted: true
     })
     .catch(NamespaceMember.objects.NotFound, () => null);
@@ -235,6 +236,7 @@ async function decline(context, { namespace, host }) {
     .get({
       namespace_id: context.namespace.id,
       user_id: context.user.id,
+      active: true,
       accepted: false
     })
     .catch(NamespaceMember.objects.NotFound, () => null);
@@ -243,9 +245,13 @@ async function decline(context, { namespace, host }) {
     return response.error('invitation not found', 404);
   }
 
-  await NamespaceMember.objects.delete({
-    id: invitation.id
-  });
+  await NamespaceMember.objects
+    .filter({
+      id: invitation.id
+    })
+    .update({
+      active: false
+    });
 
   context.logger.info(
     `${context.user.name} declined the invitation to join ${namespace}@${host}`
@@ -255,12 +261,16 @@ async function decline(context, { namespace, host }) {
   );
 }
 
-async function pendingMemberships(context, params) {
+async function pendingMemberships(context, { invitee }) {
+  if (!context.invitee) {
+    return response.error(`${invitee} does not exist.`, 404);
+  }
+
   const memberships = await Namespace.objects
     .filter({
       'namespace_members.accepted': false,
-      'namespace_members.active': false,
-      'namespace_members.user_id': context.user.id,
+      'namespace_members.active': true,
+      'namespace_members.user_id': context.invitee.id,
       active: true
     })
     .then();
@@ -288,6 +298,8 @@ async function memberships(context, { host, namespace }) {
   const memberships = await Namespace.objects
     .filter({
       'namespace_members.user_id': user.id,
+      'namespace_members.active': true,
+      'namespace_members.accepted': true,
       active: true
     })
     .values('name')
@@ -305,13 +317,12 @@ async function pendingMaintainerships(context, params) {
   const pkgInvitations = await Package.objects
     .filter({
       'maintainers.accepted': false,
-      'maintainers.active': false,
-      'maintainers.namespace_id': context.namespace.id,
-      active: true,
-      'namespace.active': true,
-      'namespace.host.active': true
+      'maintainers.active': true,
+      'maintainers.namespace_id': context.namespace.id
     })
     .then();
+
+  console.log(pkgInvitations);
 
   const objects = [];
   for (const pkg of pkgInvitations) {

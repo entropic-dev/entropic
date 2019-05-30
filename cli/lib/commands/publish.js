@@ -175,9 +175,9 @@ async function publish(opts) {
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
   const request = await fetch(
-    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(
-      content.version
-    )}`,
+    `${host}/v1/packages/package/${
+      spec.canonical
+    }/versions/${encodeURIComponent(content.version)}`,
     {
       method: 'PUT',
       body: form.pipe(zlib.createDeflate()),
