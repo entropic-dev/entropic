@@ -55,13 +55,12 @@ function canWrite(next) {
         .filter({
           package: pkg,
           active: true,
+          accepted: true,
           'namespace.active': true,
-          'namespace.name': namespace,
           'namespace.namespace_members.active': true,
+          'namespace.namespace_members.accepted': true,
           'namespace.namespace_members.user_id': context.user.id
         })
-        .values('id')
-        .slice(0, 1)
         .then();
 
       if (!any) {

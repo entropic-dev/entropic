@@ -26,6 +26,8 @@ Every Entropic user has a namespace that matches their user name. They may addit
 
 For example, user `chris` owns the package `chris@entropic.dev/ds`. Chris can invite `ceejbot` to maintain `ds`. If ceejbot accepts, they'll be able to publish new versions of `ds`. Meanwhile, the package `lodash-people@entropic.dev/lodash` can be maintained by anybody who's a member of the `lodash-people` namespace. This might include the user `jdalton` and anybody else jdalton invites. (We hear that jdd gets a dollar every time somebody uses lodash as an example.)
 
+All packages published to Entropic are public. Our expectation is that you'll use something like the [GitHub Package Registry](https://help.github.com/en/articles/about-github-package-registry) if you need to control access to packages you publish. Or you might choose to run an Entropic instance and control access to it another way.
+
 ### The `ds` cli
 
 ds requires a new command-line client. Install the cli:
@@ -76,7 +78,7 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 
 The following people have helped make this:
 
-* Ryan Day @soldair
+* [Ryan Day @soldair](https://github.com/soldair)
 
 ## LICENSE
 
