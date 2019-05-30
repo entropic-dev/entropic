@@ -124,7 +124,6 @@ async function members(context, { namespace, host }) {
   const ns = await Namespace.objects
     .get({
       active: true,
-      accepted: true,
       name: namespace,
       'host.name': host
     })
@@ -133,11 +132,11 @@ async function members(context, { namespace, host }) {
   if (!ns) {
     return response.error(`${namespace}@${host} does not exist.`, 404);
   }
-
   const users = await User.objects
     .filter({
       'namespace_members.namespace_id': ns.id,
-      'namespace_members.active': true
+      'namespace_members.active': true,
+      'namespace_members.accepted': true
     })
     .then();
 
@@ -153,6 +152,7 @@ async function invite(context, { invitee, namespace, host }) {
   const existing = await NamespaceMember.objects
     .get({ user: context.invitee, namespace: context.namespace })
     .catch(NamespaceMember.objects.NotFound, () => null);
+
   if (existing) {
     let msg;
     if (existing.active) {

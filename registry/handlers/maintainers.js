@@ -24,11 +24,11 @@ module.exports = [
     findInvitee(canWrite(remove))
   ),
   fork.post(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
     packageExists(isNamespaceMember(accept))
   ),
   fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:member/invitation',
+    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
     packageExists(isNamespaceMember(decline))
   )
 ];
@@ -151,21 +151,26 @@ async function remove(context, { namespace, host, name, invitee }) {
 
 async function accept(context, { namespace, host, name, member }) {
   const invitation = await Maintainer.objects
-    .filter({
+    .get({
       namespace_id: context.member.id,
       package_id: context.pkg.id,
       active: true,
       accepted: false
-    })
-    .update({
-      modified: new Date(),
-      accepted: true
     })
     .catch(Maintainer.objects.NotFound, () => null);
 
   if (!invitation) {
     return response.error('invitation not found', 404);
   }
+
+  await Maintainer.objects
+    .filter({
+      id: invitation.id
+    })
+    .update({
+      modified: new Date(),
+      accepted: true
+    });
 
   context.logger.info(
     `${
