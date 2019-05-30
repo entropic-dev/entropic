@@ -14,7 +14,7 @@ const whoamiOpts = figgy({
 async function whoami(opts) {
   opts = whoamiOpts(opts);
 
-  const response = await fetch(`${opts.registry}/-/whoami`, {
+  const response = await fetch(`${opts.registry}/v1/auth/whoami`, {
     headers: {
       authorization: `Bearer ${opts.token}`
     }
@@ -24,7 +24,7 @@ async function whoami(opts) {
   try {
     body = await response.json();
   } catch (err) {
-    opts.log.error(`Caught error requesting "${opts.registry}/-/whoami"`);
+    opts.log.error(`Caught error requesting "${opts.registry}/v1/auth/whoami"`);
     return 1;
   }
 

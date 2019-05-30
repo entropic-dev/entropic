@@ -16,7 +16,7 @@ function createBearerAuthMW() {
       if (
         requrl.startsWith('/www') ||
         requrl.startsWith('/-/v1/login') ||
-        (idempotent.has(context.request.method) && requrl !== '/-/whoami')
+        idempotent.has(context.request.method)
       ) {
         return next(context);
       }

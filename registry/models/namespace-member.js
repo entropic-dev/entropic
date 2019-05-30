@@ -72,5 +72,5 @@ module.exports.objects = orm(module.exports, {
   created: joi.date(),
   modified: joi.date(),
   active: joi.boolean().default(true),
-  accepted: joi.boolean().default(false)
+  accepted: joi.boolean().default(true)
 });

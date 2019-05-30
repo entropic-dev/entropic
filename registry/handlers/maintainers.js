@@ -72,33 +72,30 @@ async function invite(context, { namespace, host, name, invitee }) {
     return response.error(`${invitee} not found.`, 404);
   }
 
-  const found = await Namespace.objects
-    .filter({
-      'maintainers.package_id': context.pkg.id,
-      'maintainers.active': true,
-      'maintainers.namespace_id': context.invitee.id
-    })
-    .then();
-  if (found.length > 0) {
-    return response.message(
-      `${invitee} was already a maintainer of ${namespace}@${host}/${name}.`
-    );
-  }
-
   const existing = await Maintainer.objects
-    .get({ namespace: context.invitee, package: context.pkg })
+    .get({
+      namespace: context.invitee,
+      package: context.pkg
+    })
     .catch(Maintainer.objects.NotFound, () => null);
   if (existing) {
-    return response.message(
-      `${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`
-    );
+    if (existing.active === false) {
+      return response.message(
+        `${invitee} has already declined to maintain ${namespace}@${host}/${name}.`
+      );
+    }
+    if (existing.accepted === false) {
+      return response.message(
+        `${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`
+      );
+    }
   }
 
   await Maintainer.objects.create({
     namespace: context.invitee,
     package: context.pkg,
     accepted: false,
-    active: false
+    active: true
   });
 
   context.logger.info(
@@ -156,10 +153,12 @@ async function accept(context, { namespace, host, name, member }) {
   const invitation = await Maintainer.objects
     .filter({
       namespace_id: context.member.id,
-      package_id: context.pkg.id
+      package_id: context.pkg.id,
+      active: true,
+      accepted: false
     })
     .update({
-      active: true,
+      modified: new Date(),
       accepted: true
     })
     .catch(Maintainer.objects.NotFound, () => null);
@@ -182,7 +181,9 @@ async function decline(context, { namespace, host, name, member }) {
   const invitation = await Maintainer.objects
     .get({
       namespace_id: context.member.id,
-      package_id: context.pkg.id
+      package_id: context.pkg.id,
+      active: true,
+      accepted: false
     })
     .catch(Maintainer.objects.NotFound, () => null);
 
@@ -190,9 +191,14 @@ async function decline(context, { namespace, host, name, member }) {
     return response.error('invitation not found', 404);
   }
 
-  await Maintainer.objects.delete({
-    id: invitation.id
-  });
+  await Maintainer.objects
+    .filter({
+      id: invitation.id
+    })
+    .update({
+      modified: new Date(),
+      active: false
+    });
 
   context.logger.info(
     `${

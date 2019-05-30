@@ -89,22 +89,25 @@ async function publish(opts) {
     return 1;
   }
 
-  const pkgReq = await fetch(`${host}/packages/package/${spec.canonical}`);
+  const pkgReq = await fetch(`${host}/v1/packages/package/${spec.canonical}`);
 
   const mustCreate = pkgReq.status === 404;
 
   if (mustCreate) {
-    const request = await fetch(`${host}/packages/package/${spec.canonical}`, {
-      body:
-        opts.require2fa || opts.requiretfa || opts.tfa
-          ? '{"require_tfa": true}'
-          : '{}',
-      method: 'PUT',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'content-type': 'application/json'
+    const request = await fetch(
+      `${host}/v1/packages/package/${spec.canonical}`,
+      {
+        body:
+          opts.require2fa || opts.requiretfa || opts.tfa
+            ? '{"require_tfa": true}'
+            : '{}',
+        method: 'PUT',
+        headers: {
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json'
+        }
       }
-    });
+    );
 
     const body = await request.json();
     if (request.status > 399) {
@@ -172,9 +175,9 @@ async function publish(opts) {
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
   const request = await fetch(
-    `${host}/packages/package/${spec.canonical}/versions/${encodeURIComponent(
-      content.version
-    )}`,
+    `${host}/v1/packages/package/${
+      spec.canonical
+    }/versions/${encodeURIComponent(content.version)}`,
     {
       method: 'PUT',
       body: form.pipe(zlib.createDeflate()),

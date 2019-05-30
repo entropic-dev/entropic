@@ -33,7 +33,7 @@ async function decline(opts) {
 
   const invitee = opts.as;
 
-  const uri = `${opts.registry}/packages/package/${
+  const uri = `${opts.registry}/v1/packages/package/${
     parsed.canonical
   }/maintainers/${invitee}/invitation`;
 

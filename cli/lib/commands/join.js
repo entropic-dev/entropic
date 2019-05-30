@@ -33,14 +33,14 @@ async function join(opts) {
       opts.argv[0],
       opts.registry.replace(/^https?:\/\//, '')
     );
-    uri = `${opts.registry}/packages/package/${
+    uri = `${opts.registry}/v1/packages/package/${
       parsed.canonical
     }/maintainers/${invitee}/invitation`;
   } else {
     const ns = opts.argv[0] + (opts.argv[0].includes('@') ? '' : `@${host}`);
     uri = `${
       opts.registry
-    }/namespaces/namespace/${ns}/members/${invitee}/invitation`;
+    }/v1/namespaces/namespace/${ns}/members/${invitee}/invitation`;
   }
 
   const response = await fetch(uri, {

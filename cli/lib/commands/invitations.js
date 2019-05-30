@@ -17,8 +17,12 @@ const invitationsOpts = figgy({
 
 async function invitations(opts) {
   opts = invitationsOpts(opts);
-
   let invitee = opts.argv[0];
+  if (!invitee) {
+    console.log('Usage: ds invitations <namespace|user>');
+    process.exit(1);
+  }
+
   if (!invitee.includes('@')) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
@@ -26,29 +30,27 @@ async function invitations(opts) {
   const response = await fetch(
     `${
       opts.registry
-    }/namespaces/namespace/${invitee}/maintainerships?accepted=false`,
+    }/v1/namespaces/namespace/${invitee}/maintainerships/pending`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }
   );
 
   const pkg = await response.json();
-  const result = [];
+  let result = [];
   if (Array.isArray(pkg.objects)) {
-    result.concat(pkg.objects.length);
+    result = pkg.objects;
   }
 
   const response2 = await fetch(
-    `${
-      opts.registry
-    }/namespaces/namespace/${invitee}/memberships?accepted=false`,
+    `${opts.registry}/v1/users/user/${invitee}/memberships/pending`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }
   );
   const ns = await response2.json();
   if (Array.isArray(ns.objects)) {
-    result.concat(ns.objects.length);
+    result = result.concat(ns.objects);
   }
 
   if (result.length === 0) {
@@ -68,5 +70,7 @@ async function invitations(opts) {
     console.log(`  ds join ${dest.name} --as ${invitee}`);
   });
 
-  console.log(`\nTo decline an invitation: ds decline <group> --as ${invitee}`);
+  console.log(
+    `\nTo decline an invitation: ds decline <group|package> --as ${invitee}`
+  );
 }

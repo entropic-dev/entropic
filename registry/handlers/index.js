@@ -4,12 +4,12 @@ module.exports = makeRouter;
 
 const ship = require('culture-ships').random();
 
+const isLoggedIn = require('../decorators/is-logged-in');
 const response = require('../lib/response');
 const pkg = require('../package.json');
 const User = require('../models/user');
 const fork = require('../lib/router');
 const auth = require('./auth');
-const www = require('./www');
 
 function makeRouter() {
   const router = fork.router()(
@@ -21,7 +21,7 @@ function makeRouter() {
 
     fork.get('/-/v1/login/poll/:session', auth.poll),
     fork.post('/-/v1/login', auth.login),
-    fork.get('/-/whoami', whoami),
+    fork.get('/v1/auth/whoami', isLoggedIn(whoami)),
     fork.get('/ping', ping)
   );
 
@@ -32,7 +32,8 @@ async function version() {
   const data = {
     server: 'entropic',
     version: pkg.version,
-    message: ship
+    message: ship,
+    website: 'https://www.entropic.dev'
   };
   return response.json(data);
 }

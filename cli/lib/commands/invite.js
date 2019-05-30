@@ -26,7 +26,7 @@ async function invite(opts) {
       opts.to,
       opts.registry.replace(/^https?:\/\//, '')
     );
-    uri = `${opts.registry}/packages/package/${
+    uri = `${opts.registry}/v1/packages/package/${
       parsed.canonical
     }/maintainers/${invitee}`;
   } else {
@@ -35,7 +35,7 @@ async function invite(opts) {
       ns += '@' + opts.registry.replace(/^https?:\/\//, '');
     }
 
-    uri = `${opts.registry}/namespaces/namespace/${ns}/members/${invitee}`;
+    uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members/${invitee}`;
   }
 
   const response = await fetch(uri, {
