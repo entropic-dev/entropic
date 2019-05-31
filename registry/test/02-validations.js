@@ -52,4 +52,8 @@ describe('name validations', () => {
     result = check.nameOK('q');
     result.error.must.exist();
   });
+
+  describe('validDependencyName()', () => {
+    it('has tests');
+  });
 });
