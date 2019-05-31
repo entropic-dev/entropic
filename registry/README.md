@@ -12,6 +12,10 @@ http://localhost:3000/www/login/providers/github/callback
 
 Note the client id and the client secret.
 
+The registry requires both a postgres database and a Redis instance. (It will need the beandstalkd work queue soon, but does not yet require it.) You can provide these any way you like. For convenience, there's a Docker compose file at the top level of the repo. Run `docker-compose up` to provide all of the requirements.
+
+To run the registry service, run `npm start`. Sadly ds does not have lifecycle scripts implemented yet. (Perhaps you need a project?)
+
 Entropic reads all of its configuration from environment variables. You may provide these to the service any way you wish. For local development, you might find it most convenient to use a `.env` file in the registry root directory. To get started, copy `.env-example` into `.env` and edit to taste.
 
 Here are the config values and what they mean:
@@ -29,6 +33,7 @@ Here are the config values and what they mean:
 * `EXTERNAL_HOST=http://localhost:3000`: the web host to advertise to the npm cli
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
+
 
 ## The API
 
