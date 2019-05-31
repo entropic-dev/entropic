@@ -33,10 +33,11 @@ function parsePackageSpec(input, defaultHost) {
   }
 
   const [namespace, host = defaultHost] = namespacehost.split('@');
-  const [name, range = 'latest'] = namerange.split('@');
+  const [namePartialEnc, range = 'latest'] = namerange.split('@');
 
+  const name = decodeURIComponent(namePartialEnc)
   return {
-    canonical: `${namespace}@${host}/${decodeURIComponent(name)}`,
+    canonical: `${namespace}@${host}/${encodeURIComponent(name)}`,
     host,
     name,
     namespace,
