@@ -28,7 +28,7 @@ async function fetchObject({ registry, cache }, integrity, load = false) {
   }
 
   const response = await fetch(
-    `${registry}/objects/object/${algo}/${encodeURIComponent(digest)}`
+    `${registry}/v1/objects/object/${algo}/${encodeURIComponent(digest)}`
   );
 
   if (response.status > 399) {

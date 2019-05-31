@@ -19,7 +19,7 @@ async function fetchPackage(
     .catch(() => null);
 
   if (!meta || now - Date.parse(meta.date) > Number(expires)) {
-    const pkgReq = await fetch(`${registry}/packages/package/${name}`);
+    const pkgReq = await fetch(`${registry}/v1/packages/package/${name}`);
     meta = {
       date: Date.parse(pkgReq.headers.date),
       data: await pkgReq.json()

@@ -63,7 +63,7 @@
     "url": "git://github.com/entopic-dev/entropic.git"
   },
   "scripts": {
-    "coverage": "nyc mocha -R spec",
+    "coverage": "NODE_ENV=test PGUSER=postgres PGDATABASE=entropic_test nyc mocha -R spec",
     "createdb": "createdbjs -U postgres entropic_${NODE_ENV:-dev} || true",
     "dev": "NODE_ENV=dev PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
     "lint": "eslint .",
