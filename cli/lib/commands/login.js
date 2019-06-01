@@ -10,7 +10,7 @@ const { load, save } = require('../config');
 
 const loginOpts = figgy({
   log: { default: require('npmlog') },
-  registry: { default: 'https://entropic.dev' }
+  registry: { default: 'https://registry.entropic.dev' }
 });
 
 async function login(opts) {

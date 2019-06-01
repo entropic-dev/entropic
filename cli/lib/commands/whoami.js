@@ -6,7 +6,7 @@ const figgy = require('figgy-pudding');
 const fetch = require('node-fetch');
 
 const whoamiOpts = figgy({
-  registry: true,
+  registry: { default: 'https://registry.entropic.dev' },
   token: true,
   log: { default: require('npmlog') }
 });

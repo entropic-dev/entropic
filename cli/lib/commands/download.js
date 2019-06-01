@@ -21,7 +21,7 @@ const fetchObject = require('../fetch-object');
 const pipeline = promisify(_);
 
 const downloadOpts = figgy({
-  registry: { default: 'https://entropic.dev' },
+  registry: { default: 'https://registry.entropic.dev' },
   argv: true,
   expires: true,
   cache: { default: path.join(home, '.ds', 'cache') },

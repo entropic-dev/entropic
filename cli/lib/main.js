@@ -30,7 +30,7 @@ async function main(argv) {
       args.registry ||
       config.registry ||
       env.registry ||
-      'https://entropic.dev';
+      'https://registry.entropic.dev';
 
     const registryConfig = (config.registries || {})[registry] || {};
 

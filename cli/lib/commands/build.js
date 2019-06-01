@@ -16,7 +16,7 @@ const fetchPackage = require('../fetch-package');
 const fetchObject = require('../fetch-object');
 
 const buildOpts = figgy({
-  registry: { default: 'https://entropic.dev' },
+  registry: { default: 'https://registry.entropic.dev' },
   argv: true,
   expires: true,
   cache: { default: path.join(home, '.ds', 'cache') },
@@ -159,7 +159,7 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
     const version = semver.maxSatisfying(Object.keys(pkg.versions), range);
 
     if (version === null) {
-      throw new Error(`Could not satisfy ${dep} at ${range}`);
+      throw new Error(`Could not satisfy ${dep.canonical} at ${range}`);
     }
 
     const integrity = pkg.versions[version];
