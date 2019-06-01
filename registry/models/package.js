@@ -34,8 +34,9 @@ module.exports = class Package {
 
   async serialize() {
     const namespace = await this.namespace;
+    const host = await namespace.host;
     return {
-      name: `${namespace.name}/${this.name}`,
+      name: `${namespace.name}@${host.name}/${encodeURIComponent(this.name)}`,
       yanked: this.yanked,
       created: this.created,
       modified: this.modified,
