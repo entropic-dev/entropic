@@ -380,7 +380,7 @@ GET     /packages/authored-by/<namespace>
 GET     /packages/maintained-by/<namespace>
 
 GET     /packages/package/<namespace>/<name>
-GET     /packages/package/<namespace>/<name>
+PUT     /packages/package/<namespace>/<name>
 DELETE  /packages/package/<namespace>/<name>                            # yank. still available, but not displayed anywhere. maintained only by "abandonware"
 
 GET     /packages/package/<namespace>/<name>/dist-tags
