@@ -53,6 +53,7 @@ async function maintainers(context, { namespace, host, name }) {
   const namespaces = await Namespace.objects
     .filter({
       'maintainers.package_id': pkg.id,
+      'maintainers.accepted': true,
       'maintainers.active': true
     })
     .then();

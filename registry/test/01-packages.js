@@ -80,7 +80,7 @@ describe('entropic', () => {
         response.status.must.eql(201);
         const data = await response.json();
         data.must.eql({
-          name: 'malfoy/draco',
+          name: 'malfoy@localhost:3000/draco',
           yanked: false,
           created: data.created,
           modified: data.modified,

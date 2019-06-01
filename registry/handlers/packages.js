@@ -52,7 +52,7 @@ module.exports = [
 
 async function packageList(context) {
   const packages = await Package.objects
-    .filter({ active: true, 'namespace.active': true })
+    .filter({ active: true, 'namespace.active': true, 'namespace.host.active': true })
     .then();
 
   const objects = [];

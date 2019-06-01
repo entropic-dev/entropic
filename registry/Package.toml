@@ -2,8 +2,8 @@ name = "ceejbot@entropic.dev/entropic-registry"
 version = "0.0.0-alpha"
 
 [dependencies]
-"legacy@entropic.dev/@hapi%2firon" = "^5.1.0"
-"legacy@entropic.dev/@hapi%2fjoi" = "~15.0.2"
+"legacy@entropic.dev/%40hapi%2firon" = "^5.1.0"
+"legacy@entropic.dev/%40hapi%2fjoi" = "~15.0.2"
 "legacy@entropic.dev/are-we-dev" = "^1.0.0"
 "legacy@entropic.dev/bole" = "~3.0.2"
 "legacy@entropic.dev/cls-hooked" = "^4.2.2"
