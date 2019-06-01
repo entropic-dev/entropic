@@ -31,6 +31,7 @@
     "chalk": "^2.4.2",
     "figgy-pudding": "^3.5.1",
     "form-data": "^2.3.3",
+    "fs.promises": "^0.1.2",
     "graceful-fs": "^4.1.15",
     "minimist": "^1.2.0",
     "node-fetch": "^2.5.0",
