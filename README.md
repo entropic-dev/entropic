@@ -32,7 +32,7 @@ The only thing about Entropic that assumes you're managing javascript packages i
 
 ### The `ds` cli
 
-ds requires a new command-line client. Install the cli:
+Entropic requires a new command-line client, called `ds` (or "entropy delta".) **`ds` requires at least Node 12.** Install the cli:
 
 ```sh
 curl -sSL https://www.entropic.dev/install.sh | bash
