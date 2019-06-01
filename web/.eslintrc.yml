@@ -2,6 +2,8 @@ extends:
   - airbnb
   - plugin:jest/recommended
   - prettier
+plugins:
+  - '@typescript-eslint'
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: 2018
@@ -22,6 +24,7 @@ rules:
   react/prop-types: 0
   react/no-array-index-key: 0
   react/jsx-filename-extension: [error, { extensions: [.tsx] }]
+  react/jsx-one-expression-per-line: 0
 
   # jsx-a11y
   jsx-a11y/click-events-have-key-events: 0
@@ -35,9 +38,12 @@ rules:
   no-prototype-builtins: 0
   no-return-assign: [error, except-parens]
   no-use-before-define: 0
-  no-unused-vars: [error, { argsIgnorePattern: "^_" }]
   no-nested-ternary: 0
   no-plusplus: [error, { allowForLoopAfterthoughts: true }]
   no-confusing-arrow: 0
   lines-between-class-members: [warn, always, { exceptAfterSingleLine: true }]
   no-underscore-dangle: 0
+
+  # typescript
+  no-unused-vars: 0
+  '@typescript-eslint/no-unused-vars': [error, { argsIgnorePattern: '^_' }]

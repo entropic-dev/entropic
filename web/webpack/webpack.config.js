@@ -23,9 +23,7 @@ module.exports = {
     new NoEmitOnErrorsPlugin(),
     new ErrorOverlayPlugin(),
     new EnvironmentPlugin(process.env),
-    new ManifestPlugin({
-      seed: manifestSeed
-    }),
+    new ManifestPlugin({ seed: manifestSeed }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '..', 'src', 'index.html')
     }),
@@ -52,14 +50,7 @@ module.exports = {
         enforce: 'pre',
         test: /\.(js|ts)x?$/,
         exclude: /node_modules/,
-        loader: {
-          loader: 'eslint-loader',
-          options: {
-            fix: false,
-            cache: true,
-            configFile: '.eslintrc.yml'
-          }
-        }
+        loader: 'eslint-loader'
       },
       {
         test: /\.tsx?$/,
@@ -81,6 +72,10 @@ module.exports = {
           loader: 'babel-loader',
           options: babelConfig
         }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(svg|png|jpg)$/,

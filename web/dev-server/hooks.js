@@ -13,12 +13,12 @@ module.exports.afterFirstCompile = cb => {
 };
 
 module.exports.hookInto = compiler => {
-  compiler.hooks.thisCompilation.tap('Logger', _ => {
+  compiler.hooks.thisCompilation.tap('DevServer', _ => {
     clear();
     console.log(chalk.green('[WDM] compiling...'));
   });
 
-  compiler.hooks.emit.tapAsync('Logger', (compilation, cb) => {
+  compiler.hooks.emit.tapAsync('DevServer', (compilation, cb) => {
     clear();
     console.log(chalk.green('[WDM] built!'));
 
@@ -32,21 +32,17 @@ module.exports.hookInto = compiler => {
     cb();
   });
 
-  compiler.hooks.afterCompile.tap('Logger', compilation => {
-    if (compilation.errors.length) {
-      console.log();
-      console.log(chalk.red('[WDM] encountered error(s) when building'));
-      printArr(compilation.errors);
-    }
-
-    if (compilation.warnings.length) {
-      console.log();
-      console.log(chalk.yellow('[WDM] encountered warning(s) when building'));
-      printArr(compilation.warnings);
-    }
+  compiler.hooks.afterCompile.tap('DevServer', compilation => {
+    checkForErrorsAndWarnings(compilation);
   });
 
-  compiler.hooks.done.tap('Logger', stats => {
+  compiler.hooks.done.tap('DevServer', stats => {
+    if (checkForErrorsAndWarnings(stats.compilation)) {
+      console.log();
+      process.stdout.write(chalk.red('[WDM] '));
+      return;
+    }
+
     const { hash, startTime, endTime } = stats;
     const start = new Date(startTime);
     const end = new Date(endTime);
@@ -61,8 +57,38 @@ module.exports.hookInto = compiler => {
     console.log();
     process.stdout.write(chalk.green('[WDM] '));
   });
+
+  compiler.hooks.failed.tap('DevServer', err => {
+    console.log('failed');
+    console.log(err);
+  });
+
+  compiler.hooks.invalid.tap('DevServer', (fileName, changeTime) => {
+    console.log('invalid');
+    console.log(fileName, changeTime);
+  });
 };
 
+function checkForErrorsAndWarnings({ errors, warnings }) {
+  let foundErrors = false;
+
+  if (errors.length) {
+    foundErrors = true;
+    console.log();
+    console.log(chalk.red('[WDM] encountered error(s) when building'));
+    printArr(errors);
+  }
+
+  if (warnings.length) {
+    foundErrors = true;
+    console.log();
+    console.log(chalk.yellow('[WDM] encountered warning(s) when building'));
+    printArr(warnings);
+  }
+
+  return foundErrors;
+}
+
 function printArr(arr) {
-  arr.forEach(el => console.log(el));
+  arr.forEach(el => console.log(el.message || el));
 }
