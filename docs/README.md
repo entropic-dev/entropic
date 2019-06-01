@@ -61,8 +61,8 @@ of administrators **"SUPPORT."**
 ## The problem, for real:
 
 **INSTALLERS** and **MAINTAINERS** are presently using a VC-backed public
-registry (hence, "**VCPM**") as a public good. However, VC funding is about to
-run out and in any case has untowards effects on such a registry. **CALAMITY**
+registry (hence, "**VCPM**") as a public good. However, VC funding may run out
+someday and in any case has untowards effects on such a registry. **CALAMITY**
 is on the horizon.
 
 **INSTALLERS** and **MAINTAINERS**, presently, are happy with the tools they
