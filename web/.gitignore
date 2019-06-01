@@ -1,0 +1,9 @@
+# environment
+.env.local
+.env.development.local
+
+# node
+node_modules
+
+# artifacts
+build
