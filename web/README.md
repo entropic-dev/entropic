@@ -1,6 +1,13 @@
 # entropic/website
 
-Entropic's website ~~goes~~ is here.
+<br />
+<br />
+<p align="center">
+  <img src="assets/splash.png" width="500" />
+</p>
+<br />
+
+Entropic's website ~~goes~~ **is** here.
 
 **DISCLAIMER:** This **is not** Entropic's live site (found at [https://entropic.dev](https://entropic.dev)). The source for that site can be found in the [`registry`](../registry) directory in the parent repo.
 

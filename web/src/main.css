@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700&display=swap');
+
+html,
+body {
+  background: #363636;
+  color: #f4e04d;
+  font-family: 'Fira Sans', sans-serif;
+}
+
+#page-wrapper {
+  padding: 25px;
+}
