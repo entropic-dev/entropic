@@ -14,7 +14,21 @@ hookInto(compiler);
 
 const app = express();
 
-app.use(require('connect-history-api-fallback')());
+app.use(
+  require('connect-history-api-fallback')({
+    rewrites: [
+      {
+        // Package routes (/package/{name}/{version}) will often include a '.'
+        // character in {version}, which `connect-history-api-fallback`
+        // assumes to be an indication that the browser is requesting a file.
+        // Since we know it _is_ in fact requesting a route, we'll force
+        // the rewrite to /index.html
+        from: /^\/package/,
+        to: '/index.html'
+      }
+    ]
+  })
+);
 
 app.use(
   require('webpack-dev-middleware')(compiler, {
@@ -27,10 +41,11 @@ app.use(
 
 app.use(require('webpack-hot-middleware')(compiler));
 
-app.listen(PORT, () =>
-  afterFirstCompile(() =>
-    setTimeout(() => {
-      console.log(chalk.blue(`[SRV] dev server listening on :${PORT}`));
-    }, 500)
+afterFirstCompile(() =>
+  app.listen(PORT, () =>
+    setTimeout(
+      () => console.log(chalk.blue(`[SRV] dev server listening on :${PORT}`)),
+      500
+    )
   )
 );
