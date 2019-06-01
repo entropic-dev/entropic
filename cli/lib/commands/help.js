@@ -19,6 +19,6 @@ async function help(opts) {
     console.log(
       `help has not been implemented yet for ${command}. You could build it!`
     );
-    console.log('comands: download, login, publish, whoami');
+    console.log('commands: download, login, publish, whoami');
   }
 }
