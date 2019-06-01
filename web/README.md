@@ -1,9 +1,9 @@
-# entropic/website
+# entropic/web
 
 <br />
 <br />
 <p align="center">
-  <img src="assets/splash.png" width="500" />
+  <img src="assets/splash.png" width="750" />
 </p>
 <br />
 
