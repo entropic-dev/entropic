@@ -54,6 +54,8 @@ token = "another-valid-entropic-token"
 
 The cli doesn't have a very sensible shell for running commands yet, and it doesn't yet have working help. (Help for help welcomed!) You can see what commands are implemented by browsing [the command source folder](./cli/lib/commands). See the [cli readme](./cli/README.md) for more notes.
 
+At present, if you want to install packages using `ds`, you can run `ds build` in a directory with a `Package.toml`. This will produce a `ds/node_modules` directory, which you can move into place by hand. This is a temporary situation!
+
 ### Packages
 
 Packages are described by toml files giving metadata and listing dependencies.
