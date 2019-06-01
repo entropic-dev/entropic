@@ -1,0 +1,43 @@
+extends:
+  - airbnb
+  - plugin:jest/recommended
+  - prettier
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2018
+env:
+  browser: true
+settings:
+  import/resolver:
+    node:
+      extensions: ['.js', '.ts', '.tsx']
+rules:
+  # import
+  import/order: 0
+  import/no-cycle: 0
+  import/prefer-default-export: 0
+  import/no-extraneous-dependencies: [error, { devDependencies: true }]
+
+  # react
+  react/prop-types: 0
+  react/no-array-index-key: 0
+  react/jsx-filename-extension: [error, { extensions: [.tsx] }]
+
+  # jsx-a11y
+  jsx-a11y/click-events-have-key-events: 0
+
+  # misc
+  no-restricted-syntax: 0
+  comma-dangle: 0
+  object-curly-newline: 0
+  implicit-arrow-linebreak: 0
+  arrow-parens: [error, as-needed]
+  no-prototype-builtins: 0
+  no-return-assign: [error, except-parens]
+  no-use-before-define: 0
+  no-unused-vars: [error, { argsIgnorePattern: "^_" }]
+  no-nested-ternary: 0
+  no-plusplus: [error, { allowForLoopAfterthoughts: true }]
+  no-confusing-arrow: 0
+  lines-between-class-members: [warn, always, { exceptAfterSingleLine: true }]
+  no-underscore-dangle: 0

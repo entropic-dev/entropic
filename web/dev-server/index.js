@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const webpack = require('webpack');
 const express = require('express');
 const chalk = require('chalk');

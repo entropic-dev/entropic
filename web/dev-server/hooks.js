@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const clear = require('clear');
 const chalk = require('chalk');
 const { format } = require('date-fns');
