@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const readdirAsync = promisify(fs.readdir);
+const helpFile = require('./help.json');
+const chalk = require('chalk');
 
 const userHome = require('user-home');
 
@@ -33,12 +35,31 @@ async function help(opts) {
 }
 
 async function showBasicHelp() {
-  const commands = (await readdirAsync(__dirname))
-    .filter(cmd => cmd.endsWith('.js'))
-    .map(cmd => `\t${cmd.split('.')[0]}`)
-    .join('\n');
+  const basicHelp = helpFile.basic;
+  const commands = Object.keys(basicHelp).map(key => {
+    const descArr = basicHelp[key].split('');
+    let t = '';
+    let desc = '';
+    for (let i = 0; i < descArr.length; i++) {
+      if (descArr[i] === '|' && descArr[i + 1] === 'c') {
+        for (let j = i + 2; j < descArr.length - 1; j++) {
+          if (descArr[j] === '|' && descArr[j + 1] === 'c') {
+            i = j + 1;
+            desc += chalk.magenta.italic(t);
+            t = '';
+            break;
+          } else {
+            t += descArr[j];
+          }
+        }
+      } else {
+        desc += descArr[i];
+      }
+    }
+    return '\t' + chalk.bold.blue(key) + ':  ' + desc;
+  });
   console.log('Usage: ds <command>');
   console.log('\nAvailable commands:');
-  console.log(commands);
+  console.log(commands.join('\n'));
   console.log(`\nThe configuration is located at ${userHome}/.entropicrc `);
 }
