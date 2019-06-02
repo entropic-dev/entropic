@@ -9,5 +9,8 @@
     "join": "accept an invitation to join a namespace or maintain a package",
     "decline": "decline an invitation to join a namespace or package maintainers list",
     "members": "show members of a namespace OR list all maintainers of a package"
-  }
+  },
+  "login": "|cds login|c\n\tRun this to log into the preferred registry specified in |c~/.entropicrc|c (default: https://registry.entropic.dev). \nRunning the command should open up a browser window in which you can log in using Github. You can then create and delete tokens for the registry.",
+  "whoami": "|cds whoami|c\n\tGet the name of the authenticated user",
+  "publish": "|cds login|c\n\tPublish an updated version of the package. If there is no package available, a new one is created"
 }

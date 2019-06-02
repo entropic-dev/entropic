@@ -18,34 +18,38 @@ function help(opts) {
       );
       showBasicHelp();
     } else {
-      console.log(helpFile[command]);
+      console.log('Help for: ' + parse(helpFile[command]));
     }
   }
 }
 
+const parse = sArr => {
+  let t = '';
+  let desc = '';
+  for (let i = 0; i < sArr.length; i++) {
+    if (sArr[i] === '|' && sArr[i + 1] === 'c') {
+      for (let j = i + 2; j < sArr.length - 1; j++) {
+        if (sArr[j] === '|' && sArr[j + 1] === 'c') {
+          i = j + 1;
+          desc += chalk.magenta.italic(t);
+          t = '';
+          break;
+        } else {
+          t += sArr[j];
+        }
+      }
+    } else {
+      desc += sArr[i];
+    }
+  }
+  return desc;
+};
+
 function showBasicHelp() {
   const basicHelp = helpFile.basic;
   const commands = Object.keys(basicHelp).map(key => {
-    const descArr = basicHelp[key].split('');
-    let t = '';
-    let desc = '';
-    for (let i = 0; i < descArr.length; i++) {
-      if (descArr[i] === '|' && descArr[i + 1] === 'c') {
-        for (let j = i + 2; j < descArr.length - 1; j++) {
-          if (descArr[j] === '|' && descArr[j + 1] === 'c') {
-            i = j + 1;
-            desc += chalk.magenta.italic(t);
-            t = '';
-            break;
-          } else {
-            t += descArr[j];
-          }
-        }
-      } else {
-        desc += descArr[i];
-      }
-    }
-    return '\t' + chalk.bold.blue(key) + ':  ' + desc;
+    const sArr = basicHelp[key].split('');
+    return '\t' + chalk.bold.blue(key) + ':  ' + parse(sArr);
   });
   console.log('Usage: ds <command>');
   console.log('\nAvailable commands:');
