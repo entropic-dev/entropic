@@ -40,7 +40,7 @@ curl -sSL https://www.entropic.dev/install.sh | bash
 
 Log in to a registry: `ds login`. You will be prompted to authenticate using Github.
 
-The `ds` cli is configured with an `.entropicrc` file in your home directory. This is a toml file. Use it to specify your preferred registry, as well as any other registries you use normally.
+The `ds` cli is configured with an `.entropicrc` file in your home directory. This is a [TOML](https://github.com/toml-lang/toml) file. Use it to specify your preferred registry, as well as any other registries you use normally.
 
 ```toml
 registry = "http://example.com"
@@ -58,7 +58,7 @@ At present, if you want to install packages using `ds`, you can run `ds build` i
 
 ### Packages
 
-Packages are described by toml files giving metadata and listing dependencies.
+Packages are described by [TOML](https://github.com/toml-lang/toml) files giving metadata and listing dependencies.
 
 Here's an example `Package.toml`:
 
