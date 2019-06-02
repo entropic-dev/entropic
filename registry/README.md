@@ -34,6 +34,10 @@ Here are the config values and what they mean:
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
+## Running locally
+
+If you have Docker and Docker Compose, first `npm install`, then `npm start`.
+
 
 ## The API
 
