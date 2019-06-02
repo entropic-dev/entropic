@@ -37,7 +37,7 @@ Examples of unacceptable behavior by participants include:
   * Public or private harassment, deliberate intimidation, or threats.
   * Publishing others' private information, such as a physical or electronic address, without explicit permission. This includes any sort of "outing" of any aspect of someone's identity without their consent.
   * Publishing private screenshots or quotes of interactions in the context of this project without all quoted users' *explicit* consent.
-  * Publishing of private communication that doesn't have to do with reporting harrassment.
+  * Publishing of private communication that doesn't have to do with reporting harassment.
   * Any of the above even when [presented as "ironic" or "joking"](https://en.wikipedia.org/wiki/Hipster_racism).
   * Any attempt to present "reverse-ism" versions of the above as violations. Examples of reverse-isms are "reverse racism", "reverse sexism", "heterophobia", and "cisphobia".
   * Unsolicited explanations under the assumption that someone doesn't already know it. Ask before you teach! Don't assume what people's knowledge gaps are.
