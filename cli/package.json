@@ -71,6 +71,20 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
-    "test": "mocha -R spec"
+    "test": "ava",
+    "test:coverage": "nyc npm run test"
+  },
+  "ava": {
+    "helpers": [
+      "test/utils/**/*"
+    ]
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "lib/**/*.js"
+    ],
+    "check-coverage": true,
+    "lines": 80
   }
 }

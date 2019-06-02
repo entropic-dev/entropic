@@ -1,8 +1,10 @@
-/* eslint-env node, mocha */
-'use strict';
+/* eslint-env node */
+const test = require('ava');
+const ds = require('./utils/ds');
 
-const demand = require('must');
+test('--version should print version', async t => {
+  const { stdout, code } = await ds('--version');
 
-describe('ds', () => {
-  it('has tests');
+  t.is(code, 0);
+  t.true(/^v\d+\.\d+\.\d+/.test(stdout));
 });
