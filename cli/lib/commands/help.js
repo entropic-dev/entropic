@@ -18,7 +18,16 @@ function help(opts) {
       );
       showBasicHelp();
     } else {
-      console.log('Help for: ' + parse(helpFile[command]));
+      const text = helpFile[command];
+      let first = true;
+      for (let line of text) {
+        if (first) {
+          console.log('\nHelp for: ' + parse(line) + '\n');
+          first = false;
+        } else {
+          console.log('\t' + parse(line));
+        }
+      }
     }
   }
 }
