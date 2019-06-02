@@ -17,7 +17,8 @@ const App = () => (
       <Router>
         <Splash path="/" />
         <Search path="/search" />
-        <Package path="/package/:package" />
+        <Package path="/package/:name" />
+        <Package path="/package/:name/:version" />
         <NotFound default />
       </Router>
     </div>

@@ -1,12 +1,26 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700&display=swap');
 
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
-  background: #363636;
+  background: #2d2d2d;
   color: #f4e04d;
   font-family: 'Fira Sans', sans-serif;
 }
 
 #page-wrapper {
   padding: 25px;
+}
+
+a {
+  color: #f4e04d;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+  border-bottom: 2px solid #f4e04d;
 }

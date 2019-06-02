@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { RouteComponentProps } from '@reach/router';
+import { Input } from '../components/Input';
+import { Heading2 } from '../components/Heading';
 
 export interface Props extends RouteComponentProps {}
 
 const Search = (_props: Props) => (
   <>
-    <h1>Search for a package</h1>
-    <input />
+    <Heading2>Search for a package</Heading2>
+    <Input placeholder="search..." />
   </>
 );
 

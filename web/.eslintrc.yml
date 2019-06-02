@@ -4,6 +4,7 @@ extends:
   - prettier
 plugins:
   - '@typescript-eslint'
+  - 'react-hooks'
 parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: 2018
@@ -25,6 +26,8 @@ rules:
   react/no-array-index-key: 0
   react/jsx-filename-extension: [error, { extensions: [.tsx] }]
   react/jsx-one-expression-per-line: 0
+  react-hooks/rules-of-hooks: error
+  react-hooks/exhaustive-deps: warn
 
   # jsx-a11y
   jsx-a11y/click-events-have-key-events: 0
@@ -46,4 +49,6 @@ rules:
 
   # typescript
   no-unused-vars: 0
-  '@typescript-eslint/no-unused-vars': [error, { argsIgnorePattern: '^_' }]
+  '@typescript-eslint/no-unused-vars':
+    - error
+    - { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
