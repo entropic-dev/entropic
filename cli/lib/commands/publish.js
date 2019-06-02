@@ -2,7 +2,7 @@
 
 module.exports = publish;
 
-const { createReadStream, promises: fs } = require('fs');
+const { createReadStream, promises: fs } = require('fs-extra');
 const packlist = require('npm-packlist');
 const figgy = require('figgy-pudding');
 const FormData = require('form-data');

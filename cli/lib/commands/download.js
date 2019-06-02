@@ -2,7 +2,7 @@
 
 module.exports = download;
 
-const { createReadStream, promises: fs } = require('fs');
+const { createReadStream, promises: fs } = require('fs-extra');
 const { pipeline: _ } = require('stream');
 const figgy = require('figgy-pudding');
 const { promisify } = require('util');

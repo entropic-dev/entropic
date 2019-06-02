@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const { promisify } = require('util');
 const readdirAsync = promisify(fs.readdir);
