@@ -10,7 +10,8 @@ const { load, save } = require('../config');
 
 const loginOpts = figgy({
   log: { default: require('npmlog') },
-  registry: { default: 'https://registry.entropic.dev' }
+  registry: { default: 'https://registry.entropic.dev' },
+  config: {}
 });
 
 async function login(opts) {
@@ -22,11 +23,13 @@ async function login(opts) {
   );
 
   // load _just_ the config file, not the config file + env + cli args.
-  const current = await load();
+  const current = await load(opts.config);
 
   current.registries = current.registries || {};
   current.registries[opts.registry] = current.registries[opts.registry] || {};
   current.registries[opts.registry].token = token;
 
-  await save(current);
+  await save(current, opts.config);
+
+  return { token };
 }
