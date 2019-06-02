@@ -51,6 +51,7 @@
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
+    "ninos": "^3.0.0",
     "prettier": "~1.17.1"
   },
   "directories": {
