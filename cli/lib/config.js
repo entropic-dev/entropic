@@ -2,7 +2,8 @@
 
 module.exports = { load, save };
 
-const { promises: fs } = require('fs');
+const { dirname } = require('path');
+const { promises: fs, ensureDir } = require('fs-extra');
 const toml = require('@iarna/toml');
 const home = require('user-home');
 const path = require('path');
@@ -32,5 +33,8 @@ async function load(filename = path.join(home, '.entropicrc')) {
 }
 
 async function save(content, filename = path.join(home, '.entropicrc')) {
+  const dir = dirname(filename);
+  // Ensure that dir exists before trying to write there
+  await ensureDir(dir);
   await fs.writeFile(filename, toml.stringify(content));
 }
