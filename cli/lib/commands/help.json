@@ -13,11 +13,13 @@
   "login": [
     "|cds login|c",
     "Run this to log into the preferred registry specified in |c~/.entropicrc|c (default: https://registry.entropic.dev).",
-    "Running the command should open up a browser window in which you can log in using Github. You can then create and delete tokens for the registry."
+		"Running the command should open up a browser window in which you can log in using Github.",
+		"You can then create and delete tokens for the registry."
   ],
   "whoami": ["|cds whoami|c", "Get the name of the authenticated user"],
   "publish": [
     "|cds login|c",
-    "Publish an updated version of the package. If there is no package available, a new one is created"
+		"Publish an updated version of the package.",
+		"If there is no package available, a new one is created"
   ]
 }
