@@ -5,7 +5,7 @@
       "ENV": "PGDATABASE"
     },
     "host": {
-      "ENV": "POSTGRES_HOST"
+      "ENV": "PGHOST"
     }
   }
 }

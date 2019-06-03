@@ -7,12 +7,7 @@ const { Client } = require('pg');
 
 function providePostgres(to) {
   return async function(...args) {
-    const client = new Client({
-      user: process.env.PGUSER,
-      database: process.env.PGDATABASE,
-      port: 5432,
-      host: process.env.POSTGRES_HOST
-    });
+    const client = new Client();
 
     await client.connect();
     await client.query('begin');

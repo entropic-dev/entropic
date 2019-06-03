@@ -20,7 +20,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
 
-      - run: npm test
+      - run: PGHOST=localhost EXTERNAL_HOST=http://localhost:3000 npm test
 
   cli:
     docker:
