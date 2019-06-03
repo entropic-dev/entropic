@@ -10,12 +10,11 @@ jobs:
     steps:
       - checkout:
           path: ~/repo
-      - run: npm install
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
-
+      - run: npm install
       - save_cache:
           paths:
             - node_modules
@@ -37,9 +36,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
-
       - run: npm install
-
       - save_cache:
           paths:
             - node_modules
