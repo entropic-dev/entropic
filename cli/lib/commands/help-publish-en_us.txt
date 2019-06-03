@@ -1,0 +1,4 @@
+Help for: ds publish
+    
+    Run this command to publish your package to the registry specified in your
+    Package.toml.
