@@ -30,15 +30,15 @@ services:
   registry:
     image: mhart/alpine-node:12
     volumes:
-      - ./registry:/registry
-    working_dir: /registry
+      - ./services/:/services
+    working_dir: /services/registry
     command: npm start
     networks:
       - entropic
     ports:
       - "3000:3000"
     env_file:
-      - registry/.env
+      - ./services/registry/.env
 
 volumes:
   postgres_data:
