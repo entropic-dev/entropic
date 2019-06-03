@@ -1,7 +1,7 @@
 'use strict';
 
 const Namespace = require('../models/namespace');
-const response = require('../lib/response');
+const { response } = require('boltzmann');
 
 module.exports = isNamespaceMember;
 

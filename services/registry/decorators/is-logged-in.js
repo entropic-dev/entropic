@@ -1,7 +1,7 @@
 'use strict';
 
 const Token = require('../models/token');
-const response = require('../lib/response');
+const { response } = require('boltzmann');
 
 module.exports = isLoggedIn;
 

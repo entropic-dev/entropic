@@ -17,7 +17,7 @@ Boltzmann's router is an *even simpler* version of [micro-fork](https://github.c
 If you need to store data used through a request lifecycle, hang it onto the context object.
 
 
-The
+The router has sugar for all the http verbs. It returns a handler
 
 ```js
 const handlerList = [

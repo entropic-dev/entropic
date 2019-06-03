@@ -3,10 +3,9 @@
 const NamespaceMember = require('../models/namespace-member');
 const isLoggedIn = require('../decorators/is-logged-in');
 const Namespace = require('../models/namespace');
+const { response, fork } = require('boltzmann');
 const Package = require('../models/package');
-const response = require('../lib/response');
 const User = require('../models/user');
-const fork = require('../lib/router');
 
 module.exports = [
   fork.get('/v1/namespaces', namespaces),

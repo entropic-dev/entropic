@@ -5,10 +5,9 @@ module.exports = makeRouter;
 const ship = require('culture-ships').random();
 
 const isLoggedIn = require('../decorators/is-logged-in');
-const response = require('../lib/response');
+const { response, fork } = require('boltzmann');
 const pkg = require('../package.json');
 const User = require('../models/user');
-const fork = require('../lib/router');
 const auth = require('./auth');
 
 function makeRouter() {

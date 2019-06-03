@@ -13,10 +13,9 @@ const canWrite = require('../decorators/can-write-package');
 const clone = require('../lib/clone-legacy-package');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
+const { response, fork } = require('boltzmann');
 const Package = require('../models/package');
-const response = require('../lib/response');
 const check = require('../lib/validations');
-const fork = require('../lib/router');
 
 // Set these env vars to "Infinity" if you'd like to turn these checks off.
 const MAX_DEPENDENCIES = Number(process.env.MAX_DEPENDENCIES) || 1024;
@@ -52,7 +51,11 @@ module.exports = [
 
 async function packageList(context) {
   const packages = await Package.objects
-    .filter({ active: true, 'namespace.active': true, 'namespace.host.active': true })
+    .filter({
+      active: true,
+      'namespace.active': true,
+      'namespace.host.active': true
+    })
     .then();
 
   const objects = [];

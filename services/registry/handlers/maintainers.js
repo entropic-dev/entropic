@@ -7,8 +7,7 @@ const canWrite = require('../decorators/can-write-package');
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
-const response = require('../lib/response');
-const fork = require('../lib/router');
+const { response, fork } = require('boltzmann');
 
 module.exports = [
   fork.get(

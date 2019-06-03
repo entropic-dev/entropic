@@ -3,7 +3,7 @@
 const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const Package = require('../models/package');
-const response = require('../lib/response');
+const { response } = require('boltzmann');
 
 module.exports = canWrite;
 

@@ -7,8 +7,6 @@ module.exports = {
   logger: require('./logger'),
   'flush-request': require('./flush-request'),
   requestid: require('./requestid'),
-  postgres: require('./postgres'),
-  transaction: require('./transaction'),
   redis: require('./redis'),
   build
 };

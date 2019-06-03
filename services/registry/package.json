@@ -7,6 +7,7 @@
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
+    "boltzmann": "file:../common/boltzmann",
     "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
     "are-we-dev": "^1.0.0",

@@ -10,10 +10,9 @@ const { URL } = require('url');
 const CSRF = require('csrf');
 
 const Authentication = require('../models/authentication');
-const response = require('../lib/response');
+const { response, fork } = require('boltzmann');
 const Token = require('../models/token');
 const User = require('../models/user');
-const fork = require('../lib/router');
 
 const TOKENS = new CSRF();
 

@@ -4,7 +4,7 @@ const { json } = require('micro');
 const joi = require('@hapi/joi');
 const uuid = require('uuid');
 
-const response = require('../lib/response');
+const { response } = require('boltzmann');
 
 module.exports = {
   login,

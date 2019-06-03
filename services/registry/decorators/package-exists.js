@@ -1,7 +1,7 @@
 'use strict';
 
 const Package = require('../models/package');
-const response = require('../lib/response');
+const { response } = require('boltzmann');
 
 module.exports = packageExists;
 
