@@ -7,11 +7,11 @@
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
-    "boltzmann": "file:../common/boltzmann",
     "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
     "are-we-dev": "^1.0.0",
     "bole": "~3.0.2",
+    "boltzmann": "file:../common/boltzmann",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
     "csrf": "~3.1.0",
