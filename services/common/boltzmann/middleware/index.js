@@ -18,7 +18,6 @@ function build(middleware) {
 
     // Add a middleware that runs between each middleware layer so we can detect
     // slow views, hangs, etc.
-    const cwd = process.cwd();
     const result = middleware.reduce((lhs, rhs) => {
       const [mw, ...args] = Array.isArray(rhs) ? rhs : [rhs];
       return [...lhs, dev(mw), mw(...args)];
@@ -31,6 +30,6 @@ function build(middleware) {
   // Build for production.
   return middleware.map(xs => {
     const [mw, ...args] = Array.isArray(xs) ? xs : [xs];
-    return require(xs)(...args);
+    return xs(...args);
   });
 }

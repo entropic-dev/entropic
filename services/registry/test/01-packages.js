@@ -55,7 +55,7 @@ describe('entropic', () => {
         data.must.be.an.object();
         data.must.have.property('message');
         data.message.must.eql('You are not a member of "any-namespace"');
-      }).middleware([require('../middleware/bearer-auth')()])
+      }).middleware([require('../middleware/bearer-auth')])
     )
   );
 
@@ -89,8 +89,8 @@ describe('entropic', () => {
           tags: {}
         });
       }).middleware([
-        require('../middleware/bearer-auth')(),
-        require('./utils/logger')()
+        require('../middleware/bearer-auth'),
+        require('./utils/logger')
       ])
     )
   );

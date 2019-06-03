@@ -5,17 +5,14 @@ module.exports = provideRegistry;
 const listen = require('test-listen');
 const micro = require('micro');
 
-const { makeRequestHandler } = require('../../lib/request-handler');
-const flush = require('../../middleware/flush-request');
+const { muxer, middleware } = require('boltzmann');
+const flush = middleware['flush-request'];
 const registry = require('../../handlers');
 
 function provideRegistry(to) {
-  let middleware = [];
+  let ourmiddles = [];
   const testHandler = async function(...args) {
-    const requestHandler = makeRequestHandler(registry(), [
-      flush(),
-      ...middleware
-    ]);
+    const requestHandler = muxer(registry(), [flush, ...ourmiddles]);
 
     const service = await micro(requestHandler);
     const url = await listen(service);
@@ -29,9 +26,9 @@ function provideRegistry(to) {
 
   testHandler.middleware = function(mw) {
     if (!mw) {
-      return middleware;
+      return ourmiddles;
     }
-    middleware = mw;
+    ourmiddles = mw;
     return this;
   };
 

@@ -1,10 +1,11 @@
 /* eslint-env node, mocha */
 'use strict';
 
+process.env.EXTERNAL_HOST = 'http://localhost:3000';
+
 const fetch = require('node-fetch');
 const demand = require('must');
 
-const check = require('../lib/validations');
 const providePostgres = require('./utils/postgres');
 const provideRegistry = require('./utils/registry');
 const { createUser, createToken } = require('./utils/users');
@@ -139,8 +140,8 @@ describe('invitations to namespaces', () => {
         data.must.have.property('message');
         data.message.must.match(/cannot act on behalf of/);
       }).middleware([
-        require('../middleware/bearer-auth')(),
-        require('./utils/logger')()
+        require('../middleware/bearer-auth'),
+        require('./utils/logger')
       ])
     )
   );
@@ -261,8 +262,8 @@ describe('invitations to packages', () => {
         data.must.have.property('message');
         data.message.must.match(/declined/);
       }).middleware([
-        require('../middleware/bearer-auth')(),
-        require('./utils/logger')()
+        require('../middleware/bearer-auth'),
+        require('./utils/logger')
       ])
     )
   );

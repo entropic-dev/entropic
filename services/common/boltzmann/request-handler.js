@@ -26,7 +26,8 @@ class Context {
 }
 
 function muxer(router, middleware) {
-  const handler = build(middleware).reduceRight((lhs, rhs) => {
+  const built = build(middleware);
+  const handler = built.reduceRight((lhs, rhs) => {
     return rhs(lhs);
   }, router);
 

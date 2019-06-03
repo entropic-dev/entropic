@@ -14,10 +14,12 @@ function providePostgres(to) {
     if (typeof to.middleware === 'function') {
       to.middleware([
         ...to.middleware(),
-        next => {
-          return req => {
-            req.getPostgresClient = async () => client;
-            return next(req);
+        function addpg() {
+          return next => {
+            return req => {
+              req.getPostgresClient = async () => client;
+              return next(req);
+            };
           };
         }
       ]);
