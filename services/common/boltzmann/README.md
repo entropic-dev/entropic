@@ -16,8 +16,9 @@ Boltzmann's router is an *even simpler* version of [micro-fork](https://github.c
 
 If you need to store data used through a request lifecycle, hang it onto the context object.
 
+The router has sugar for all the http verbs. It returns a handler that can in turn be passed to the muxer-creation function that mashes up the request router with the middleware layer.
 
-The router has sugar for all the http verbs. It returns a handler
+Here's an example of extremely important CRUD handlers:
 
 ```js
 const handlerList = [
@@ -84,7 +85,7 @@ Here are all the response conveniences:
 
 ## Middleware functions
 
-
+Middleware wraps *around* the middleware that follows it in the list, so you have a chance to act both before & after other middlewares run. You must call next to invoke the next middleware unless you are interrupting execution for some reason. You can examine or modify the response object returned to you. Remember to return something from your middleware!
 
 Here's Boltzmann's redis middleware:
 
@@ -97,7 +98,7 @@ function middlewareBuilder({
   return function theMiddlewareFunction(next) {
     const client = redis.createClient(redisURL);
 
-	// The innermost function is what gets run on every request.
+	  // The innermost function is what gets run on every request.
     return function thisIsRunOnEveryRequest(context) {
       context.redis = client;
       return next(context);
@@ -108,14 +109,12 @@ function middlewareBuilder({
 
 ## Putting it all together...
 
-
 Here's the Boltzmann hello world, complete:
-
 
 ```js
 'use strict';
 
-const boltzmann = require('./index.js');
+const boltzmann = require('boltzmann');
 
 async function greeting(context, params) {
   return boltzmann.response.text(`greetings, ${params.human}`);
@@ -126,14 +125,18 @@ const router = boltzmann.fork.router()(
 );
 
 const myMiddles = [
-	boltmmann.middleware['logger'],
-	boltmmann.middleware['flush-request'],
-	boltzmann.middleware['logger'],
-	boltzmann.middleware['flush-request'],
-	boltzmann.middleware['requestid'],
+	require('boltmmann/middleware/logger'),
+	require('boltmmann/middleware/flush-request'),
+	require('boltmmann/middleware/logger'),
+	require('boltmmann/middleware/flush-request'),
+	require('boltmmann/middleware/requestid'),
 ];
 
 const server = boltzmann.make(router,  myMiddles);
 server.listen(process.env.PORT, '0.0.0.0');
 console.log(`now listening on ${process.env.PORT}`);
 ```
+
+## LICENSE
+
+As with the enclosing Entropic project, Apache-2.0.

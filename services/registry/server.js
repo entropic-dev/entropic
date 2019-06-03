@@ -20,12 +20,12 @@ if (isDev()) {
 
 // This code does not yet inspire joy.
 const myMiddles = [
-  boltzmann.middleware['logger'],
-  boltzmann.middleware['flush-request'],
-  boltzmann.middleware['requestid'],
+  require('boltzmann/middleware/logger'),
+  require('boltzmann/middleware/flush-request'),
+  require('boltzmann/middleware/requestid'),
   require('./middleware/postgres'),
   require('./middleware/transaction'),
-  boltzmann.middleware['redis'],
+  require('boltzmann/middleware/redis'),
   require('./middleware/session'),
   require('./middleware/bearer-auth'),
   require('./middleware/object-store')

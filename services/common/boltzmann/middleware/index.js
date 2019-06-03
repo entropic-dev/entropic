@@ -3,10 +3,6 @@
 const isDev = require('are-we-dev');
 
 module.exports = {
-  logger: require('./logger'),
-  'flush-request': require('./flush-request'),
-  requestid: require('./requestid'),
-  redis: require('./redis'),
   build
 };
 

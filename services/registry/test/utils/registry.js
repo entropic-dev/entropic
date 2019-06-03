@@ -5,8 +5,8 @@ module.exports = provideRegistry;
 const listen = require('test-listen');
 const micro = require('micro');
 
-const { muxer, middleware } = require('boltzmann');
-const flush = middleware['flush-request'];
+const { muxer } = require('boltzmann');
+const flush = require('boltzmann/middleware/flush-request');
 const registry = require('../../handlers');
 
 function provideRegistry(to) {
