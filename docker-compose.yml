@@ -29,22 +29,6 @@ services:
 
   registry:
     image: mhart/alpine-node:12
-    environment:
-      NODE_ENV: development
-      POSTGRES_URL: postgres://postgres@db:5432
-      POSTGRES_HOST: db
-      REDIS_URL: redis://redis:6379
-      PORT: 3000
-      DEV_LATENCY_ERROR_MS: 10000
-      PGUSER: postgres
-      PGDATABASE: entropic_dev
-      CACHE_DIR: ../data/entropic-cache
-      OAUTH_GITHUB_CLIENT: gh_client_id_here
-      OAUTH_GITHUB_SECRET: gh_secret_here
-      OAUTH_PASSWORD: pw_for_encrypting_tokens_here
-      EXTERNAL_HOST: http://localhost:3000
-      SESSION_SECRET: long_pw_for_encrypting_sessions_here
-      SESSION_EXPIRY_SECONDS: 31536000
     volumes:
       - ./registry:/registry
     working_dir: /registry
@@ -53,6 +37,8 @@ services:
       - entropic
     ports:
       - "3000:3000"
+    env_file:
+      - registry/.env
 
 volumes:
   postgres_data:

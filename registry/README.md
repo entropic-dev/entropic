@@ -36,7 +36,12 @@ Here are the config values and what they mean:
 
 ## Running locally
 
-If you have Docker and Docker Compose, first `npm install`, then `npm start`.
+* [Get Docker](https://docs.docker.com/install/)
+* [Get Docker Compose](https://docs.docker.com/compose/install/)
+* [Get Node](https://nodejs.org/en/download/)
+
+Once you have Node, Docker, and Docker Compose, first `npm install`, then `npm start`,
+and go to <http://localhost:3000>.
 
 
 ## The API
