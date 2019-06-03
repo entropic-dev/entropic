@@ -9,7 +9,8 @@ module.exports = class FakeApi {
       resolve({
         status: this.desiredStatus,
         message: 'OK',
-        json: () => new Promise((jsonRes, _jsonRej) => jsonRes(this.desiredResponse))
+        json: () =>
+          new Promise((jsonRes, _jsonRej) => jsonRes(this.desiredResponse))
       });
     });
   }
