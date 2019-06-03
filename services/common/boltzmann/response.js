@@ -88,6 +88,6 @@ function authneeded(message, status = 401, extraHeaders = {}) {
   if (typeof message === 'string') {
     message = { error: message };
   }
-  const r = new Response(JSON.stringify(message), status, headers);
+  const r = new Response(JSON.stringify(message), { status, headers });
   return r;
 }
