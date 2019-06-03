@@ -22,11 +22,11 @@ Here's an example of extremely important CRUD handlers:
 
 ```js
 const handlerList = [
-	fork.post('/floofs', createAFloof),
-	fork.get('/floofs/floof/:id', readFloof),
-	fork.put('/floofs/floof/:id', updateFloof),
-	fork.patch('/floofs/floof/:id', repairTheFloofSoItDoesntRegenerate),
-	fork.del('/floofs/floof/:id', deleteFloof)
+  fork.post('/floofs', createAFloof),
+  fork.get('/floofs/floof/:id', readFloof),
+  fork.put('/floofs/floof/:id', updateFloof),
+  fork.patch('/floofs/floof/:id', repairTheFloofSoItDoesntRegenerate),
+  fork.del('/floofs/floof/:id', deleteFloof)
 ];
 ```
 
@@ -98,7 +98,7 @@ function middlewareBuilder({
   return function theMiddlewareFunction(next) {
     const client = redis.createClient(redisURL);
 
-	  // The innermost function is what gets run on every request.
+    // The innermost function is what gets run on every request.
     return function thisIsRunOnEveryRequest(context) {
       context.redis = client;
       return next(context);
@@ -125,11 +125,9 @@ const router = boltzmann.fork.router()(
 );
 
 const myMiddles = [
-	require('boltmmann/middleware/logger'),
-	require('boltmmann/middleware/flush-request'),
-	require('boltmmann/middleware/logger'),
-	require('boltmmann/middleware/flush-request'),
-	require('boltmmann/middleware/requestid'),
+  require('boltmmann/middleware/logger'),
+  require('boltmmann/middleware/flush-request'),
+  require('boltmmann/middleware/requestid'),
 ];
 
 const server = boltzmann.make(router,  myMiddles);
