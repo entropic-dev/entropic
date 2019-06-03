@@ -1,13 +1,14 @@
 /* eslint-env node, ava */
-const test = require('ava');
-const { promises: fs } = require('fs-extra');
-const profile = require('npm-profile');
+import test from 'ava';
+import { promises as fs } from 'fs-extra';
+import profile from 'npm-profile';
 
-const { save } = require('../lib/config');
-const login = require('../lib/commands/login');
-const tmpConfigPath = require('./utils/tmpConfigPath');
+import { save } from '../lib/config';
+import login from '../lib/commands/login';
+import tmpConfigPath from './utils/tmpConfigPath';
+import ninos from 'ninos';
 
-require('ninos')(test);
+ninos(test);
 
 // Serial tests to ensure that fs is not trying to read
 // the same config file
