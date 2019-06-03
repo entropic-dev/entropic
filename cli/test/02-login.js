@@ -2,11 +2,11 @@
 import test from 'ava';
 import { promises as fs } from 'fs-extra';
 import profile from 'npm-profile';
+import ninos from 'ninos';
+import tempy from 'tempy';
 
 import { save } from '../lib/config';
 import login from '../lib/commands/login';
-import tmpConfigPath from './utils/tmpConfigPath';
-import ninos from 'ninos';
 
 ninos(test);
 
@@ -16,7 +16,7 @@ test.serial(
   'login should save the auth token for specified registry',
   async t => {
     const registry = 'https://mock.registry.test';
-    const configFilename = tmpConfigPath();
+    const configFilename = tempy.file();
 
     t.context.spy(profile, 'loginWeb', async () => {
       return { username: 'spiderman', token: 'peter parker' };
@@ -35,7 +35,7 @@ test.serial(
   'login should override token in the config, if one is already present',
   async t => {
     const registry = 'https://mock.registry.test';
-    const configFilename = tmpConfigPath();
+    const configFilename = tempy.file();
 
     t.context.spy(profile, 'loginWeb', async () => {
       return { username: 'captainmarvel', token: 'carol danvers' };
