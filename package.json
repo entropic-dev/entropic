@@ -29,8 +29,10 @@
   "scripts": {
     "lint": "npm run lint-registry && npm run lint-cli",
     "lint-cli": "cd cli; npm run lint",
-    "lint-registry": "cd registry; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint-registry": "cd registry; npm run lint",
+    "postinstall": "for d in cli registry workers; do cd $d; npm i; cd -; done",
+    "start": "./misc/start.sh",
+    "test": "for d in cli registry; do cd $d; npm t; cd -; done"
   }
 }

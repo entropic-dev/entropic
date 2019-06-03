@@ -1,6 +1,11 @@
 {
   "entropic": {
     "driver": "postgres",
-    "database": {"ENV": "PGDATABASE"}
+    "database": {
+      "ENV": "PGDATABASE"
+    },
+    "host": {
+      "ENV": "POSTGRES_HOST"
+    }
   }
 }

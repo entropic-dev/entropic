@@ -34,6 +34,16 @@ Here are the config values and what they mean:
 * `SESSION_SECRET=long_pw_for_encrypting_sessions_here`
 * `SESSION_EXPIRY_SECONDS=31536000`: how long login sessions should live
 
+## Running locally
+
+* [Get Docker](https://docs.docker.com/install/)
+* [Get Docker Compose](https://docs.docker.com/compose/install/)
+* [Get Node](https://nodejs.org/en/download/)
+
+Once you have Node, Docker, and Docker Compose, `cp registry/.env-example
+registry/.env` (and make any adjustments you like), `npm i`, and `npm start`.
+Then go to <http://localhost:3000>.
+
 
 ## The API
 
