@@ -10,11 +10,6 @@ jobs:
     steps:
       - checkout:
           path: ~/repo
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-
       - run: npm install
 
       - save_cache:
