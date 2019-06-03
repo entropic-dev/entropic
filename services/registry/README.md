@@ -20,7 +20,7 @@ Entropic reads all of its configuration from environment variables. You may prov
 
 Here are the config values and what they mean:
 
-* `NODE_ENV=env`: one of `development`, `testing`, or `production`
+* `NODE_ENV=env`: one of `dev`, `testing`, or `production`
 * `DEV_LATENCY_ERROR_MS=10000`: if a middleware is slower than this in development, you'll see warning logs
 * `POSTGRES_URL=postgres://postgres@127.0.0.1:5432`: postgresql connection string
 * `PORT=3000`: the port for the registry service to listen on
