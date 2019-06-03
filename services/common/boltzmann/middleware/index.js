@@ -1,7 +1,6 @@
 'use strict';
 
 const isDev = require('are-we-dev');
-const path = require('path');
 
 module.exports = {
   logger: require('./logger'),
