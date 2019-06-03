@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:latest
       - image: circleci/postgres:latest
 
-    working_directory: ~/repo/registry
+    working_directory: ~/repo/services/registry
 
     steps:
       - checkout:
