@@ -86,7 +86,7 @@ Here are all the response conveniences:
 
 
 
-Here's Boltmann's redis middleware:
+Here's Boltzmann's redis middleware:
 
 ```js
 // build the middleware function, using runtime config
