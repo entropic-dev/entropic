@@ -1,0 +1,38 @@
+{
+  "name": "boltzmann",
+  "description": "The constant parts of entropic services.",
+  "version": "1.0.0",
+  "author": "C J Silverio <ceejceej@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/entropic-dev/entropic/issues"
+  },
+  "dependencies": {
+    "are-we-dev": "~1.0.0",
+    "bole": "~3.0.2",
+    "find-my-way": "~2.0.1",
+    "micro": "~9.3.4",
+    "node-fetch": "~2.6.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "~10.0.1",
+    "eslint": "~5.16.0",
+    "prettier": "~1.17.1"
+  },
+  "homepage": "https://github.com/entopic-dev/entropic#readme",
+  "keywords": [
+    "entropy",
+    "heat death"
+  ],
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/entopic-dev/entropic.git"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint-fix": "prettier --write '**/*.js'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
