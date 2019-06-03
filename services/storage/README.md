@@ -1,4 +1,4 @@
-# entropic registry internal
+# entropic registry storage
 
 Internal APIs used by the website, the entropic public API service, and the workers.
 
