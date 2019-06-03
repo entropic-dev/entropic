@@ -128,7 +128,9 @@ const router = boltzmann.fork.router()(
 const myMiddles = [
 	boltmmann.middleware['logger'],
 	boltmmann.middleware['flush-request'],
-	boltmmann.middleware['requestid'],
+	boltzmann.middleware['logger'],
+	boltzmann.middleware['flush-request'],
+	boltzmann.middleware['requestid'],
 ];
 
 const server = boltzmann.make(router,  myMiddles);
