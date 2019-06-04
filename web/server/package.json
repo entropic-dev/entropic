@@ -1,0 +1,15 @@
+{
+  "name": "server",
+  "version": "0.0.1-alpha",
+  "description": "SEO provider for Entropic SPA",
+  "main": "index.js",
+  "author": "Aaron Ross <superhawk610@gmail.com>",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"No test command specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

@@ -34,6 +34,18 @@ This repository is setup as a standard React application - each route renders a 
 - `styled-components` for, well, component styling
 - `jest` via `ts-jest` for testing
 
+## SEO Optimization
+
+This repo contains a basic PoC server to illustrate how SEO information could be rather easily injected without sacrificing much overhead server-side.
+
+To try it out, simply build the project and then run the SEO server.
+
+```
+npm run build:prod
+cd server
+npm start
+```
+
 ## Scripts
 
 ### `npm run start`
