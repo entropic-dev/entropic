@@ -6,9 +6,9 @@ process.env.EXTERNAL_HOST = 'http://localhost:3000';
 const fetch = require('node-fetch');
 const demand = require('must');
 
-const { createUser, createToken } = require('./utils/users');
-const providePostgres = require('./utils/postgres');
-const provideRegistry = require('./utils/registry');
+const { createUser, createToken } = require('../utils/users');
+const providePostgres = require('../utils/postgres');
+const provideRegistry = require('../utils/registry');
 
 describe('entropic', () => {
   it(

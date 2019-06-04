@@ -58,6 +58,10 @@ module.exports = class Token {
   }
 
   static async lookupUser(value) {
+    if (!value || !value.startsWith('ent_v1_')) {
+      throw new Error('Invalid lookup value received');
+    }
+
     const hashed = Token.hasher(value);
     try {
       const found = await Token.objects.get({
