@@ -237,6 +237,8 @@ All of the below positions are granted based on the project team's needs, as wel
 
 You can spot a collaborator on the repo by looking for the `[Collaborator]` or `[Owner]` tags next to their names.
 
+See the [entropic process document](./docs/entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
+
 Permission | Description
 --- | ---
 Issue Tracker | Granted to contributors who express a strong interest in spending time on the project's issue tracker. These tasks are mainly [labeling issues](#label-issues), [cleaning up old ones](#clean-up-issues-and-prs), and [reviewing pull requests](#review-pull-requests), as well as all the usual things non-team-member contributors can do. Issue handlers should not merge pull requests, tag releases, or directly commit code themselves: that should still be done through the usual pull request process. Becoming an Issue Handler means the project team trusts you to understand enough of the team's process and context to implement it on the issue tracker.
