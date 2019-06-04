@@ -1,5 +1,6 @@
 'use strict';
 
+const { response, fork } = require('boltzmann');
 const isEmailMaybe = require('is-email-maybe');
 const validate = require('npm-user-validate');
 const querystring = require('querystring');
@@ -9,23 +10,20 @@ const { text } = require('micro');
 const { URL } = require('url');
 const CSRF = require('csrf');
 
-const Authentication = require('../models/authentication');
-const { response, fork } = require('boltzmann');
-const Token = require('../models/token');
-const User = require('../models/user');
+const providers = require('../lib/providers')
 
 const TOKENS = new CSRF();
 
 module.exports = [
   fork.get(
-    '/www/login/providers/:provider/callback',
+    '/login/providers/:provider/callback',
     redirectAuthenticated(oauthCallback)
   ),
-  fork.get('/www/login', handleCLISession(redirectAuthenticated(login))),
-  fork.get('/www/signup', redirectAuthenticated(signup)),
-  fork.post('/www/signup', redirectAuthenticated(signupAction)),
-  fork.get('/www/tokens', seasurf(redirectUnauthenticated(tokens))),
-  fork.post('/www/tokens', seasurf(redirectUnauthenticated(handleTokenAction)))
+  fork.get('/login', handleCLISession(redirectAuthenticated(login))),
+  fork.get('/signup', redirectAuthenticated(signup)),
+  fork.post('/signup', redirectAuthenticated(signupAction)),
+  fork.get('/tokens', seasurf(redirectUnauthenticated(tokens))),
+  fork.post('/tokens', seasurf(redirectUnauthenticated(handleTokenAction)))
 ];
 
 async function login(context) {
@@ -40,7 +38,7 @@ async function login(context) {
       <body>
         <p>So, you&#39;re thinking of logging in.</p>
         <ul>
-        ${Authentication.providers.map(
+        ${providers.map(
           provider => `
             <a href="${provider.redirect(state)}">Login with ${
             provider.name
@@ -56,14 +54,12 @@ async function login(context) {
 async function oauthCallback(context, { provider: providerName }) {
   const clientState = context.session.get('state');
   context.session.delete('state');
-  const provider = Authentication.providers.find(
-    ({ name }) => name === providerName
-  );
+  const provider = providers.find(xs => xs.name === providerName)
 
   const url = new URL(`${process.env.EXTERNAL_HOST}${context.request.url}`);
 
   if (!provider) {
-    context.logger.error(`unknown provider "${provider}"`);
+    context.logger.error(`unknown provider "${providerName}"`);
     return new response.html(`<h1>not found</h1>`, 404);
   }
 
@@ -93,19 +89,19 @@ async function oauthCallback(context, { provider: providerName }) {
   const { access_token: token } = querystring.parse(remoteBody);
   const remote = await provider.getIdentity(token);
 
-  const authn = await Authentication.objects
-    .get({
-      active: true,
-      remote_identity: remote.id,
-      provider: provider.name,
-      'user.active': true
-    })
-    .catch(Authentication.objects.NotFound, () => null);
+  const authn = await context.storageApi.getAuthentication({
+    remoteId: remote.id,
+    provider: provider.name
+  }).catch(err => {
+    if (err.status === 404) {
+      return null
+    }
+    throw err
+  });
 
   if (authn) {
-    const user = await authn.user;
-    context.session.set('user', user.name);
-    return response.redirect('/www/tokens');
+    context.session.set('user', authn.user.name);
+    return response.redirect('/tokens');
   }
 
   const remoteAuth = {
@@ -117,7 +113,7 @@ async function oauthCallback(context, { provider: providerName }) {
   };
 
   context.session.set('remoteAuth', remoteAuth);
-  return response.redirect('/www/signup');
+  return response.redirect('/signup');
 }
 
 async function signup(context) {
@@ -125,7 +121,7 @@ async function signup(context) {
   const remoteAuth = context.session.get('remoteAuth');
 
   if (!remoteAuth) {
-    return response.redirect('/www/login');
+    return response.redirect('/login');
   }
 
   let username = '';
@@ -148,7 +144,7 @@ async function signup(context) {
       <body>
         <h1>Welcome to Entropic!</h1>
         <p>the static is the channel, do not touch that dial</p>
-        <form action="/www/signup" method="POST">
+        <form action="/signup" method="POST">
           <p>
             ${
               context.errors && context.errors.username
@@ -182,7 +178,7 @@ async function signupAction(context) {
   const remoteAuth = context.session.get('remoteAuth');
 
   if (!remoteAuth) {
-    return response.redirect('/www/login');
+    return response.redirect('/login');
   }
 
   const { username, email } = querystring.parse(await text(context.request));
@@ -201,50 +197,49 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const num = await User.objects.filter({ email, active: true }).count();
-
-  if (Number(num) > 0) {
-    context.errors = { email: 'That email is already taken.' };
-    return signup(context);
-  }
-
-  const [err, user] = await User.signup(username, email, remoteAuth).then(
+  const [err, user] = await context.storageApi.signup({
+    username,
+    email,
+    remoteAuth
+  }).then(
     xs => [null, xs],
     xs => [xs, null]
-  );
+  )
 
-  if (err && err instanceof User.Conflict) {
-    context.errors = { username: 'That username is already taken.' };
-    return signup(context);
-  } else if (err) {
-    throw err;
+  if (err) {
+    switch (err.code) {
+      case 'signup.email_taken': {
+        context.errors = { email: 'That email is already taken.' };
+        return signup(context);
+      }
+      case 'signup.username_taken': {
+        context.errors = { username: 'That username is already taken.' };
+        return signup(context);
+      }
+      default:
+        throw err
+    }
   }
 
   context.logger.info(`successful signup: ${username} <${email}>`);
-
   context.session.delete('remoteAuth');
   context.session.set('user', user.name);
-  return response.redirect('/www/tokens');
+  return response.redirect('/tokens');
 }
 
 async function tokens(context) {
   const user = context.session.get('user');
-  const tokens = await Token.objects
-    .filter({
-      active: true,
-      'user.name': user,
-      'user.active': true
-    })
-    .order('-created')
-    .then();
+  const { objects: tokens } = await context.storageApi.listTokens({
+    for: user,
+    bearer: user,
+    page: Number(context.url.query.page) || 0
+  })
   const cliLoginSession = context.session.get('cli');
 
   let description = context.description
     ? context.description
     : cliLoginSession
-    ? JSON.parse(
-        (await context.redis.getAsync(`cli_${cliLoginSession}`)) || '{}'
-      ).description
+    ? await context.storageApi.fetchCLISession({session: cliLoginSession}).description || ''
     : '';
 
   const banner = context.session.get('banner');
@@ -256,7 +251,7 @@ async function tokens(context) {
       <body>
         ${banner ? banner : ''}
         <h1>Tokens for ${escapeHtml(user)}</h1>
-        <form method="POST" action="/www/tokens">
+        <form method="POST" action="/tokens">
           <input name="action" value="create" type="hidden" />
           <input name="description" value="${escapeHtml(description)}" />
           <input name="csrf_token" value="${escapeHtml(
@@ -287,7 +282,7 @@ async function tokens(context) {
                   !cliLoginSession
                     ? `
                   <td>
-                    <form method="POST" action="/www/tokens">
+                    <form method="POST" action="/tokens">
                     <input name="csrf_token" value="${escapeHtml(
                       context.csrf_token
                     )}" type="hidden" />
@@ -323,8 +318,25 @@ async function handleTokenAction(context) {
   context.description = description;
 
   if (action === 'create') {
-    const target = await User.objects.get({ active: true, name: user });
-    const tokenValue = await Token.create({ for: target, description });
+    const [err, result] = await context.storageApi.createToken({
+      for: user,
+      description,
+      bearer: user
+    }).then(
+      xs => [null, xs],
+      xs => [xs, null]
+    )
+
+    if (err) {
+      if (err.code === 'tokens.create.description_required') {
+        context.errors = ['Description is required.']
+        return tokens(context)
+      }
+
+      throw err
+    }
+
+    const { secret: tokenValue } = result
 
     if (cliLoginSession) {
       context.session.set(
@@ -336,11 +348,7 @@ async function handleTokenAction(context) {
       `
       );
       context.session.delete('cli');
-      await context.redis.setexAsync(
-        `cli_${cliLoginSession}`,
-        5000,
-        JSON.stringify({ value: tokenValue })
-      );
+      await context.storageApi.resolveCLISession({session: cliLoginSession, value: tokenValue})
       context.logger.info(
         `${user.name} created a token in a cli login session`
       );
@@ -359,24 +367,17 @@ async function handleTokenAction(context) {
       context.logger.info(`${user.name} created a token to be copied`);
     }
 
-    return response.redirect('/www/tokens');
+    return response.redirect('/tokens');
   } else if (action === 'delete') {
     if (cliLoginSession) {
       return tokens(context);
     }
 
-    await Token.objects
-      .filter({
-        'user.name': user,
-        'user.active': true,
-        active: true,
-        value_hash: token
-      })
-      .update({ active: false });
+    const { count } = await context.storageApi.deleteToken({for: user, valueHashes: [value_hash]})
 
-    context.session.set('banner', 'Successfully deleted 1 token.');
+    context.session.set('banner', `Successfully deleted ${count} token${count === 1 ? '' :  's'}.`);
     context.logger.info(`${user.name} deleted a token`);
-    return response.redirect('/www/tokens');
+    return response.redirect('/tokens');
   }
 }
 
@@ -394,14 +395,14 @@ function handleCLISession(next) {
 // From this point forward, just _imagine we had session middleware_:
 function redirectAuthenticated(to) {
   if (typeof to === 'function') {
-    return redirectAuthenticated('/www/tokens')(to);
+    return redirectAuthenticated('/tokens')(to);
   }
 
   return next => {
     return (context, ...args) => {
       const user = context.session.get('user');
       if (user) {
-        context.logger.debug(`redirecting ${user} to /www/tokens`);
+        context.logger.debug(`redirecting ${user} to /tokens`);
         return response.redirect(to);
       }
 
@@ -412,14 +413,14 @@ function redirectAuthenticated(to) {
 
 function redirectUnauthenticated(to) {
   if (typeof to === 'function') {
-    return redirectUnauthenticated('/www/login')(to);
+    return redirectUnauthenticated('/login')(to);
   }
 
   return next => {
     return (context, ...args) => {
       const user = context.session.get('user');
       if (!user) {
-        context.logger.debug(`redirecting anonymous user to /www/login`);
+        context.logger.debug(`redirecting anonymous user to /login`);
         return response.redirect(to);
       }
 
@@ -447,7 +448,7 @@ function seasurf(next) {
       const okay = TOKENS.verify(secret, csrf_token);
       if (!okay) {
         context.logger.warn(`csrf token mismatch! bad: ${csrf_token}`);
-        return response.redirect('/www/login');
+        return response.redirect('/login');
       }
     }
 

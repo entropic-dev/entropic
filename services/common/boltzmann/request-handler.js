@@ -1,5 +1,7 @@
 'use strict';
 
+const { parse } = require('url');
+
 const { build } = require('./middleware');
 
 module.exports = {
@@ -22,6 +24,15 @@ class Context {
       : '';
     const [host, _] = request.headers['host'].split(':');
     this.host = host;
+    this._parsedUrl = null;
+  }
+
+  get url () {
+    if (this._parsedUrl) {
+      return this._parsedUrl
+    }
+    this._parsedUrl = parse(this.request.url, true)
+    return this._parsedUrl
   }
 }
 

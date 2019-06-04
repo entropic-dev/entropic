@@ -30,6 +30,11 @@ module.exports = class User {
     this.active = active;
   }
 
+  toJSON () {
+    const { tfa_secret: _0, backup_codes: _1, id: _2, ...meta } = this
+    return meta
+  }
+
   static async signup(name, email, remoteAuth) {
     const user = await User.objects.create({
       name,

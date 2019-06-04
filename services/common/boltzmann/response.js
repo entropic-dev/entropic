@@ -4,6 +4,7 @@ const { Response, Headers } = require('node-fetch');
 
 module.exports = {
   authneeded,
+  empty,
   bytes,
   error,
   html,
@@ -77,6 +78,15 @@ function error(err, status = 500, extraHeaders = {}) {
   }
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;
+}
+
+error.coded = coded
+function coded(code, ...args) {
+  return error(Object.assign(new Error(code), { code }), ...args)
+}
+
+function empty(status = 204, headers = {}) {
+  return new Response('', { status, headers })
 }
 
 function authneeded(message, status = 401, extraHeaders = {}) {

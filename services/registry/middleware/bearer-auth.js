@@ -1,26 +1,15 @@
 'use strict';
 
-const Token = require('../models/token');
 const { response } = require('boltzmann');
+const crypto = require('crypto')
 
 module.exports = createBearerAuthMW;
 
-const idempotent = new Set(['GET', 'HEAD']);
-
-function createBearerAuthMW() {
+function createBearerAuthMW({
+  sessionTimeout = Number(process.env.SESSION_TIMEOUT) || (5 * 60)
+} = {}) {
   return next => {
     return async context => {
-      // We skip our (temporarily) embedded website AND paths that are
-      // never expected to have valid tokens.
-      const requrl = context.request.url;
-      if (
-        requrl.startsWith('/www') ||
-        requrl.startsWith('/-/v1/login') ||
-        idempotent.has(context.request.method)
-      ) {
-        return next(context);
-      }
-
       const bearer = context.request.headers['authorization']
         ? context.request.headers['authorization'].replace(/^Bearer /, '')
         : '';
@@ -34,16 +23,29 @@ function createBearerAuthMW() {
         );
       }
 
+      // getting access to the redis doesn't get you the tokens.
+      const hash = crypto
+        .createHash('sha256')
+        .update(bearer + process.env.SESSION_SECRET)
+        .digest('base64')
+
+      const key = `token_${hash}`
+      const data = await context.redis.getAsync(key)
+
       try {
-        const user = await Token.lookupUser(bearer);
-        if (user) {
-          context.user = user;
+        if (data) {
+          context.user = JSON.parse(data)
         }
-      } catch (err) {
-        // Consider responding with the 401 here.
-        context.logger.warn('unexpected error looking up user', {
-          error: err.message
-        });
+      } catch {
+        const [err, response] = await context.storageApi.getToken(bearer).then(
+          xs => [null, xs],
+          xs => [xs, null]
+        )
+
+        if (!err) {
+          await context.redis.setexAsync(key, sessionTimeout, JSON.stringify(response.user))
+          context.user = response.user
+        }
       }
 
       return next(context);
