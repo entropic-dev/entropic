@@ -7,6 +7,8 @@ const readdirAsync = promisify(fs.readdir);
 
 const userHome = require('user-home');
 
+const helpDirectory = path.join(__dirname, "./help/")
+
 module.exports = help;
 
 async function help(opts) {
@@ -15,11 +17,12 @@ async function help(opts) {
     await showBasicHelp();
   } else {
     return new Promise((resolve, reject) => {
-      fs.createReadStream(path.join(__dirname, `help-${command}.txt`))
+      fs.createReadStream(path.join(helpDirectory, `${command}.txt`))
         .on('error', async err => {
           if (err.code === 'ENOENT') {
             console.log(
-              `help has not been implemented yet for ${command}. You could build it!`
+              `Help has not been implemented for "${command}". You could build it! \n` + 
+              `https://github.com/entropic-dev \n`
             );
             await showBasicHelp();
             return resolve();

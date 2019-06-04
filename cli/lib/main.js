@@ -9,12 +9,17 @@ const minimist = require('minimist');
 const { load } = require('./config');
 
 async function main(argv) {
-  if (!argv[0]) {
-    argv[0] = 'help';
-  }
+  if (!argv[0]) { argv[0] = 'help'; }
 
   try {
-    const cmd = require(`./commands/${argv[0]}`);
+    let cmd 
+    try { cmd = require(`./commands/${argv[0]}`); }
+    catch (e) {
+      // this command isn't feeling well
+      return console.error(`An error ocurred when trying to "${argv[0]}". \n` + 
+                           `If you're from a future where "${argv[0]}" is a working command, ` + 
+                           `please share your knowledge at https://github.com/entropic-dev`)
+    }
 
     const config = await load();
     const args = minimist(argv.slice(1));
@@ -26,11 +31,12 @@ async function main(argv) {
       }
     }
 
-    const registry =
-      args.registry ||
+    const registry = (
+      args.registry   ||
       config.registry ||
-      env.registry ||
-      'https://registry.entropic.dev';
+      env.registry    ||
+      'https://registry.entropic.dev'
+    );
 
     const registryConfig = (config.registries || {})[registry] || {};
 
