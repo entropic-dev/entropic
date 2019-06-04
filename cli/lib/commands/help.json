@@ -1,0 +1,25 @@
+{
+  "basic": {
+    "login": "log into the selected registry, generating and storing an auth token",
+    "whoami": "respond with the name of the authenticated user",
+    "publish": "publish a new package-version, creating a package as a side effect if necessary",
+    "download": "fetch & insert into cache the content blobs for the named package-version",
+    "invite": "|cinvite [name] --to pkg/namespace|c invites the namespace to join the maintainers list",
+    "invitations": "list all your open invitations",
+    "join": "accept an invitation to join a namespace or maintain a package",
+    "decline": "decline an invitation to join a namespace or package maintainers list",
+    "members": "show members of a namespace OR list all maintainers of a package"
+  },
+  "login": [
+    "|cds login|c",
+    "Run this to log into the preferred registry specified in |c~/.entropicrc|c (default: https://registry.entropic.dev).",
+		"Running the command should open up a browser window in which you can log in using Github.",
+		"You can then create and delete tokens for the registry."
+  ],
+  "whoami": ["|cds whoami|c", "Get the name of the authenticated user"],
+  "publish": [
+    "|cds login|c",
+		"Publish an updated version of the package.",
+		"If there is no package available, a new one is created"
+  ]
+}
