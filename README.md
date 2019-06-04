@@ -78,6 +78,8 @@ Publish a new package-version with `ds publish`.
 
 Entropic is, at the moment of this writing, the work of two people: [Chris Dickinson](https://github.com/chrisdickinson) and [C J Silverio](https://github.com/ceejbot). They are not sponsored by anybody nor do they represent anyone but themselves. Chris and Ceej are seeking additional contributors but wish to onboard newcomers slowly. The project is new enough that clear direction does not always exist in the code, so contributors will need to work closely with us.
 
+See the [entropic process document](./docs/entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
+
 ## Contributors
 
 The following people have helped make this:
