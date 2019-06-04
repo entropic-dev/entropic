@@ -40,8 +40,8 @@ Here are the config values and what they mean:
 * [Get Docker Compose](https://docs.docker.com/compose/install/)
 * [Get Node](https://nodejs.org/en/download/)
 
-Once you have Node, Docker, and Docker Compose, `cp registry/.env-example
-registry/.env` (and make any adjustments you like), `npm i`, and `npm start`.
+Once you have Node, Docker, and Docker Compose, `cp services/registry/.env-example
+services/registry/.env` (and make any adjustments you like), `npm i`, and `npm start`.
 Then go to <http://localhost:3000>.
 
 
