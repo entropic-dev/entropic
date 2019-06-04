@@ -2,13 +2,15 @@
 import test from 'ava';
 import { promises as fs } from 'fs-extra';
 import profile from 'npm-profile';
-import ninos from 'ninos';
 import tempy from 'tempy';
+import td from 'testdouble';
 
 import { save } from '../lib/config';
 import login from '../lib/commands/login';
 
-ninos(test);
+test.afterEach(() => {
+  td.reset();
+});
 
 // Serial tests to ensure that fs is not trying to read
 // the same config file
@@ -18,7 +20,7 @@ test.serial(
     const registry = 'https://mock.registry.test';
     const configFilename = tempy.file();
 
-    t.context.spy(profile, 'loginWeb', async () => {
+    td.replace(profile, 'loginWeb', async () => {
       return { username: 'spiderman', token: 'peter parker' };
     });
 
@@ -37,7 +39,7 @@ test.serial(
     const registry = 'https://mock.registry.test';
     const configFilename = tempy.file();
 
-    t.context.spy(profile, 'loginWeb', async () => {
+    td.replace(profile, 'loginWeb', async () => {
       return { username: 'captainmarvel', token: 'carol danvers' };
     });
 
