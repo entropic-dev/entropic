@@ -1,0 +1,4 @@
+Usage: ds whoami
+
+Contacts your registry and figures out which user you're logged in as.
+

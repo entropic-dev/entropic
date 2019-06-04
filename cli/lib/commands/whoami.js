@@ -11,6 +11,10 @@ const whoamiOpts = figgy({
   log: { default: require('npmlog') }
 });
 
+const standardErrors = {
+  "Your auth token is not a valid entropic token.": "Oops! You're not logged in (no valid token found)."
+}
+
 async function whoami(opts) {
   opts = whoamiOpts(opts);
 
@@ -30,6 +34,12 @@ async function whoami(opts) {
 
   if (response.status > 399) {
     opts.log.error(body.message || body);
+    return 1;
+  }
+
+  if (body.error) {
+    if (standardErrors[body.error]) { console.error(standardErrors[body.error] + "\n") }
+    else { opts.log.error(`Error from registry "${opts.registry}": ${body.error}`); }
     return 1;
   }
 

@@ -1,0 +1,4 @@
+Usage: ds help <command>
+
+Prints a few lines explaining what <command> does and how to use it.
+
