@@ -37,6 +37,7 @@
     "npm-profile": "^4.0.1",
     "npmlog": "^4.1.2",
     "opener": "^1.5.1",
+    "os-locale": "^3.1.0",
     "read-package-tree": "^5.2.2",
     "ssri": "^6.0.1",
     "user-home": "^2.0.0"
