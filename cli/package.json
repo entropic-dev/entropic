@@ -54,7 +54,8 @@
     "ninos": "^3.0.0",
     "nyc": "^14.1.1",
     "prettier": "~1.17.1",
-    "tempy": "^0.3.0"
+    "tempy": "^0.3.0",
+    "testdouble": "^3.11.0"
   },
   "directories": {
     "lib": "lib"
