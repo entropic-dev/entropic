@@ -1,7 +1,7 @@
 /* eslint-env node, mocha */
 'use strict';
 
-const check = require('../lib/validations');
+const check = require('../../lib/validations');
 const demand = require('must');
 
 describe('name validations', () => {

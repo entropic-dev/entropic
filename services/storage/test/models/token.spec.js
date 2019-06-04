@@ -37,7 +37,7 @@ describe('Token', () => {
 
   describe('lookupUser', () => {
     it(
-      'A user can be lookedup by a token',
+      'A user can be looked up by a token',
 
       providePostgres(async () => {
         const newUser = await createUser('foo bar', 'baz@entropic.dev');
@@ -50,6 +50,24 @@ describe('Token', () => {
 
         // The user we found by token should equal the new user we created.
         demand(foundUser).to.eql(newUser);
+      })
+    );
+
+    it(
+      'handles invalid values',
+
+      providePostgres(async () => {
+        [null, undefined, '', 'not_valid'].forEach(async invalidValue => {
+          let error = undefined;
+
+          try {
+            await Token.lookupUser(invalidValue);
+          } catch (e) {
+            error = e.message;
+          }
+
+          demand(error).to.be('Invalid lookup value received');
+        });
       })
     );
   });

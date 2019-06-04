@@ -63,6 +63,17 @@ describe('User', () => {
   );
 
   describe('signup', () => {
+    let prevOAuthEnvVar;
+    before(() => {
+      // Capture for reset later when env is changed
+      prevOAuthEnvVar = process.env.OAUTH_PASSWORD;
+    });
+
+    after(() => {
+      // reset
+      process.env.OAUTH_PASSWORD = prevOAuthEnvVar;
+    });
+
     it(
       'can sign a user up with valid parameters',
       providePostgres(async () => {
@@ -78,8 +89,7 @@ describe('User', () => {
       providePostgres(async () => {
         let error = undefined;
         try {
-          const u = await User.signup('', 'bar@foo.com', false);
-          console.log(u);
+          await User.signup('', 'bar@foo.com', false);
         } catch (e) {
           error = e.message;
         }
@@ -140,8 +150,6 @@ describe('User', () => {
     it(
       'should create a remoteAuth when remoteAuth param is provided',
       providePostgres(async () => {
-        // Kind of dirty, but we currently only need it for this test
-        let prevOAuthEnvVar = process.env.OAUTH_PASSWORD;
         // requires 32 chars
         process.env.OAUTH_PASSWORD = 'this_is_a_thirty_two_char_string';
 
@@ -164,9 +172,6 @@ describe('User', () => {
         // The user should now have 1 active authentication object
         demand(remoteAuthObjects.length).to.be(1);
         demand(remoteAuthObjects[0].active).to.be.truthy();
-
-        // reset
-        process.OAUTH_PASSWORD = prevOAuthEnvVar;
       })
     );
   });
