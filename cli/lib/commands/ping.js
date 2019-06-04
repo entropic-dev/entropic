@@ -16,9 +16,9 @@ const pingOpts = figgy({
 async function ping(opts) {
   opts = pingOpts(opts);
 
-  console.log(`PING: ${opts.registry}`)
+  console.log(`PING: ${opts.registry}`);
 
-  const start = Date.now()
+  const start = Date.now();
   const response = await fetch(`${opts.registry}/ping`);
 
   let body = null;
@@ -34,7 +34,7 @@ async function ping(opts) {
     return 1;
   }
 
-  const time = Date.now() - start
+  const time = Date.now() - start;
 
   console.log(`PONG: (${time / 1000}ms) ${body}`);
   return 0;
