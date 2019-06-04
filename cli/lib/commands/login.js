@@ -14,7 +14,6 @@ const loginOpts = figgy({
 });
 
 async function login(opts) {
-  console.log(opts);
   opts = loginOpts(opts);
 
   const { username, token } = await profile.loginWeb(
