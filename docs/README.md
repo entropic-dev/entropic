@@ -329,8 +329,8 @@ The flow for syncing a dependency tree to local cache:
                 2. Recurse to 1 with D and R. Propagate failure upward.
             7. For each key and value (D and R) in the `O.optionalDependencies` object:
                 2. Recurse to 1 with D and R. Ignore failure.
-      4. If RESOLVED length is 0, fail with UNRESOLVABLERANGE.
-      5. Return success with RESOLVED.
+    4. If RESOLVED length is 0, fail with UNRESOLVABLERANGE.
+    5. Return success with RESOLVED.
 
 * * *
 
