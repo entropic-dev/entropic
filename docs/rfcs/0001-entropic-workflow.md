@@ -23,7 +23,7 @@ Follow these steps:
 
 Following the steps above dogmatically should *not* be a goal. Instead we should follow the spirit of the workflow: discuss to understand the problem; be thoughtful & propose action; make the proposal better; act. The bigger the problem is, or the more people are involved in the discussion, the more formal our process should be.
 
-For example, discussing how to fix a small bug might take only a few comments in a Github issue. Discussing how to fingerprint Entropic instances to establish a trust network might require the full process, because it's important and we need to think carefully about security issues. (I expect to do the same with package signing!)
+For example, discussing how to fix a small bug might take only a few comments in a Github issue. Discussing how to fingerprint Entropic instances to establish a trust network might require the full process, because it's important and we need to think carefully about security issues. (We expect to do the same with package signing!)
 
 If a consensus doesn't emerge, [@chrisdickinson](https://github.com/chrisdickinson) and [@ceejbot](https://github.com/ceejbot) will make final decisions. This isn't ideal, but I think until the projects design principles & technical goals are widely shared, we'll have to fall back to this to break stalemates & values conflicts. Also, Chris & Ceej bear the final responsibility so it's fair to make them do the hard work of saying no sometimes.
 
