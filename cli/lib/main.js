@@ -18,7 +18,7 @@ async function main(argv) {
       // this command isn't feeling well
       return console.error(`An error ocurred when trying to "${argv[0]}". \n` + 
                            `If you're from a future where "${argv[0]}" is a working command, ` + 
-                           `please share your knowledge at https://github.com/entropic-dev`)
+                           `please share your knowledge at https://github.com/entropic-dev/entropic`)
     }
 
     const config = await load();
