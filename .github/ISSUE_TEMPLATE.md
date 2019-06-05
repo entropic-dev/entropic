@@ -4,4 +4,9 @@
 
 # Actual behavior:
 
-# Environment info (relevant browser, OS, etc.; run `npx envinfo`):
+# Environment info (where relevant)
+
+- Browser:
+- Operating System & Version:
+- Version of Node (`node -v`):
+- Version of ds (`ds --version`):
