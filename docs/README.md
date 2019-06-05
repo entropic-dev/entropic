@@ -96,7 +96,7 @@ on the resources of administrators.
 
 # Assumptions / Decisions / The Chem in the Golem's Head
 
-- Do the dumbest thing that works, then iterate on that as it breaks. KISS.
+- Do the simplest thing that works, then iterate on that as it breaks.
 - We will build a new registry and website.
 - INSTALLERS will be able to access VCPM packages through the registry, on demand.
     - Note: this implies we will mirror on-demand, not optimistically.

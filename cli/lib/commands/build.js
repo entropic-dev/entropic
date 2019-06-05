@@ -117,6 +117,7 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
   const toplevel = { installed: {}, parent: null, name: 'root' };
 
   // todo list of "canonical dep name", "range", tree tier
+  content.dependencies = content.dependencies || {};
   const todo = Object.entries(content.dependencies).map(xs => [
     parsePackageSpec(xs[0], defaultHost),
     xs[1],

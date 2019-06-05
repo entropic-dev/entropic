@@ -46,4 +46,3 @@ volumes:
 
 networks:
   entropic:
-    external: true

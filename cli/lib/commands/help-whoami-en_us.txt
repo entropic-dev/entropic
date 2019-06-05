@@ -1,0 +1,6 @@
+Help for: ds whoami [--registry=https://your.registry.here]
+    
+    Find out the username associated with the local token on a given registry.
+    Default registry is https://registry.entropic.dev; a different registry may
+    be passed with `--registry`. The URL for this registry must be a fully-
+    qualified domain name, including `https://`

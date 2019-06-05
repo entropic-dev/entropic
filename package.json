@@ -12,6 +12,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "markdownlint-cli": "^0.16.0",
     "prettier": "~1.17.1"
   },
   "directories": {
@@ -27,12 +28,13 @@
     "url": "git+https://github.com/entropic-dev/entropic.git"
   },
   "scripts": {
-    "lint": "npm run lint-registry && npm run lint-cli",
+    "lint": "npm run lint-registry && npm run lint-cli && npm run lint-md",
     "lint-cli": "cd cli; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",
+    "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
     "lint-registry": "cd services/registry; npm run lint",
     "postinstall": "for d in cli services/registry services/workers services/common/boltzmann; do cd $d; npm i; cd -; done",
-    "start": "./misc/start.sh",
+    "start": "docker-compose up",
     "test": "for d in cli services/registry; do cd $d; npm t; cd -; done"
   }
 }
