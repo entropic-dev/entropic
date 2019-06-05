@@ -44,7 +44,6 @@ Once you have Node, Docker, and Docker Compose, `cp services/registry/.env-examp
 services/registry/.env` (and make any adjustments you like), `npm i`, and `npm start`.
 Then go to <http://localhost:3000>.
 
-
 ## The API
 
 For a full description of the final API, see  [docs/README.md](../docs/README.md). This readme documents what's implemented currently.
