@@ -145,4 +145,3 @@ at
 [http://contributor-covenant.org/version/1/4](http://contributor-covenant.org/version/1/4),
 and the LGBTQ in Technology Slack [Code of
 Conduct](http://lgbtq.technology/coc.html).
-

@@ -70,6 +70,13 @@ function findNamespace(next) {
       })
       .catch(Namespace.objects.NotFound, () => null);
 
+    if (!ns) {
+      return response.error(
+        `${params.namespace}@${params.host} does not exist.`,
+        404
+      );
+    }
+
     context.namespace = ns;
     return next(context, params);
   };
