@@ -4,6 +4,8 @@
 
 # Actual behavior:
 
+# Steps to replicate:
+
 # Environment info (where relevant)
 
 - Browser:
