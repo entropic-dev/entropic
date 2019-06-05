@@ -83,8 +83,8 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://github.com/nschonni"><img src="https://avatars2.githubusercontent.com/u/1297909?v=4" width="100px;" alt="Nick Schonning"/><br /><sub><b>Nick Schonning</b></sub></a><br /><a href="https://github.com/entropic-dev/entropic/commits?author=nschonni" title="Documentation">📖</a></td></tr></table>
 <table><tr><td align="center"><a href="https://github.com/gribnoysup"><img src="https://avatars2.githubusercontent.com/u/5036933?v=4" width="100px;" alt="Sergey"/><br /><sub><b>Sergey</b></sub></a><br /><a href="https://github.com/entropic-dev/entropic/commits?author=gribnoysup" title="Code">💻</a></td></tr></table>
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 The following people have helped make this:
 
