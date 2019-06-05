@@ -11,7 +11,7 @@
   - [:x: Or, Start With Verdaccio](#or-start-with-verdaccio)
   - [:x: A Moderately Content Addressable Take On The Situation, Publishes](#a-moderately-content-addressable-take-on-the-situation-publishes)
   - [:white_check_mark: Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI](#just-build-the-damn-registry-from-scratch-again-but-differently-this-time-and-also-write-a-cli)
-      - [:white_check_mark: A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
+    - [:white_check_mark: A Really Content Addressable Take On The Situation, Publishes and Installs](#a-really-content-addressable-take-on-the-situation-publishes-and-installs)
 - [Proposed Solution](#proposed-solution)
   - [Objects](#objects)
     - [Packages](#packages)
@@ -99,33 +99,33 @@ on the resources of administrators.
 - Do the simplest thing that works, then iterate on that as it breaks.
 - We will build a new registry and website.
 - INSTALLERS will be able to access VCPM packages through the registry, on demand.
-    - Note: this implies we will mirror on-demand, not optimistically.
-    - This means we'll defer (or eliminate) the cost of supporting the long tail of
-      VCPM packages.
+  - Note: this implies we will mirror on-demand, not optimistically.
+  - This means we'll defer (or eliminate) the cost of supporting the long tail of
+    VCPM packages.
 - INSTALLERS will not be subject to package privacy rules via access control lists.
 - MAINTAINERS will be subject to package access lists (who can publish which package?)
 - INSTALLERS may browse the registry via a website.
 - MAINTAINERS may create an account via the website.
 - Leave Stars out. :star2:
 - We want to demo _something_ by June 1st at JSConf EU.
-    - Marketing can help nudge INSTALLERS and MAINTAINERS to move, avoiding CALAMITY.
-    - It can also help some INSTALLERS and MAINTAINERS become ADMINISTRATORS, increasing
-      our reserves of attention.
+  - Marketing can help nudge INSTALLERS and MAINTAINERS to move, avoiding CALAMITY.
+  - It can also help some INSTALLERS and MAINTAINERS become ADMINISTRATORS, increasing
+    our reserves of attention.
 - It is easy to put behind a CDN.
 - All packages are public.
 - All packages are namespaced by the originally-publishing entity.
 - Yes semver required. (discuss which standard)
 - We don't explicitly wish to make this API line up with other package manager APIs.
-    - Crates, VCPM, etc.
+  - Crates, VCPM, etc.
 - MAINTAINERS use authentication tokens for publishing. Version tokens in an
   obvious fashion: `ent_v1_<uuid>`, say.
-    - This makes it obvious that they don't belong to any other registry.
+  - This makes it obvious that they don't belong to any other registry.
 - IMPLEMENTATION: (NOTE_SERVICES)
-    - Plan is: 3 services: registry, website, internal.
-    - Start with the registry.
-        - Plan to split out internal from the registry.
-    - Splitting www from the registry makes security easier, and gives us much more room
-      to manuever with regards to the legacy VCPM API.
+  - Plan is: 3 services: registry, website, internal.
+  - Start with the registry.
+    - Plan to split out internal from the registry.
+  - Splitting www from the registry makes security easier, and gives us much more room
+    to manuever with regards to the legacy VCPM API.
 
 # Open Questions & Consequences
 
@@ -133,24 +133,24 @@ on the resources of administrators.
   URLs? One service running in two modes depending on incoming `Host` header?
   One service running at one URL?~ See "NOTE_SERVICES" above.
 - Do we support the legacy VCPM API? To what degree?
-    - For installation? For publication? For ACL manipulation?
-    - Notably: breaking with the VCPM API may make life better for ADMINISTRATORS in
-      the short term at the expense of INSTALLERS and MAINTAINERS.
-        - We'd need a new CLI.
-    - If we're not supporting the legacy API, do we still want to store packuments,
-      or should we break these down into "package version lists"?
-        - How far do we break things down? Into exploded files in a content addressable fashion?
+  - For installation? For publication? For ACL manipulation?
+  - Notably: breaking with the VCPM API may make life better for ADMINISTRATORS in
+    the short term at the expense of INSTALLERS and MAINTAINERS.
+    - We'd need a new CLI.
+  - If we're not supporting the legacy API, do we still want to store packuments,
+    or should we break these down into "package version lists"?
+    - How far do we break things down? Into exploded files in a content addressable fashion?
 - What does it look like to sign up for the new registry?
-    - There's a website flow, even from the CLI (github oauth?)
-    - Prove that you own a VCPM account by publishing a placeholder package containing
-      `<nonce>` or something like that?
-    - Provides the ability to mint new authentication tokens used by MAINTAINERS during
-      publishes.
+  - There's a website flow, even from the CLI (github oauth?)
+  - Prove that you own a VCPM account by publishing a placeholder package containing
+    `<nonce>` or something like that?
+  - Provides the ability to mint new authentication tokens used by MAINTAINERS during
+    publishes.
 - Federation. What does it look like?
 - [Import maps][import-maps] are a going concern, as is tink.
-    - Tink won't be ready by June 1st, _but_
-    - Deno is also playing with this install-on-demand / CLI-less installer concept
-    - This seems like a beneficial trend: then you just have to write a client for publishing
+  - Tink won't be ready by June 1st, _but_
+  - Deno is also playing with this install-on-demand / CLI-less installer concept
+  - This seems like a beneficial trend: then you just have to write a client for publishing
 - Which semver standard to use?
 - Do we want to let MAINTAINERS change package ACLs via the website?
 
@@ -159,9 +159,9 @@ on the resources of administrators.
 ## Just Build the Damn Registry From Scratch Again
 
 - Keep the same API (so yarn and npm still work) but reimplement the services.
-    - We can tweak the rules and backing implementation details as we choose, though
-    - One bonus is that milestones are natural. E.g., you can login using `npm login`,
-      you can `npm install` a whole dep graph from it.
+  - We can tweak the rules and backing implementation details as we choose, though
+  - One bonus is that milestones are natural. E.g., you can login using `npm login`,
+    you can `npm install` a whole dep graph from it.
 - Downside is that we're tied to legacy decisions about the API structure that have
   knock-on effects when it comes to implementation detail and bandwidth/storage/upload costs.
 - **We don't want to do this.** These legacy decisions box us in and precipitate future **CALAMITY**.
