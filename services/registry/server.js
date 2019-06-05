@@ -31,6 +31,19 @@ const myMiddles = [
   require('./middleware/object-store')
 ];
 
-const server = boltzmann.make(router, myMiddles);
-server.listen(process.env.PORT, '0.0.0.0');
-logger.info(`listening on port: ${process.env.PORT}`);
+const main = () => {
+  const server = boltzmann.make(router, myMiddles);
+  server.listen(process.env.PORT, '0.0.0.0');
+  logger.info(`listening on port: ${process.env.PORT}`);
+
+  // Docker gives containers 10 seconds to handle SIGTERM
+  // before sending SIGKILL. Close all current connections
+  // graceully and exit with 0.
+  process.on('SIGTERM', () => {
+    server.close(() => {
+      process.exit(0);
+    });
+  });
+};
+
+main();
