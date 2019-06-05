@@ -313,8 +313,8 @@ The flow for syncing a dependency tree to local cache:
             2. If it does not exist:
                 1. Fetch the version from the registry at `/packages/package/USER/PACKAGE/versions/V`.
                 2. Store object as "O".
-                2. Create a subresource integrity string for O, and store in cache.
-                3. Store object in RESOLVED.
+                3. Create a subresource integrity string for O, and store in cache.
+                4. Store object in RESOLVED.
             3. For each key and value (F and I) in the `O.files` object:
                 1. For each algo A, hash H in I, interpreted as a subresource integrity string:
                     1. Check to see if H exists in local cache.
