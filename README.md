@@ -83,9 +83,15 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 The following people have helped make this:
 
 * [Aaron Ross](https://github.com/superhawk610)
+* [Andrew Nesbitt](https://github.com/andrew)
 * [Brenna Flood](https://github.com/brennx0r)
+* [James Spencer](https://github.com/varjmes)
 * [Jonathan Weiss](https://github.com/jonathanweiss)
+* [Nick Olinger](https://github.com/olingern)
+* [Nick Schonning](https://github.com/nschonni)
+* [Nikhil Ranjan](https://github.com/niklabh)
 * [Sébastien Cevey](https://github.com/theefer)
+* [Sergey](https://github.com/gribnoysup)
 * [Todd Kennedy](https://github.com/toddself)
 * [Zac Anger](https://github.com/zacanger)
 
