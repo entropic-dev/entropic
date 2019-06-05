@@ -1,4 +1,4 @@
-Usage: ds whoami
+Usage: ds whoami [--registry url]
 
 Contacts your registry and figures out which user you're logged in as.
 
