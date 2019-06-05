@@ -7,10 +7,17 @@ module.exports = main;
 const minimist = require('minimist');
 
 const { load } = require('./config');
+const { getValidCommandSet } = require('./utils');
 
 async function main(argv) {
   if (!argv[0]) {
     argv[0] = 'help';
+  }
+
+  const validCommand = (await getValidCommandSet()).has(argv[0]);
+  if (!validCommand) {
+    console.error(`${argv[0]} is not a valid command or option`);
+    return 0;
   }
 
   try {
