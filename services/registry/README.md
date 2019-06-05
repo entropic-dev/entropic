@@ -2,7 +2,7 @@
 
 This is the backend service for the Entropic package manager.
 
-##  Running your own registry
+## Running your own registry
 
 Go to https://github.com/settings/developers and create a new oauth app. The authorization callback url will need to look like this:
 
