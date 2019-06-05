@@ -78,7 +78,7 @@ Here are all the response conveniences:
 * `json(body, status = 200, extraHeaders = {})`: Respond with a json object.
 * `message(msg, status = 200, extraHeaders = {})`: Wrap the given text message with the object expected by the ds cli.
 * `bytes(stream, status = 200, extraHeaders = {})`: Set up an octet byte stream response.
-* `html(text, status = 200, extraHeaders = {}) `: Set up an html response.
+* `html(text, status = 200, extraHeaders = {})`: Set up an html response.
 * `redirect(where, status = 301, extraHeaders = {})`: Redirect the request. Note that this breaks with the pattern of the other functions: you pass the url to redirect to, not a response body.
 * `authneeded(message, status = 401, extraHeaders = {})`: Respond with www-authenticate and the given message.
 * `error(err, status = 500, extraHeaders = {})`: Respond with the given error. You can pass a string if you want, but an error object is preferred.
