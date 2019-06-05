@@ -2,5 +2,5 @@ Usage: ds login [--registry url]
 
 1) ds opens the default web browser, 
 2) you authenticate, 
-3) ds stores the resulting authentication token within your .entropicrc file
+3) ds stores the resulting authentication token within your .entropicrc file.
 
