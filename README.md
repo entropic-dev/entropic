@@ -1,4 +1,5 @@
 # Entropic: a federated package registry for anything
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 A new package registry with a new CLI, designed to be easy to stand up inside your network. Entropic features an entirely new file-centric API and a content-addressable storage system that attempts to minimize the amount of data you must retrieve over a network. This file-centric approach also applies to the publication API. See the [API section of the manifesto](https://github.com/entropic-dev/entropic/tree/master/docs#apis) for more details about the API offered.
 
@@ -80,6 +81,11 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 
 ## Contributors
 
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://github.com/gribnoysup"><img src="https://avatars2.githubusercontent.com/u/5036933?v=4" width="100px;" alt="Sergey"/><br /><sub><b>Sergey</b></sub></a><br /><a href="https://github.com/entropic-dev/entropic/commits?author=gribnoysup" title="Code">💻</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 The following people have helped make this:
 
 * [Aaron Ross](https://github.com/superhawk610)
