@@ -1,4 +1,4 @@
 Usage: ds --version
 
-Prints the version of ds you're using
+Prints the version of ds you're using.
 
