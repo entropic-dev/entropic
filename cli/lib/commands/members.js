@@ -10,14 +10,14 @@ module.exports = members;
 
 const membersOpts = figgy({
   argv: true,
-  registry: true,
+  registry: { default: 'https://registry.entropic.dev' },
   log: { default: require('npmlog') }
 });
 
 async function members(opts) {
   opts = membersOpts(opts);
 
-  if (opts.argv.length !== 1) {
+  if (!Array.isArray(opts.argv) || opts.argv.length !== 1) {
     console.error('Usage: ds members <namespace|package>');
     return 1;
   }
@@ -36,7 +36,7 @@ async function members(opts) {
   const body = await response.json();
   if (!Array.isArray(body.objects) || body.objects.length === 0) {
     console.log(`${ns} has no members.`);
-    return 0;
+    return { objects: [] };
   }
 
   console.log(
@@ -50,6 +50,8 @@ async function members(opts) {
   body.objects.forEach(n => {
     console.log(`    ${n}`);
   });
+
+  return { objects: body.objects };
 }
 
 async function listPackageMaintainers(opts) {
@@ -67,7 +69,7 @@ async function listPackageMaintainers(opts) {
 
   if (!Array.isArray(body.objects) || body.objects.length === 0) {
     console.log(`${parsed.canonical} has no maintainers.`);
-    return 0;
+    return { objects: [] };
   }
 
   console.log(
@@ -81,4 +83,6 @@ async function listPackageMaintainers(opts) {
   body.objects.forEach(n => {
     console.log(`    ${n}`);
   });
+
+  return { objects: body.objects };
 }
