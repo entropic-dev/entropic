@@ -9,7 +9,7 @@ const minimist = require('minimist');
 const { load } = require('./config');
 
 async function main(argv) {
-  if (!argv[0]) { argv[0] = 'help'; }
+  argv[0] = argv[0] || 'help';
 
   try {
     let cmd 
