@@ -22,7 +22,7 @@ async function help(opts) {
           if (err.code === 'ENOENT') {
             console.log(
               `Help has not been implemented for "${command}". You could build it! \n` + 
-              `https://github.com/entropic-dev \n`
+              `https://github.com/entropic-dev/entropic \n`
             );
             await showBasicHelp();
             return resolve();
