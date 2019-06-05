@@ -10,7 +10,11 @@
     "MD026": false,
     "MD028": false,
     "MD029": false,
-    "MD033": false,
+    "MD033": {
+        "allowed_elements": [
+            "a"
+        ]
+    },
     "MD034": false,
     "MD040": false,
     "MD038": false
