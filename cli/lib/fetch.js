@@ -19,9 +19,11 @@ function fetchWithAgent(resource, init) {
     if (!init) init = {};
 
     const url = new URL(resource);
-    url.protocol == 'https:'
-      ? (init.agent = httpsAgent)
-      : (init.agent = httpAgent);
+    if (url.protocol == 'https:') {
+        init.agent = httpsAgent;
+    } else {
+        init.agent = httpAgent;
+    }
 
     return fetch(resource, init);
 }
