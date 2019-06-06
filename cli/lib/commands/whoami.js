@@ -20,7 +20,7 @@ async function whoami(opts) {
     }
   });
 
-  var body = null;
+  let body = null;
   try {
     body = await response.json();
   } catch (err) {
