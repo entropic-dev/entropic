@@ -51,7 +51,9 @@
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
-    "prettier": "~1.17.1"
+    "prettier": "~1.17.1",
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.3.2"
   },
   "directories": {
     "lib": "lib"
