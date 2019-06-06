@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../fetch');
 const figgy = require('figgy-pudding');
 const parsePackageSpec = require('../canonicalize-spec');
 

@@ -3,7 +3,7 @@
 module.exports = whoami;
 
 const figgy = require('figgy-pudding');
-const fetch = require('node-fetch');
+const fetch = require('../fetch');
 
 const whoamiOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },

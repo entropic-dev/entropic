@@ -3,7 +3,7 @@
 module.exports = ping;
 
 const figgy = require('figgy-pudding');
-const fetch = require('node-fetch');
+const fetch = require('../fetch');
 
 const pingOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
