@@ -115,13 +115,14 @@ async function create(opts) {
     });
 
     if (fileExists(tomlLocation())) {
-      // Ask if we should proces
+      // Ask if we should proceed since the Package.toml exits
       const proceed = await askQuestion(
         QUESTIONS.TOML_EXISTS,
         rl,
         validateYesNo,
         lowercase
       );
+
       if (VALID_YES_NO[proceed] === 0) {
         console.log('Exiting.');
         rl.close();
