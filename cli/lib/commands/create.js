@@ -43,7 +43,7 @@ function validateYesNo(ans) {
     return false;
   }
 
-  return VALID_YES_NO[ans.toLowerCase()] !== undefined;
+  return VALID_YES_NO[ans] !== undefined;
 }
 
 /**
@@ -90,15 +90,15 @@ async function askQuestion(question, rl, validator, transform = undefined) {
   while (invalid) {
     ans = await ask(question, rl);
 
+    if (transform) {
+      ans = transform(ans);
+    }
+
     if (validator(ans)) {
       invalid = false;
     } else {
       console.error(REJECTION_MSGS[validator.name]);
     }
-  }
-
-  if (transform) {
-    ans = transform(ans);
   }
 
   return ans;
