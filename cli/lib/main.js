@@ -20,7 +20,7 @@ async function main(argv) {
     const args = minimist(argv.slice(1));
     const { _, ...rest } = args;
     const env = {};
-    for (var key in process.env) {
+    for (const key in process.env) {
       if (key.startsWith('ent_')) {
         env[key.slice(4)] = process.env[key];
       }
