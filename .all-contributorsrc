@@ -133,6 +133,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "aredridel",
+      "name": "Aria Stewart",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2876?v=4",
+      "profile": "http://dinhe.net/~aredridel/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
