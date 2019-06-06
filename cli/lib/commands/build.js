@@ -14,6 +14,7 @@ const parsePackageSpec = require('../canonicalize-spec');
 const fetchPackage = require('../fetch-package');
 const fetchObject = require('../fetch-object');
 const { loadPkg } = require('../config')
+const { NODE_MODULES } = require('../const')
 
 const buildOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
@@ -52,9 +53,8 @@ async function loadTree(opts, where) {
   await printTree(tier);
 }
 
-const MODULES = 'node_modules';
 async function unfurlTree(opts, dir, tree, dirc) {
-  dir.push(MODULES);
+  dir.push(NODE_MODULES);
   dir.push(undefined);
   for (const dep in tree.tier.installed) {
     dir[dir.length - 1] = dep;
