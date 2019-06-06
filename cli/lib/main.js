@@ -14,11 +14,16 @@ async function main(argv) {
   }
 
   try {
-    const cmd = require(`./commands/${argv[0]}`);
+    const { _, ...args } = minimist(argv);
+
+    let cmd;
+    try {
+      cmd = require(`./commands/${_.shift()}`);
+    } catch (e) {
+      cmd = require('./commands/help');
+    }
 
     const config = await load();
-    const args = minimist(argv.slice(1));
-    const { _, ...rest } = args;
     const env = {};
     for (const key in process.env) {
       if (key.startsWith('ent_')) {
