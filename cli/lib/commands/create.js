@@ -3,35 +3,57 @@
 module.exports = create;
 
 const readline = require('readline');
-const { createToml, tomlLocation, writeToml } = require('../utils');
+const {
+  createToml,
+  tomlLocation,
+  writeToml,
+  isValidSemver
+} = require('../utils');
 
-function validateName() {
+const REJECTION_MSGS = {
+  validateName: "Sorry, that's not a valid name",
+  validateVersion: "Sorry, that's not a valid semver version"
+};
+
+function validateName(name) {
   // TODO: Uese Regex for "name@registry-domain.dev/package_name"?
-  return true;
+  return name && name.length > 0;
 }
 
-function validateVersion() {
-  // TODO: validate against semver?
-  return true;
+function validateVersion(version) {
+  return isValidSemver(version);
 }
 
 /**
  * Minimal prompt for asking users for input
  */
-function ask(question, rl, validator) {
+function ask(question, rl) {
   return new Promise((resolve, reject) => {
-    rl.question(question, answer => {
-      if (validator()) {
-        resolve(answer);
-      }
-    });
+    rl.question(question, answer => resolve(answer));
   }).catch(e => {
     console.error(e);
   });
 }
 
+async function askQuestion(question, rl, validator) {
+  let invalid = true;
+  let ans = undefined;
+
+  while (invalid) {
+    ans = await ask(question, rl, validator);
+
+    if (validator(ans)) {
+      invalid = false;
+    } else {
+      console.error(REJECTION_MSGS[validator.name]);
+    }
+  }
+
+  return ans;
+}
+
 /**
- * Exported function
+ * Exported function used as `ds create`
  */
 async function create(opts) {
   try {
@@ -40,8 +62,8 @@ async function create(opts) {
       output: process.stdout
     });
 
-    const name = await ask('Name:', rl, validateName);
-    const version = await ask('Version:', rl, validateVersion);
+    const name = await askQuestion('Name:', rl, validateName);
+    const version = await askQuestion('Version:', rl, validateVersion);
 
     rl.close();
 
