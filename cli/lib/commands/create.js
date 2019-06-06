@@ -40,7 +40,7 @@ async function askQuestion(question, rl, validator) {
   let ans = undefined;
 
   while (invalid) {
-    ans = await ask(question, rl, validator);
+    ans = await ask(question, rl);
 
     if (validator(ans)) {
       invalid = false;
@@ -67,7 +67,7 @@ async function create(opts) {
 
     rl.close();
 
-    writeToml(tomlLocation(), createToml(name, version));
+    await writeToml(tomlLocation(), createToml(name, version));
   } catch (e) {
     console.error('There was an error creating your Package.toml');
     console.error(e);
