@@ -22,7 +22,7 @@ const loadPkg = ({ dir }) => findAndRead({
 const loadRc = () => findAndRead({
   dir: home,
   name: RC_FILE,
-})
+}).content
 
 module.exports = {
   saveRc,
