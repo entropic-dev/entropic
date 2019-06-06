@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = { createToml, tomlLocation, writeToml, isValidSemver };
+module.exports = { createToml, writeToml, isValidSemver, fileExists };
 
 const fs = require('fs').promises;
 
@@ -22,12 +22,15 @@ function createToml(name, version) {
 }
 
 /**
- * Returns string for the path to write Package.toml
+ * Writes a file given a location and string.
  */
-function tomlLocation() {
-  return `${process.cwd()}/Package.toml`;
-}
-
 async function writeToml(tomlLoc, tomlStr) {
   await fs.writeFile(tomlLoc, tomlStr);
+}
+
+/**
+ * Check if a file exists
+ */
+async function fileExists(loc) {
+  return fs.access(loc);
 }
