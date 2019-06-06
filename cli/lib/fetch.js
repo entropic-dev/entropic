@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 module.exports = fetchWithAgent;
 
@@ -9,20 +9,19 @@ const fetch = require('node-fetch');
 const https = require('https');
 
 const httpAgent = new http.Agent({
-    family: 6, hints: dns.ADDRCONFIG | dns.V4MAPPED
-})
+  family: 6,
+  hints: dns.ADDRCONFIG | dns.V4MAPPED
+});
 const httpsAgent = new https.Agent({
-    family: 6, hints: dns.ADDRCONFIG | dns.V4MAPPED
-})
+  family: 6,
+  hints: dns.ADDRCONFIG | dns.V4MAPPED
+});
 
 function fetchWithAgent(resource, init) {
-    if (!init) init = {};
+  if (!init) init = {};
 
-    const url = new URL(resource);
-    url.protocol == 'https:'
-      ? (init.agent = httpsAgent)
-      : (init.agent = httpAgent);
+  const url = new URL(resource);
+  init.agent = url.protocol == 'https:' ? httpsAgent : httpAgent;
 
-    return fetch(resource, init);
+  return fetch(resource, init);
 }
-
