@@ -3,7 +3,7 @@
 // This is kind of a toy command because it will swiftly
 // become unwieldy with large numbers of packages. But it's fun for now!
 
-const fetch = require('node-fetch');
+const fetch = require('../fetch');
 const figgy = require('figgy-pudding');
 
 module.exports = packages;
