@@ -6,11 +6,13 @@ const parsePackageSpec = require('../canonicalize-spec');
 
 module.exports = decline;
 
-// usage: ds decline name@host/pkg --as namespace
+// usage: ds decline --package name@host/pkg --as namespace
+//        ds decline --namespace name@host
 
 const declineOpts = figgy({
-  argv: true,
   as: true,
+  namespace: true,
+  package: true,
   registry: true,
   token: true,
   log: { default: require('npmlog') }
@@ -19,23 +21,34 @@ const declineOpts = figgy({
 async function decline(opts) {
   opts = declineOpts(opts);
 
-  if (opts.argv.length !== 1 || !opts.as) {
+  if (!opts.as || (!opts.package && !opts.namespace)) {
     console.error(
-      'Usage: ds decline <namespace|package> --as <namespace|user>'
+      'Usage: ds decline --package <package> --as <namespace>\n' +
+        '       ds decline --namespace <namespace>'
     );
     return 1;
   }
 
-  const { _, ...parsed } = parsePackageSpec(
-    opts.argv[0],
-    opts.registry.replace(/^https?:\/\//, '')
-  );
+  let uri;
+  if (opts.package) {
+    const parsed = parsePackageSpec(
+      opts.package,
+      opts.registry.replace(/^https?:\/\//, '')
+    );
 
-  const invitee = opts.as;
+    const invitee = opts.as;
 
-  const uri = `${opts.registry}/v1/packages/package/${
-    parsed.canonical
-  }/maintainers/${invitee}/invitation`;
+    uri = `${opts.registry}/v1/packages/package/${
+      parsed.canonical
+    }/maintainers/${invitee}/invitation`;
+  } else {
+    let ns = opts.namespace;
+    if (!ns.includes('@')) {
+      ns += '@' + opts.registry.replace(/^https?:\/\//, '');
+    }
+
+    uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members/invitation`;
+  }
 
   const response = await fetch(uri, {
     method: 'DELETE',
