@@ -1,0 +1,143 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "nschonni",
+      "name": "Nick Schonning",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1297909?v=4",
+      "profile": "https://github.com/nschonni",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "gribnoysup",
+      "name": "Sergey",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5036933?v=4",
+      "profile": "https://github.com/gribnoysup",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "varjmes",
+      "name": "James",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/542140?v=4",
+      "profile": "https://jmes.tech",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "zacanger",
+      "name": "Zac Anger",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/12520493?v=4",
+      "profile": "https://zacanger.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "toddself",
+      "name": "Todd Kennedy",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/193412?v=4",
+      "profile": "https://tck.io",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "theefer",
+      "name": "Sébastien Cevey",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/36964?v=4",
+      "profile": "http://bytes.inso.cc/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "niklabh",
+      "name": "Nikhil Ranjan",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/874046?v=4",
+      "profile": "http://www.linkedin.com/in/niklabh",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "olingern",
+      "name": "Nick Olinger",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1470297?v=4",
+      "profile": "http://twitter.com/olingern",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jonathanweiss",
+      "name": "Jonathan Weiss",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/39352?v=4",
+      "profile": "https://linkedin.com/in/jonathanfweiss",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "andrew",
+      "name": "Andrew Nesbitt",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1060?v=4",
+      "profile": "http://nesbitt.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "brennx0r",
+      "name": "Brenna Flood",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3596466?v=4",
+      "profile": "http://brennx0r.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "superhawk610",
+      "name": "Aaron Ross",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/18172185?v=4",
+      "profile": "https://aaronross.tech",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ceejbot",
+      "name": "C J Silverio",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/757502?v=4",
+      "profile": "http://ceejbot.github.io/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "chrisdickinson",
+      "name": "Chris Dickinson",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/37303?v=4",
+      "profile": "https://www.neversaw.us",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "entropic",
+  "projectOwner": "entropic-dev",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "commitConvention": "none"
+}

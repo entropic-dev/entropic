@@ -2,7 +2,7 @@
 
 This is the backend service for the Entropic package manager.
 
-##  Running your own registry
+## Running your own registry
 
 Go to https://github.com/settings/developers and create a new oauth app. The authorization callback url will need to look like this:
 
@@ -43,7 +43,6 @@ Here are the config values and what they mean:
 Once you have Node, Docker, and Docker Compose, `cp services/registry/.env-example
 services/registry/.env` (and make any adjustments you like), `npm i`, and `npm start`.
 Then go to <http://localhost:3000>.
-
 
 ## The API
 

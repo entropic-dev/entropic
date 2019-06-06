@@ -95,7 +95,7 @@ To contribute documentation:
 * Edit or add any relevant documentation.
 * Make sure your changes are formatted correctly and consistently with the rest of the documentation.
 * Re-read what you wrote, and run a spellchecker on it to make sure you didn't miss anything.
-* In your commit message(s), begin the first line with `docs: `. For example: `docs: Adding a doc contrib section to CONTRIBUTING.md`.
+* In your commit message(s), begin the first line with `docs:`. For example: `docs: Adding a doc contrib section to CONTRIBUTING.md`.
 * Write clear, concise commit message(s) using [conventional-changelog format](https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md). Documentation commits should use `docs(<component>): <message>`.
 * Go to https://github.com/entropic-dev/entropic/pulls and open a new pull request with your changes.
 * If your PR is connected to an open issue, add a line in your PR's description that says `Fixes: #123`, where `#123` is the number of the issue you're fixing.
@@ -244,4 +244,3 @@ Admin/Owner | Granted to people ultimately responsible for the project, its comm
 ## Attribution
 
 This guide was generated using the WeAllJS `CONTRIBUTING.md` generator. [Make your own](https://npm.im/weallcontribute)!
-
