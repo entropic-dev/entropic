@@ -10,7 +10,8 @@ const inviteOpts = figgy({
   argv: true,
   registry: true,
   token: true,
-  to: true,
+  namespace: true,
+  package: true,
   log: { default: require('npmlog') }
 });
 
@@ -21,16 +22,16 @@ async function invite(opts) {
   const invitee = opts.argv[0];
   let uri;
 
-  if (opts.to.includes('/')) {
-    const { _, ...parsed } = parsePackageSpec(
-      opts.to,
+  if (opts.package) {
+    const parsed = parsePackageSpec(
+      opts.package,
       opts.registry.replace(/^https?:\/\//, '')
     );
     uri = `${opts.registry}/v1/packages/package/${
       parsed.canonical
     }/maintainers/${invitee}`;
   } else {
-    let ns = opts.to;
+    let ns = opts.namespace;
     if (!ns.includes('@')) {
       ns += '@' + opts.registry.replace(/^https?:\/\//, '');
     }
