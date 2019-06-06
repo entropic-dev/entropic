@@ -1,36 +1,31 @@
 'use strict';
 
-module.exports = { load, save };
-
-const { promises: fs } = require('fs');
+const { fs } = require('fs');
 const toml = require('@iarna/toml');
 const home = require('user-home');
 const path = require('path');
+const findAndRead = require('./find-and-read')
+const { RC_FILE, PACKAGE_TOML } = require('./const')
 
-const errors = require('./errors');
+const rcPath = path.join(home, RC_FILE)
 
-async function load(filename = path.join(home, '.entropicrc')) {
-  let content = null;
-  try {
-    content = await fs.readFile(filename, 'utf8');
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return {};
-    }
-
-    throw new errors.CouldNotReadConfigFile(filename, e);
-  }
-
-  let parsed = null;
-  try {
-    parsed = toml.parse(content);
-  } catch (e) {
-    throw new errors.CouldNotParseConfigToml(filename, e);
-  }
-
-  return parsed;
+function saveRc(content) {
+  fs.writeFileSync(rcPath, toml.stringify(content));
 }
 
-async function save(content, filename = path.join(home, '.entropicrc')) {
-  await fs.writeFile(filename, toml.stringify(content));
+const loadPkg = ({ dir }) => findAndRead({
+  dir,
+  name: PACKAGE_TOML,
+  recursive: true
+})
+
+const loadRc = () => findAndRead({
+  dir: home,
+  name: RC_FILE,
+})
+
+module.exports = {
+  saveRc,
+  loadPkg,
+  loadRc,
 }

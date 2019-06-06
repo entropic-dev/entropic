@@ -11,8 +11,9 @@ const semver = require('semver');
 const path = require('path');
 const zlib = require('zlib');
 
-const loadPackageToml = require('../load-package-toml');
+const findAndRead = require('../find-and-read')
 const parseSpec = require('../canonicalize-spec');
+const { PACKAGE_TOML } = require('../const')
 
 const publishOpts = figgy({
   registries: true,
@@ -26,7 +27,7 @@ const publishOpts = figgy({
 
 async function publish(opts) {
   opts = publishOpts(opts);
-  const { location, content } = await loadPackageToml(process.cwd());
+  const { location, content } = await findAndRead({ dir: process.cwd(), filename: PACKAGE_TOML });
   const spec = parseSpec(content.name, opts.registry);
 
   const host =

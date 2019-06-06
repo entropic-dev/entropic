@@ -6,7 +6,7 @@ const figgy = require('figgy-pudding');
 const profile = require('npm-profile');
 const opener = require('opener');
 
-const { load, save } = require('../config');
+const { loadRc, saveRc } = require('../config');
 
 const loginOpts = figgy({
   log: { default: require('npmlog') },
@@ -22,12 +22,12 @@ async function login(opts) {
   );
 
   // load _just_ the config file, not the config file + env + cli args.
-  const current = await load();
+  const current = loadRc();
 
   current.registries = current.registries || {};
   current.registries[opts.registry] = current.registries[opts.registry] || {};
   current.registries[opts.registry].token = token;
   current.registries[opts.registry].username = username;
 
-  await save(current);
+  saveRc(current);
 }

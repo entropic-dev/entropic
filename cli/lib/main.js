@@ -6,7 +6,7 @@ module.exports = main;
 
 const minimist = require('minimist');
 
-const { load } = require('./config');
+const { loadRc } = require('./config');
 
 async function main(argv) {
   if (!argv[0]) {
@@ -23,7 +23,7 @@ async function main(argv) {
       cmd = require('./commands/help');
     }
 
-    const config = await load();
+    const config = await loadRc();
     const env = {};
     for (const key in process.env) {
       if (key.startsWith('ent_')) {
