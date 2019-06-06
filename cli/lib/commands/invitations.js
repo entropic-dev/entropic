@@ -2,6 +2,7 @@
 
 const fetch = require('../fetch');
 const figgy = require('figgy-pudding');
+const { whoAmI } = require('../utils');
 
 module.exports = invitations;
 
@@ -10,16 +11,23 @@ module.exports = invitations;
 
 const invitationsOpts = figgy({
   argv: true,
-  registry: true,
+  registry: { default: 'https://registry.entropic.dev' },
+  registries: { default: [] },
   token: true,
+  packages: true,
   log: { default: require('npmlog') }
 });
 
+const getUrl = (packages, registry, invitee) =>
+  packages
+    ? `${registry}/v1/namespaces/namespace/${invitee}/maintainerships/pending`
+    : `${registry}/v1/users/user/${invitee}/memberships/pending`;
+
 async function invitations(opts) {
   opts = invitationsOpts(opts);
-  let invitee = opts.argv[0];
+  let invitee = opts.argv[0] || (await whoAmI(opts));
   if (!invitee) {
-    console.log('Usage: ds invitations <namespace|user>');
+    console.log('Usage: ds invitations <namespace|user> [--packages]');
     process.exit(1);
   }
 
@@ -27,14 +35,9 @@ async function invitations(opts) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
 
-  const response = await fetch(
-    `${
-      opts.registry
-    }/v1/namespaces/namespace/${invitee}/maintainerships/pending`,
-    {
-      headers: { authorization: `Bearer ${opts.token}` }
-    }
-  );
+  const response = await fetch(getUrl(opts.packages, opts.registry, invitee), {
+    headers: { authorization: `Bearer ${opts.token}` }
+  });
 
   const pkg = await response.json();
   let result = [];
@@ -42,27 +45,18 @@ async function invitations(opts) {
     result = pkg.objects;
   }
 
-  const response2 = await fetch(
-    `${opts.registry}/v1/users/user/${invitee}/memberships/pending`,
-    {
-      headers: { authorization: `Bearer ${opts.token}` }
-    }
-  );
-  const ns = await response2.json();
-  if (Array.isArray(ns.objects)) {
-    result = result.concat(ns.objects);
-  }
+  const qualifier = opts.packages ? 'package ' : '';
 
   if (result.length === 0) {
-    console.log(`${invitee} has no invitations.`);
+    console.log(`${invitee} has no ${qualifier}invitations.`);
     return 0;
   }
 
   console.log(
     `${invitee} has ` +
       (result.length === 1
-        ? 'one invitation.'
-        : `${result.length} invitations.`) +
+        ? `one ${qualifier}invitation.`
+        : `${result.length} ${qualifier}invitations.`) +
       '\nTo accept:\n'
   );
 
