@@ -4,10 +4,11 @@ module.exports = create;
 
 const readline = require('readline');
 const {
+  createPackageJson,
   createToml,
-  writeToml,
+  fileExists,
   isValidSemver,
-  fileExists
+  writeFile
 } = require('../utils');
 
 const REJECTION_MSGS = {
@@ -152,6 +153,8 @@ async function askQuestion(question, rl, validator, transform = undefined) {
  * Exported function used as `ds create`
  */
 async function create(opts) {
+  await writeFile(`${process.cwd()}/package.json`, createPackageJson());
+
   try {
     const rl = readline.createInterface({
       input: process.stdin,
@@ -192,7 +195,11 @@ async function create(opts) {
 
     rl.close();
 
-    await writeToml(tomlLocation(), createToml(answers));
+    await writeFile(tomlLocation(), createToml(answers));
+
+    if (answers['type'] === 'module') {
+      await writeFile(process.cwd(), createPackageJson());
+    }
   } catch (e) {
     console.error('There was an error creating your Package.toml');
     console.error(e);

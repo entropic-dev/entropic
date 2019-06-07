@@ -2,7 +2,8 @@
 
 module.exports = {
   createToml,
-  writeToml,
+  createPackageJson,
+  writeFile,
   isValidSemver,
   fileExists,
   optionalEntries
@@ -47,11 +48,20 @@ ${optionalEntries(answersHash)}
   `;
 }
 
+function createPackageJson() {
+  return `
+{
+  "type": "module"
+}`;
+}
+
 /**
  * Writes a file given a location and string.
+ * Wrap fs operations in case we need to provide
+ * OS specific workarounds in the future
  */
-async function writeToml(tomlLoc, tomlStr) {
-  await fs.writeFile(tomlLoc, tomlStr);
+async function writeFile(loc, str) {
+  await fs.writeFile(loc, str);
 }
 
 /**
