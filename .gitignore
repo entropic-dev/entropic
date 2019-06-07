@@ -7,3 +7,4 @@ allowed-list
 .DS_STORE
 *~
 *.swp
+services/data/entropic-cache

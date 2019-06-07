@@ -29,7 +29,8 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/542140?v=4",
       "profile": "https://jmes.tech",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -130,6 +131,33 @@
       "profile": "https://www.neversaw.us",
       "contributions": [
         "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "aredridel",
+      "name": "Aria Stewart",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2876?v=4",
+      "profile": "http://dinhe.net/~aredridel/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "pranshuchittora",
+      "name": "Pranshu Chittora",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/32242596?v=4",
+      "profile": "https://pranshuchittora.github.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "sbinlondon",
+      "name": "Kate Beard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/37520401?v=4",
+      "profile": "http://katebeard.co",
+      "contributions": [
         "doc"
       ]
     }

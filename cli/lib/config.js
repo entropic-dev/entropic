@@ -10,7 +10,7 @@ const path = require('path');
 const errors = require('./errors');
 
 async function load(filename = path.join(home, '.entropicrc')) {
-  var content = null;
+  let content = null;
   try {
     content = await fs.readFile(filename, 'utf8');
   } catch (e) {
@@ -21,7 +21,7 @@ async function load(filename = path.join(home, '.entropicrc')) {
     throw new errors.CouldNotReadConfigFile(filename, e);
   }
 
-  var parsed = null;
+  let parsed = null;
   try {
     parsed = toml.parse(content);
   } catch (e) {

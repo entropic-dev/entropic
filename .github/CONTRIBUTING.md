@@ -1,5 +1,7 @@
 # Contributing
 
+Before contributing, please take a moment to familiarise yourself with our [Code of Conduct](CODE_OF_CONDUCT.md). We expect everyone to follow it (and help enforce it) so that we can create a welcoming, open environment for everyone involved ✨😊✨
+
 ## How do I... <a name="toc"></a>
 
 * [Use This Guide](#introduction)?

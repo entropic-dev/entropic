@@ -4,7 +4,7 @@ module.exports = fetchObject;
 
 const { pipeline: _ } = require('stream');
 const { promisify } = require('util');
-const fetch = require('node-fetch');
+const fetch = require('./fetch');
 const cacache = require('cacache');
 const ssri = require('ssri');
 
