@@ -53,7 +53,7 @@ The manifest **MUST** contain the following top-level keys:
 - `"name"` - the canonical name of the package, as a string, including it's namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
 - `"version"` - a [SEMVER](https://semver.org/) designation conforming to version 2.0.0 of the semantic versioning specification. Due to how TOML parses numbers, this must be represented as a string. e.g. `"1.0.4"`
 
-The manifest **MAY** contain:
+The manifest **MAY** contain the following fields:
 
 - `"entry"` - the filename and package-relative path, as a string, to the main entry point of the package. The root for the relative-path is the directory which contains the `Package.toml` file. e.g `"./src/index.js"`
 - `"type"` - if set to `"module"` this will output a [`package.json` with this included](https://nodejs.org/api/esm.html#esm_code_package_json_code_code_type_code_field), and will signal to the node interpreter to run this code an ES6 Module.
@@ -61,6 +61,7 @@ The manifest **MAY** contain:
 - `"description"` - a short description of your package
 - `"homepage"` - a URL for your project's homepage
 - `"author"` - who wrote this package
+- `"repository"` - where does this code live
 
 These fields **MAY** or **MAY NOT** be validated by CLI tools or the server-side
 software, depending on the implmentation.
