@@ -39,6 +39,8 @@ Entropic requires a new command-line client, called `ds` (or "entropy delta".) *
 curl -sSL https://www.entropic.dev/install.sh | bash
 ```
 
+If you're using Arch Linux, install the [`nodejs-entropic`](https://aur.archlinux.org/packages/nodejs-entropic/) package from the AUR.
+
 Log in to a registry: `ds login`. You will be prompted to authenticate using Github.
 
 The `ds` cli is configured with an `.entropicrc` file in your home directory. This is a [TOML](https://github.com/toml-lang/toml) file. Use it to specify your preferred registry, as well as any other registries you use normally.
