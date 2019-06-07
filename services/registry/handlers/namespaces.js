@@ -1,14 +1,23 @@
 'use strict';
 
 const NamespaceMember = require('../models/namespace-member');
-const isLoggedIn = require('../decorators/is-logged-in');
+const canWrite = require('../decorators/can-write-namespace');
 const Namespace = require('../models/namespace');
 const { response, fork } = require('boltzmann');
 const Package = require('../models/package');
 const User = require('../models/user');
+const Host = require('../models/host');
 
 module.exports = [
   fork.get('/v1/namespaces', namespaces),
+  fork.put(
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host',
+    canWrite(create)
+  ),
+  fork.del(
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host',
+    canWrite(destroy)
+  ),
   fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', members),
   fork.post(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
@@ -124,6 +133,35 @@ async function namespaces(context, params) {
     .then();
   const objects = namespaces.map(ns => ns.name).sort();
   return response.json({ objects });
+}
+
+async function create(context, params) {
+  const host = await Host.objects
+    .get({ name: params.host })
+    .catch(Host.objects.NotFound, () => null);
+
+  const ns = await Namespace.objects.create({
+    name: params.namespace,
+    host: host
+  });
+
+  await NamespaceMember.objects.create({
+    user: context.user,
+    namespace: ns,
+    active: true,
+    accepted: true
+  });
+
+  return response.json(ns);
+}
+
+async function destroy(context, { namespace, host }) {
+  await Namespace.objects.delete({
+    name: namespace,
+    'host.name': host
+  });
+
+  return response.text('OK');
 }
 
 async function members(context, { namespace, host }) {
