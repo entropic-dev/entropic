@@ -64,7 +64,7 @@ The manifest **MAY** contain the following fields:
 - `"repository"` - where does this code live
 
 These fields **MAY** or **MAY NOT** be validated by CLI tools or the server-side
-software, depending on the implmentation.
+software, depending on the implementation.
 
 ### Subsections
 
