@@ -151,6 +151,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sbinlondon",
+      "name": "Kate Beard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/37520401?v=4",
+      "profile": "http://katebeard.co",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
