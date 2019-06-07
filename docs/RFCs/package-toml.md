@@ -52,6 +52,9 @@ The manifest **MUST** contain the following top-level keys:
 
 - `"name"` - the canonical name of the package, as a string, including it's namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
 - `"version"` - a [SEMVER](https://semver.org/) designation conforming to version 2.0.0 of the semantic versioning specification. Due to how TOML parses numbers, this must be represented as a string. e.g. `"1.0.4"`
+
+The manifest **MAY** contain:
+
 - `"entry"` - the filename and package-relative path, as a string, to the main entry point of the package. The root for the relative-path is the directory which contains the `Package.toml` file. e.g `"./src/index.js"`
 
 The top-level of the manifest **MAY** also contain:
@@ -62,10 +65,10 @@ The top-level of the manifest **MAY** also contain:
 
 The manifest file **MAY** contain zero or more subsections as defined below.
 
-#### `[dependencies]`
+#### Dependency Lists
 
-The dependencies section **MUST** list all the resources that are required for
-this package to run. The dependencies **MUST** be declared as `"key" = "value"`
+Dependencies lists contain all the resources that are required for
+this package, in various scenarios. The dependencies **MUST** be declared as `"key" = "value"`
 pairs where the `key` is the package's canonical name (as from the top-level section
 of it's `Package.toml` file) and the `value` is a valid SEMVER version or range
 expression that points to a valid package.
@@ -90,7 +93,29 @@ To specify any version
 "toddself@static-pkg.dev/package2toml" = "*"
 ```
 
+#### Dependency Types
+
+You **MAY** declare dependency types for:
+
+- `[dependencies]` - these are the packages that are required to run this package. They will be installed automatically when this package is required by another package, or when you specifically install the dependencies for this package manually.
+- `[devDependencies]` - these are packages that are required to develop this package. They will be installed only when you install the dependencies for this package manually. If a package depends on the current package, they will **NOT** be installed as part of that dependency graph.
+- `[peerDependencies]` - these packages are rqeuired to run this package, however, they will not be installed and should be additionally depended on or installed by either the parent package or along side this package for development.
+- `[optionalDependencies]` - these packages are not required to run this software, but may provide additional options or features in this package. They must be required or installed by the parent package or along side this package for development.
+
+### Example Package.toml
+
+```toml
+"name" = "todd@static-pkg.dev/package2toml"
+"version" = "1.0.4"
+
+[dependencies]
+"legacy@registry.entropic.dev/minimist" = "^1.2.0"
+
+[devDependencies]
+"legacy@registry.entropic.dev/tape" = "*"
+```
+
 ## Contributors
 
-- Chris Dickensen [@chrisdickensen](https://github.com/chrisdickensen)
+- Chris Dickinson [@chrisdickinson](https://github.com/chrisdickinson)
 - CJ Silverio [@ceejbot](https://github.com/ceejbot)
