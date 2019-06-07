@@ -49,11 +49,8 @@
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
-    "mocha": "~6.1.4",
-    "must": "~0.13.4",
     "prettier": "~1.17.1",
-    "proxyquire": "^2.1.0",
-    "sinon": "^7.3.2"
+    "testdouble": "^3.11.0"
   },
   "directories": {
     "lib": "lib"
@@ -72,6 +69,6 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
-    "test": "mocha -R spec"
+    "test": "ava test/**"
   }
 }

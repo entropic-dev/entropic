@@ -1,36 +1,18 @@
-const proxyquire = require('proxyquire')
-const path = require('path')
-const sinon = require('sinon')
-const toml = require('@iarna/toml');
-const test = require('ava')
-const {
-  CouldNotReadConfigFile,
+import path from 'path'
+import toml from '@iarna/toml'
+import test from 'ava'
+import td from 'testdouble'
+import {
   CouldNotParseConfigToml,
   UnableToFindConfigFile,
-} = require('../lib/errors')
+} from '../lib/errors'
+import { RC_FILE, PACKAGE_TOML } from '../lib/const'
 
-const getTestSubject = () => {
-  const readFileSync = sinon.stub()
-  const existsSync = sinon.stub()
-  const tomlParse = sinon.stub()
-
-  const findAndRead = proxyquire('../lib/find-and-read.js', {
-    fs: {
-      readFileSync,
-      existsSync,
-    },
-    '@iarna/toml': {
-      parse: tomlParse
-    }
-  })
-
-  return {
-    readFileSync,
-    existsSync,
-    findAndRead,
-    tomlParse,
-  }
-}
+const subject = () => ({
+  fs: td.replace('fs'),
+  toml: td.replace('@iarna/toml'),
+  findAndRead: require('../lib/find-and-read.js'),
+})
 
 const packageJson = {
   name: 'chris@registry.entropic.dev/ds',
@@ -41,24 +23,19 @@ const packageJson = {
 }
 
 const packageToml = toml.stringify(packageJson)
-
-const RC_FILE = '.entropicrc'
-const PACKAGE_TOML = 'Package.toml'
-
 const homeDir = '/home/user/'
 
 test('file exists right at the specified path', t => {
-  const {
-    readFileSync,
-    existsSync,
-    findAndRead,
-    tomlParse,
-  } = getTestSubject()
+  const { fs, toml, findAndRead } = subject()
 
-  existsSync.onCall(0).returns(true)
+  td.when(fs.existsSync(path.join(homeDir, RC_FILE)))
+    .thenReturn(true)
 
-  readFileSync.returns(packageToml)
-  tomlParse.returns(packageJson)
+  td.when(fs.readFileSync(path.join(homeDir, RC_FILE), 'utf8'))
+    .thenReturn(packageToml)
+
+  td.when(toml.parse(packageToml))
+    .thenReturn(packageJson)
 
   const actual = findAndRead({
     name: RC_FILE,
@@ -70,32 +47,27 @@ test('file exists right at the specified path', t => {
     location: path.join(homeDir, RC_FILE),
   }
 
-  t.deepEqual(existsSync.callCount, 1)
-  t.deepEqual(existsSync.args[0][0], path.join(homeDir, RC_FILE))
-
-  t.deepEqual(readFileSync.callCount, 1)
-  t.deepEqual(tomlParse.callCount, 1)
-
   t.deepEqual(actual, expected)
 })
 
 test('file exists two directories up', t => {
-  const {
-    readFileSync,
-    existsSync,
-    findAndRead,
-    tomlParse,
-  } = getTestSubject()
+  const { fs, toml, findAndRead } = subject()
 
   const end = path.join(homeDir, 'app')
   const start = path.join(end, 'one', 'two')
 
-  existsSync.onCall(0).returns(false)
-  existsSync.onCall(1).returns(false)
-  existsSync.onCall(2).returns(true)
+  td.when(fs.existsSync(path.join(start, PACKAGE_TOML)))
+    .thenReturn(false)
+  td.when(fs.existsSync(path.join(start, '..', PACKAGE_TOML)))
+    .thenReturn(false)
+  td.when(fs.existsSync(path.join(end, PACKAGE_TOML)))
+    .thenReturn(true)
 
-  readFileSync.returns(packageToml)
-  tomlParse.returns(packageJson)
+  td.when(fs.readFileSync(path.join(end, PACKAGE_TOML), 'utf8'))
+    .thenReturn(packageToml)
+
+  td.when(toml.parse(packageToml))
+    .thenReturn(packageJson)
 
   const actual = findAndRead({
     name: PACKAGE_TOML,
@@ -108,29 +80,17 @@ test('file exists two directories up', t => {
     location: path.join(end, PACKAGE_TOML),
   }
 
-  t.deepEqual(existsSync.callCount, 3)
-  t.deepEqual(existsSync.args[0][0], path.join(start, PACKAGE_TOML))
-  t.deepEqual(existsSync.args[1][0], path.join(start, '..', PACKAGE_TOML))
-  t.deepEqual(existsSync.args[2][0], path.join(end, PACKAGE_TOML))
-
-  t.deepEqual(readFileSync.callCount, 1)
-  t.deepEqual(tomlParse.callCount, 1)
-
   t.deepEqual(actual, expected)
 })
 
 test('unable to find config file', t => {
-  const {
-    readFileSync,
-    existsSync,
-    findAndRead,
-    tomlParse,
-  } = getTestSubject()
+  const { fs, findAndRead } = subject()
 
   const end = '/'
   const start = path.join(end, 'home')
 
-  existsSync.onCall(0).returns(false)
+  td.when(fs.existsSync(path.join(start, RC_FILE)))
+    .thenReturn(false)
 
   const actual = t.throws(() => {
     findAndRead({
@@ -142,28 +102,22 @@ test('unable to find config file', t => {
 
   const expected = new UnableToFindConfigFile(RC_FILE)
 
-  t.deepEqual(existsSync.callCount, 1)
-  t.deepEqual(existsSync.args[0][0], path.join(start, RC_FILE))
-
-  t.deepEqual(readFileSync.callCount, 0)
-  t.deepEqual(tomlParse.callCount, 0)
-
   t.deepEqual(actual, expected)
 })
 
 test('unable to parse found toml file', t => {
-  const {
-    readFileSync,
-    existsSync,
-    findAndRead,
-    tomlParse,
-  } = getTestSubject()
+  const { fs, toml, findAndRead } = subject()
 
   const start = homeDir
 
-  existsSync.onCall(0).returns(true)
-  readFileSync.returns(packageToml)
-  tomlParse.throws()
+  td.when(fs.existsSync(path.join(start, RC_FILE)))
+    .thenReturn(true)
+
+  td.when(fs.readFileSync(path.join(start, RC_FILE), 'utf8'))
+    .thenReturn(packageToml)
+
+  td.when(toml.parse(packageToml))
+    .thenThrow(new Error('whatever error'))
 
   const actual = t.throws(() => {
     findAndRead({
@@ -173,12 +127,6 @@ test('unable to parse found toml file', t => {
   })
 
   const expected = new CouldNotParseConfigToml(RC_FILE)
-
-  t.deepEqual(existsSync.callCount, 1)
-  t.deepEqual(existsSync.args[0][0], path.join(start, RC_FILE))
-
-  t.deepEqual(readFileSync.callCount, 1)
-  t.deepEqual(tomlParse.callCount, 1)
 
   t.deepEqual(actual, expected)
 })
