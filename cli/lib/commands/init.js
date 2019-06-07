@@ -11,6 +11,7 @@ const {
 } = require('../utils');
 
 const REJECTION_MSGS = {
+  REQUIRED: 'This is required',
   validateName: "Sorry, that's not a valid name",
   validateVersion: "Sorry, that's not a valid semver version"
 };
@@ -23,9 +24,46 @@ const VALID_YES_NO = {
 };
 
 const QUESTIONS = {
-  TOML_EXISTS: 'Package.toml already exists. Continue (Y/N)?: ',
-  NAME: 'Name: ',
-  VERSION: 'Version: '
+  TOML_EXISTS: {
+    MESSAGE: 'Package.toml already exists. Continue (Y/N)?: ',
+    REQUIRED: true
+  },
+  NAME: {
+    MESSAGE: 'Name: ',
+    REQUIRED: true
+  },
+  VERSION: {
+    MESSAGE: 'Version: ',
+    REQUIRED: true
+  },
+  ENTRY: {
+    MESSAGE: 'Entry: ',
+    REQUIRED: false
+  },
+  TYPE: {
+    MESSAGE: 'Type :',
+    REQUIRED: false
+  },
+  LICENSE: {
+    MESSAGE: 'License: ',
+    REQUIRED: false
+  },
+  DESCRIPTION: {
+    MESSAGE: 'Description: ',
+    REQUIRED: false
+  },
+  HOMEPAGE: {
+    MESSAGE: 'Homepage: ',
+    REQUIRED: false
+  },
+  AUTHOR: {
+    MESSAGE: 'Author: ',
+    REQUIRED: false
+  },
+  REPOSITORY: {
+    MESSAGE: 'Repository: ',
+    REQUIRED: false
+  }
 };
 
 /**
@@ -86,15 +124,21 @@ function ask(question, rl) {
 async function askQuestion(question, rl, validator, transform = undefined) {
   let invalid = true;
   let ans = undefined;
+  const { MESSAGE, REQUIRED } = question;
 
   while (invalid) {
-    ans = await ask(question, rl);
+    ans = await ask(MESSAGE, rl);
 
     if (transform) {
       ans = transform(ans);
     }
 
-    if (validator(ans)) {
+    if (ans.length < 1 && REQUIRED) {
+      console.error(REJECTION_MSGS.REQUIRED);
+      continue;
+    }
+
+    if (!validator || validator(ans)) {
       invalid = false;
     } else {
       console.error(REJECTION_MSGS[validator.name]);
@@ -130,12 +174,25 @@ async function create(opts) {
       }
     }
 
-    const name = await askQuestion(QUESTIONS.NAME, rl, validateName);
-    const version = await askQuestion(QUESTIONS.VERSION, rl, validateVersion);
+    let answers = [];
+
+    answers['name'] = await askQuestion(QUESTIONS.NAME, rl, validateName);
+    answers['version'] = await askQuestion(
+      QUESTIONS.VERSION,
+      rl,
+      validateVersion
+    );
+    answers['entry'] = await askQuestion(QUESTIONS.ENTRY, rl);
+    answers['type'] = await askQuestion(QUESTIONS.TYPE, rl);
+    answers['license'] = await askQuestion(QUESTIONS.LICENSE, rl);
+    answers['description'] = await askQuestion(QUESTIONS.DESCRIPTION, rl);
+    answers['homepage'] = await askQuestion(QUESTIONS.HOMEPAGE, rl);
+    answers['author'] = await askQuestion(QUESTIONS.AUTHOR, rl);
+    answers['repository'] = await askQuestion(QUESTIONS.REPOSITORY, rl);
 
     rl.close();
 
-    await writeToml(tomlLocation(), createToml(name, version));
+    await writeToml(tomlLocation(), createToml(answers));
   } catch (e) {
     console.error('There was an error creating your Package.toml');
     console.error(e);
