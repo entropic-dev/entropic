@@ -24,7 +24,7 @@ re-use under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ## Introduction
 
-Entropic's cannot share a manifest format with the traditional `package.json` format
+Entropic cannot share a manifest format with the traditional `package.json` format
 associated with the ECMAScript ecosystem for a number of reasons:
 
 1. Entropic is intended to allow for federated package management for more than just the ECMAScript ecosystem
