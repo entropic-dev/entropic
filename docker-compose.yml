@@ -32,7 +32,7 @@ services:
     volumes:
       - ./services/:/services
     working_dir: /services/registry
-    command: npm start
+    command: npm run dev
     networks:
       - entropic
     ports:
