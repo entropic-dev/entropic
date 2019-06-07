@@ -9,6 +9,8 @@ The legacy node package manager is treated as a read-only archive. You may insta
 
 See [docs/README.md](docs/README.md) for the manifesto.
 
+Are you interested in contributing? Do you have some feedback to share? Come talk with us in our [Discourse](https://discourse.entropic.dev/).
+
 ## What's working
 
 Entropic is self-hosting. That means login, publication, and installation (mostly) are working. There are bugs, many unimplemented features, and the whole thing will probably fall over in a stiff breeze. We feel this is exceeding expectations for a project that's just over a month old.
