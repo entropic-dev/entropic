@@ -56,10 +56,14 @@ The manifest **MUST** contain the following top-level keys:
 The manifest **MAY** contain:
 
 - `"entry"` - the filename and package-relative path, as a string, to the main entry point of the package. The root for the relative-path is the directory which contains the `Package.toml` file. e.g `"./src/index.js"`
+- `"type"` - if set to `"module"` this will output a [`package.json` with this included](https://nodejs.org/api/esm.html#esm_code_package_json_code_code_type_code_field), and will signal to the node interpreter to run this code an ES6 Module.
+- `"license"` - a valid [SPDX license](https://spdx.org/licenses/) for your code
+- `"description"` - a short description of your package
+- `"homepage"` - a URL for your project's homepage
+- `"author"` - who wrote this package
 
-The top-level of the manifest **MAY** also contain:
-
-- TK (differentiation between CJS and ESM module types, other languages, etc)
+These fields **MAY** or **MAY NOT** be validated by CLI tools or the server-side
+software, depending on the implmentation.
 
 ### Subsections
 
