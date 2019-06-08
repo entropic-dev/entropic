@@ -86,7 +86,7 @@ function authneeded(message, status = 401, extraHeaders = {}) {
     ...extraHeaders
   });
   if (typeof message === 'string') {
-    message = { error: message };
+    message = { message, code: 'EAUTHNEEDED' };
   }
   const r = new Response(JSON.stringify(message), { status, headers });
   return r;
