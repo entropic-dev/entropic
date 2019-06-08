@@ -177,7 +177,7 @@ async function create(opts) {
       }
     }
 
-    let answers = [];
+    let answers = {};
 
     answers['name'] = await askQuestion(QUESTIONS.NAME, rl, validateName);
     answers['version'] = await askQuestion(
