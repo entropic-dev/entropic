@@ -1,7 +1,7 @@
 'use strict';
 
 const { response, fork } = require('boltzmann');
-const authn = require('../decorators/authn')
+const authn = require('../decorators/authn');
 
 module.exports = [
   fork.get(
@@ -19,17 +19,16 @@ module.exports = [
 ];
 
 async function maintainers(context, { namespace, host, name }) {
-  const [err, maintainers] = await context.storageApi.listPackageMaintainers({
-    namespace,
-    host,
-    name,
-    bearer: context.user ? context.user.name : null,
-    page: Number(context.url.query.page) || 0,
-    status: context.url.query.status
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err, maintainers] = await context.storageApi
+    .listPackageMaintainers({
+      namespace,
+      host,
+      name,
+      bearer: context.user ? context.user.name : null,
+      page: Number(context.url.query.page) || 0,
+      status: context.url.query.status
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     if (err.status === 404) {
@@ -39,28 +38,27 @@ async function maintainers(context, { namespace, host, name }) {
       );
     }
 
-    context.logger.error(err.message || err)
+    context.logger.error(err.message || err);
     return response.error(
       `Caught error fetching maintainers for "${namespace}@${host}/${name}".`,
       500
     );
   }
-  return response.json({ objects });
+  return response.json(maintainers);
 }
 
 // Invite a maintainer. Maintainers are namespaces, which might be a single user or a group of users.
 // More correctly: maintainership is a relationship between a namespace and a package.
 async function invite(context, { namespace, host, name, invitee }) {
-  const [err, invite] = await context.storageApi.invitePackageMaintainer({
-    namespace,
-    host,
-    name,
-    bearer: context.user.name,
-    to: invitee
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err, invite] = await context.storageApi
+    .invitePackageMaintainer({
+      namespace,
+      host,
+      name,
+      bearer: context.user.name,
+      to: invitee
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     const msg = {
@@ -68,9 +66,10 @@ async function invite(context, { namespace, host, name, invitee }) {
       'maintainer.invite.package_dne': `Unknown package: "${invitee}".`,
       'maintainer.invite.already_accepted': `Namespace "${invitee}" is already a member.`,
       'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
-    }[err.code]
+    }[err.code];
     return response.error(
-      msg || `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
+      msg ||
+        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
       err.code
     );
   }
@@ -86,16 +85,15 @@ async function invite(context, { namespace, host, name, invitee }) {
 }
 
 async function remove(context, { namespace, host, name, invitee }) {
-  const [err, invite] = await context.storageApi.removePackageMaintainer({
-    namespace,
-    host,
-    name,
-    bearer: context.user.name,
-    to: invitee
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err, invite] = await context.storageApi
+    .removePackageMaintainer({
+      namespace,
+      host,
+      name,
+      bearer: context.user.name,
+      to: invitee
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     const msg = {
@@ -104,10 +102,11 @@ async function remove(context, { namespace, host, name, invitee }) {
       'maintainer.invite.package_dne': `Unknown package: "${invitee}".`,
       'maintainer.invite.already_accepted': `Namespace "${invitee}" is already a member.`,
       'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
-    }[err.code]
+    }[err.code];
 
     return response.error(
-      msg || `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
+      msg ||
+        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
       err.code
     );
   }

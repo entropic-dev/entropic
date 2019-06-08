@@ -25,7 +25,7 @@ const myMiddles = [
   require('boltzmann/middleware/requestid'),
   require('boltzmann/middleware/redis'),
   require('boltzmann/middleware/storage-api'),
-  require('./middleware/bearer-auth'),
+  require('./middleware/bearer-auth')
 ];
 
 const main = () => {

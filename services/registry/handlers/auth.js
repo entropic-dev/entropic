@@ -15,8 +15,8 @@ async function login(context) {
   // this is all that's required to work with npm-profile.
   const body = await json(context.request);
   const { session: id } = await context.storageApi.createCLISession({
-      description: body.hostname
-  })
+    description: body.hostname
+  });
   return response.json({
     doneUrl: `${process.env.EXTERNAL_HOST}/-/v1/login/poll/${id}`,
     loginUrl: `${process.env.WEB_HOST}/login?cli=${id}`
@@ -34,7 +34,7 @@ async function poll(context, { session }) {
   if (error) {
     return response.error('invalid request', 400);
   }
-  const result = await context.storageApi.fetchCLISession({session})
+  const result = await context.storageApi.fetchCLISession({ session });
   if (result.value) {
     return response.json({
       token: result.value

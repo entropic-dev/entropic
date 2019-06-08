@@ -5,8 +5,14 @@ const authn = require('../decorators/authn');
 
 module.exports = [
   fork.get('/v1/users/user/:username/memberships', authn.required(memberships)),
-  fork.post('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(accept)),
-  fork.delete('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(decline))
+  fork.post(
+    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+    authn.required(accept)
+  ),
+  fork.delete(
+    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+    authn.required(decline)
+  )
 ];
 
 async function memberships(context, { username }) {
@@ -15,38 +21,40 @@ async function memberships(context, { username }) {
     bearer: context.user.name,
     page: context.url.query.page,
     status: context.url.query.status
-  })
+  });
 
   if (err) {
     // TODO: enumerate error cases
-    return response.error('Caught error listing memberships', 500)
+    return response.error('Caught error listing memberships', 500);
   }
 
-  const { objects, next, prev, total } = result
+  const { objects, next, prev, total } = result;
   return response.json({ objects, next, prev, total });
 }
 
 async function accept(context, { username, namespace, host }) {
-  const [err] = await context.storageApi.acceptNamespaceMembership({
-    bearer: context.user.name,
-    invitee: username,
-    namespace,
-    host
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err] = await context.storageApi
+    .acceptNamespaceMembership({
+      bearer: context.user.name,
+      invitee: username,
+      namespace,
+      host
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     const msg = {
-      'member.invite.invitee_dne': `Unknown user for invite: "${invitee}".`,
+      'member.invite.invitee_dne': `Unknown user for invite: "${username}".`,
       'member.invite.namespace_dne': `Unknown namespace: "${namespace}@${host}".`,
-      'member.invite.bearer_unauthorized': `You are not authorized to accept an invite for "${invitee}" on "${namespace}@${host}"`,
-      'member.invite.invite_dne': `invitation not found`,
-    }[err.code]
+      'member.invite.bearer_unauthorized': `You are not authorized to accept an invite for "${username}" on "${namespace}@${host}"`,
+      'member.invite.invite_dne': `invitation not found`
+    }[err.code];
 
     return response.error(
-      msg || `Caught error accepting "${namespace}@${host}" invite for "${context.user.name}"`,
+      msg ||
+        `Caught error accepting "${namespace}@${host}" invite for "${
+          context.user.name
+        }"`,
       err.status
     );
   }
@@ -60,26 +68,28 @@ async function accept(context, { username, namespace, host }) {
 }
 
 async function decline(context, { username, namespace, host }) {
-  const [err] = await context.storageApi.declineNamespaceMembership({
-    bearer: context.user.name,
-    invitee: username,
-    namespace,
-    host
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err] = await context.storageApi
+    .declineNamespaceMembership({
+      bearer: context.user.name,
+      invitee: username,
+      namespace,
+      host
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     const msg = {
-      'member.invite.invitee_dne': `Unknown user for invite: "${invitee}".`,
+      'member.invite.invitee_dne': `Unknown user for invite: "${username}".`,
       'member.invite.namespace_dne': `Unknown namespace: "${namespace}@${host}".`,
-      'member.invite.bearer_unauthorized': `You are not authorized to decline an invite for "${invitee}" on "${namespace}@${host}"`,
-      'member.invite.invite_dne': `invitation not found`,
-    }[err.code]
+      'member.invite.bearer_unauthorized': `You are not authorized to decline an invite for "${username}" on "${namespace}@${host}"`,
+      'member.invite.invite_dne': `invitation not found`
+    }[err.code];
 
     return response.error(
-      msg || `Caught error declining "${namespace}@${host}" invite for "${context.user.name}"`,
+      msg ||
+        `Caught error declining "${namespace}@${host}" invite for "${
+          context.user.name
+        }"`,
       err.status
     );
   }
@@ -91,4 +101,3 @@ async function decline(context, { username, namespace, host }) {
     `You have declined the invitation to join ${namespace}@${host}`
   );
 }
-
