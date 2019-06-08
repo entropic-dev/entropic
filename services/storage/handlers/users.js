@@ -110,6 +110,11 @@ async function memberships (context, { username }) {
     'pending': 'pending'
   }[context.request.url.search.status] || 'active'
 
+  // you may only list pending memberships for yourself.
+  if (username !== context.user.name && status === 'pending') {
+    return response.error.coded('member.list.bearer_unauthorized', 403)
+  }
+
   const perPage = Number(process.env.PER_PAGE) || 100
   const page = Number(context.request.url.search.page) || 0
   const start = page * perPage

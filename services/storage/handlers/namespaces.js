@@ -1,12 +1,20 @@
 'use strict';
 
-const NamespaceMember = require('../models/namespace-member');
-const Namespace = require('../models/namespace');
 const { response, fork } = require('boltzmann');
+
+const NamespaceMember = require('../models/namespace-member');
+const packageExists = require('../decorators/package-exists');
+const Maintainer = require('../models/maintainer');
+const Namespace = require('../models/namespace');
 const authn = require('../decorators/authn');
 const Package = require('../models/package');
 const User = require('../models/user');
 
+const exists = packageExists({
+  namespace: 'packageNS',
+  host: 'packageHost',
+  name: 'packageName'
+})
 module.exports = [
   fork.get('/v1/namespaces', namespaces),
   fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', authn.optional(members)),
@@ -21,6 +29,15 @@ module.exports = [
   fork.get(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships',
     authn.optional(findNamespace(maintainerships))
+  ),
+
+  fork.post(
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/:packageNS@:packageHost/:packageName',
+    authn.required(exists(canChangeNamespace(accept)))
+  ),
+  fork.del(
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/:packageNS@:packageHost/:packageName',
+    authn.required(exists(canChangeNamespace(decline)))
   )
 ];
 
@@ -120,9 +137,10 @@ async function members(context, { namespace, host }) {
       'namespace_members.active': true,
       'namespace_members.accepted': true
     })
+    .order('name')
     .then();
 
-  const objects = users.map(users => users.name).sort();
+  const objects = users.map(users => users.name)
   return response.json({ objects });
 }
 
@@ -188,31 +206,6 @@ async function remove(context, { invitee, namespace, host }) {
   return response.message(`${invitee} removed from ${namespace}@${host}.`);
 }
 
-async function members(context, { host, namespace }) {
-  const user = await User.objects
-    .get({
-      active: true,
-      name: namespace
-    })
-    .catch(User.objects.NotFound, () => null);
-
-  if (!user) {
-    return response.error(`${namespace}@${host} not found`, 404);
-  }
-
-  const members = await Namespace.objects
-    .filter({
-      'namespace_members.user_id': user.id,
-      'namespace_members.active': true,
-      'namespace_members.accepted': true,
-      active: true
-    })
-    .values('name')
-    .then();
-
-  return response.json({ objects: members });
-}
-
 async function pendingMaintainerships(context, params) {
   const pkgInvitations = await Package.objects
     .filter({
@@ -248,4 +241,69 @@ async function maintainerships(context, params) {
   }
 
   return response.json({ objects });
+}
+
+async function accept(context, { namespace, host, name, member }) {
+  const invitation = await Maintainer.objects
+    .get({
+      namespace_id: context.namespace.id,
+      package_id: context.pkg.id,
+      active: true,
+      accepted: false
+    })
+    .catch(Maintainer.objects.NotFound, () => null);
+
+  if (!invitation) {
+    return response.error('invitation not found', 404);
+  }
+
+  await Maintainer.objects
+    .filter({
+      id: invitation.id
+    })
+    .update({
+      modified: new Date(),
+      accepted: true
+    });
+
+  context.logger.info(
+    `${
+      context.user.name
+    } accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
+  );
+  return response.message(
+    `${member} is now a maintainer for ${namespace}@${host}/${name}`
+  );
+}
+
+async function decline(context, { namespace, host, name, member }) {
+  const invitation = await Maintainer.objects
+    .get({
+      namespace_id: context.namespace.id,
+      package_id: context.pkg.id,
+      active: true
+    })
+    .catch(Maintainer.objects.NotFound, () => null);
+
+  if (!invitation) {
+    return response.error('invitation not found', 404);
+  }
+
+  await Maintainer.objects
+    .filter({
+      id: invitation.id
+    })
+    .update({
+      modified: new Date(),
+      active: false
+    });
+
+  context.logger.info(
+    `${
+      context.user.name
+    } declined the invitation for ${member} to join ${namespace}@${host}/${name}`
+  );
+  return response.message(
+    `You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`
+  );
 }

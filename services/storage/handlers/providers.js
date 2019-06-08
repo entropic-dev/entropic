@@ -4,6 +4,8 @@ const { fork, response } = require('boltzmann')
 const { json } = require('micro')
 const uuid = require('uuid');
 
+const Authentication = require('../models/authentication')
+
 module.exports = [
   fork.get('/v1/authn/providers/provider/:name/id/:id', providerAuthDetail),
 

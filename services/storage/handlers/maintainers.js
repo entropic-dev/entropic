@@ -1,7 +1,6 @@
 'use strict';
 
 const isNamespaceMember = require('../decorators/is-namespace-member');
-const packageExists = require('../decorators/package-exists');
 const findInvitee = require('../decorators/find-invitee');
 const canWrite = require('../decorators/can-write-package');
 const Maintainer = require('../models/maintainer');
@@ -21,14 +20,6 @@ module.exports = [
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
     findInvitee(canWrite(remove))
-  ),
-  fork.post(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
-    packageExists(isNamespaceMember(accept))
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
-    packageExists(isNamespaceMember(decline))
   )
 ];
 
@@ -146,71 +137,5 @@ async function remove(context, { namespace, host, name, invitee }) {
 
   return response.message(
     `${invitee} removed as maintainer of ${namespace}@${host}/${name}.`
-  );
-}
-
-async function accept(context, { namespace, host, name, member }) {
-  const invitation = await Maintainer.objects
-    .get({
-      namespace_id: context.member.id,
-      package_id: context.pkg.id,
-      active: true,
-      accepted: false
-    })
-    .catch(Maintainer.objects.NotFound, () => null);
-
-  if (!invitation) {
-    return response.error('invitation not found', 404);
-  }
-
-  await Maintainer.objects
-    .filter({
-      id: invitation.id
-    })
-    .update({
-      modified: new Date(),
-      accepted: true
-    });
-
-  context.logger.info(
-    `${
-      context.user.name
-    } accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
-  );
-  return response.message(
-    `${member} is now a maintainer for ${namespace}@${host}/${name}`
-  );
-}
-
-async function decline(context, { namespace, host, name, member }) {
-  const invitation = await Maintainer.objects
-    .get({
-      namespace_id: context.member.id,
-      package_id: context.pkg.id,
-      active: true,
-      accepted: false
-    })
-    .catch(Maintainer.objects.NotFound, () => null);
-
-  if (!invitation) {
-    return response.error('invitation not found', 404);
-  }
-
-  await Maintainer.objects
-    .filter({
-      id: invitation.id
-    })
-    .update({
-      modified: new Date(),
-      active: false
-    });
-
-  context.logger.info(
-    `${
-      context.user.name
-    } declined the invitation for ${member} to join ${namespace}@${host}/${name}`
-  );
-  return response.message(
-    `You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
 }
