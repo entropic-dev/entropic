@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = create;
+module.exports = init;
 
 const readline = require('readline');
 const {
@@ -11,59 +11,59 @@ const {
   writeFile
 } = require('../utils');
 
-const REJECTION_MSGS = {
-  REQUIRED: 'This is required',
+const rejection_msgs = {
+  required: 'This is required',
   validateName: "Sorry, that's not a valid name",
   validateVersion: "Sorry, that's not a valid semver version"
 };
 
-const VALID_YES_NO = {
+const valid_yes_no = {
   y: 1,
   yes: 1,
   n: 0,
   no: 0
 };
 
-const QUESTIONS = {
-  TOML_EXISTS: {
-    MESSAGE: 'Package.toml already exists. Continue (Y/N)?: ',
-    REQUIRED: true
+const questions = {
+  toml_exists: {
+    message: 'Package.toml already exists. Continue (Y/N)?: ',
+    required: true
   },
-  NAME: {
-    MESSAGE: 'Name: ',
-    REQUIRED: true
+  name: {
+    message: 'Name: ',
+    required: true
   },
-  VERSION: {
-    MESSAGE: 'Version: ',
-    REQUIRED: true
+  version: {
+    message: 'Version: ',
+    required: true
   },
-  ENTRY: {
-    MESSAGE: 'Entry: ',
-    REQUIRED: false
+  entry: {
+    message: 'Entry: ',
+    required: false
   },
-  TYPE: {
-    MESSAGE: 'Type: ',
-    REQUIRED: false
+  type: {
+    message: 'Type: ',
+    required: false
   },
-  LICENSE: {
-    MESSAGE: 'License: ',
-    REQUIRED: false
+  license: {
+    message: 'License: ',
+    required: false
   },
-  DESCRIPTION: {
-    MESSAGE: 'Description: ',
-    REQUIRED: false
+  description: {
+    message: 'Description: ',
+    required: false
   },
-  HOMEPAGE: {
-    MESSAGE: 'Homepage: ',
-    REQUIRED: false
+  homepage: {
+    message: 'Homepage: ',
+    required: false
   },
-  AUTHOR: {
-    MESSAGE: 'Author: ',
-    REQUIRED: false
+  author: {
+    message: 'Author: ',
+    required: false
   },
-  REPOSITORY: {
-    MESSAGE: 'Repository: ',
-    REQUIRED: false
+  repository: {
+    message: 'Repository: ',
+    required: false
   }
 };
 
@@ -82,7 +82,7 @@ function validateYesNo(ans) {
     return false;
   }
 
-  return VALID_YES_NO[ans] !== undefined;
+  return valid_yes_no[ans] !== undefined;
 }
 
 /**
@@ -125,7 +125,7 @@ function ask(question, rl) {
 async function askQuestion(question, rl, validator, transform = undefined) {
   let invalid = true;
   let ans = undefined;
-  const { MESSAGE, REQUIRED } = question;
+  const { message, required } = question;
 
   while (invalid) {
     ans = await ask(MESSAGE, rl);
@@ -134,15 +134,15 @@ async function askQuestion(question, rl, validator, transform = undefined) {
       ans = transform(ans);
     }
 
-    if (ans.length < 1 && REQUIRED) {
-      console.error(REJECTION_MSGS.REQUIRED);
+    if (ans.length < 1 && required) {
+      console.error(rejection_msgs.required);
       continue;
     }
 
     if (!validator || validator(ans)) {
       invalid = false;
     } else {
-      console.error(REJECTION_MSGS[validator.name]);
+      console.error(rejection_msgs[validator.name]);
     }
   }
 
@@ -150,9 +150,9 @@ async function askQuestion(question, rl, validator, transform = undefined) {
 }
 
 /**
- * Exported function used as `ds create`
+ * Exported function used as `ds init`
  */
-async function create(opts) {
+async function init(opts) {
   await writeFile(`${process.cwd()}/package.json`, createPackageJson());
 
   try {
@@ -164,13 +164,13 @@ async function create(opts) {
     if (fileExists(tomlLocation())) {
       // Ask if we should proceed since the Package.toml exits
       const proceed = await askQuestion(
-        QUESTIONS.TOML_EXISTS,
+        questions.toml_exists,
         rl,
         validateYesNo,
         lowercase
       );
 
-      if (VALID_YES_NO[proceed] === 0) {
+      if (valid_yes_no[proceed] === 0) {
         console.log('Exiting.');
         rl.close();
         return 0;
@@ -179,19 +179,19 @@ async function create(opts) {
 
     let answers = {};
 
-    answers['name'] = await askQuestion(QUESTIONS.NAME, rl, validateName);
+    answers['name'] = await askQuestion(questions.name, rl, validateName);
     answers['version'] = await askQuestion(
-      QUESTIONS.VERSION,
+      questions.version,
       rl,
       validateVersion
     );
-    answers['entry'] = await askQuestion(QUESTIONS.ENTRY, rl);
-    answers['type'] = await askQuestion(QUESTIONS.TYPE, rl);
-    answers['license'] = await askQuestion(QUESTIONS.LICENSE, rl);
-    answers['description'] = await askQuestion(QUESTIONS.DESCRIPTION, rl);
-    answers['homepage'] = await askQuestion(QUESTIONS.HOMEPAGE, rl);
-    answers['author'] = await askQuestion(QUESTIONS.AUTHOR, rl);
-    answers['repository'] = await askQuestion(QUESTIONS.REPOSITORY, rl);
+    answers['entry'] = await askQuestion(questions.entry, rl);
+    answers['type'] = await askQuestion(questions.type, rl);
+    answers['license'] = await askQuestion(questions.license, rl);
+    answers['description'] = await askQuestion(questions.description, rl);
+    answers['homepage'] = await askQuestion(questions.homepage, rl);
+    answers['author'] = await askQuestion(questions.author, rl);
+    answers['repository'] = await askQuestion(questions.repository, rl);
 
     rl.close();
 
