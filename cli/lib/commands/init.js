@@ -42,7 +42,7 @@ const QUESTIONS = {
     REQUIRED: false
   },
   TYPE: {
-    MESSAGE: 'Type :',
+    MESSAGE: 'Type: ',
     REQUIRED: false
   },
   LICENSE: {
