@@ -1,6 +1,7 @@
 {
   "name": "entropic",
   "description": "A new package registry with a new CLI, designed to be easy to stand up inside your network.",
+  "repository": "https://github.com/entropic-dev/entropic",
   "version": "1.0.0",
   "author": "C J Silverio <ceejceej@gmail.com>",
   "bugs": {
@@ -27,10 +28,6 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/entropic-dev/entropic.git"
-  },
   "scripts": {
     "lint": "run-s -s lint-registry lint-cli lint-md",
     "lint-cli": "cd cli; npm run lint",
