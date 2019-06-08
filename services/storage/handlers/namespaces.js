@@ -14,10 +14,13 @@ const exists = packageExists({
   namespace: 'packageNS',
   host: 'packageHost',
   name: 'packageName'
-})
+});
 module.exports = [
   fork.get('/v1/namespaces', namespaces),
-  fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', authn.optional(members)),
+  fork.get(
+    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members',
+    authn.optional(members)
+  ),
   fork.post(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
     authn.required(findInvitee(canChangeNamespace(invite)))
@@ -51,7 +54,7 @@ function findInvitee(next) {
       .catch(User.objects.NotFound, () => null);
 
     if (!context.invitee) {
-      return response.error.coded('members.invite.invitee_dne', 404)
+      return response.error.coded('members.invite.invitee_dne', 404);
     }
 
     context.invitee = user;
@@ -71,7 +74,7 @@ function findNamespace(next) {
       .catch(Namespace.objects.NotFound, () => null);
 
     if (ns === null) {
-      return response.error.coded('members.invite.namespace_dne', 404)
+      return response.error.coded('members.invite.namespace_dne', 404);
     }
 
     context.namespace = ns;
@@ -95,10 +98,7 @@ function canChangeNamespace(next) {
       .catch(Namespace.objects.NotFound, () => null);
 
     if (!ns) {
-      return response.error.coded(
-        'member.invite.bearer_unauthorized',
-        403
-      )
+      return response.error.coded('member.invite.bearer_unauthorized', 403);
     }
 
     context.namespace = ns;
@@ -140,7 +140,7 @@ async function members(context, { namespace, host }) {
     .order('name')
     .then();
 
-  const objects = users.map(users => users.name)
+  const objects = users.map(users => users.name);
   return response.json({ objects });
 }
 

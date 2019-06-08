@@ -13,22 +13,24 @@ function createInternalAuthMW() {
       // authenticated user (if any.)
       //
       // TODO: Someday use JWTs, maybe.
-      let user
+      let user;
 
       if (!context.request.headers.bearer) {
-        user = null
+        user = null;
       }
 
       context.getUser = async () => {
         if (user !== undefined) {
-          return user
+          return user;
         }
 
-        user = await User.objects.get({
-          name: context.request.headers.bearer
-        }).catch(User.objects.NotFound, () => null)
-        return user
-      }
+        user = await User.objects
+          .get({
+            name: context.request.headers.bearer
+          })
+          .catch(User.objects.NotFound, () => null);
+        return user;
+      };
 
       return next(context);
     };

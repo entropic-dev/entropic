@@ -1,7 +1,7 @@
 'use strict';
 
 const { response, fork } = require('boltzmann');
-const { json } = require('micro')
+const { json } = require('micro');
 
 const NamespaceMember = require('../models/namespace-member');
 const Namespace = require('../models/namespace');
@@ -11,8 +11,14 @@ const User = require('../models/user');
 
 module.exports = [
   fork.get('/v1/users/user/:username/memberships', authn.required(memberships)),
-  fork.post('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(accept)),
-  fork.del('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(decline)),
+  fork.post(
+    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+    authn.required(accept)
+  ),
+  fork.del(
+    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+    authn.required(decline)
+  ),
   fork.get('/v1/tokens/token', byToken),
   fork.del('/v1/tokens/token/*', deleteTokens),
   fork.get('/v1/users/user/:username/tokens', authn.required(tokens)),
@@ -20,13 +26,13 @@ module.exports = [
   fork.post('/v1/users/signup', signup)
 ];
 
-async function tokens (context, { username }) {
+async function tokens(context, { username }) {
   if (username !== context.user.name) {
-    return response.error.coded('user.tokens.bearer_unauthorized', 403)
+    return response.error.coded('user.tokens.bearer_unauthorized', 403);
   }
 
-  const PER_PAGE = 100
-  const offset = (Number(context.url.query.page) || 0) * PER_PAGE
+  const PER_PAGE = 100;
+  const offset = (Number(context.url.query.page) || 0) * PER_PAGE;
 
   const tokens = await Token.objects
     .filter({
@@ -42,40 +48,43 @@ async function tokens (context, { username }) {
     objects: tokens.slice(0, -1),
     next: tokens.length > PER_PAGE,
     prev: offset > 0
-  })
+  });
 }
 
-async function deleteTokens (context, {'*': tokens}) {
-  tokens = tokens.split(';')
+async function deleteTokens(context, { '*': tokens }) {
+  tokens = tokens.split(';');
 
-  const count = await Token.objects.filter({
-    'active': true,
-    'value_hash:in': tokens
-  }).update({
-    modified: new Date(),
-    active: false
-  })
+  const count = await Token.objects
+    .filter({
+      active: true,
+      'value_hash:in': tokens
+    })
+    .update({
+      modified: new Date(),
+      active: false
+    });
 
-  context.logger.info(`${count} token(s) deleted.`)
-  return response.empty()
+  context.logger.info(`${count} token(s) deleted.`);
+  return response.empty();
 }
 
 async function createToken(context, { username }) {
-  const target = await User.objects.get({ active: true, name: username })
+  const target = await User.objects
+    .get({ active: true, name: username })
     .catch(User.objects.NotFound, () => null);
 
   if (!target) {
-    return response.error.coded('tokens.create.user_dne', 404)
+    return response.error.coded('tokens.create.user_dne', 404);
   }
 
   const { description } = await json(context.request);
   if (!description) {
-    return response.error.coded('tokens.create.description_required', 400)
+    return response.error.coded('tokens.create.description_required', 400);
   }
 
   const secret = await Token.create({ for: target, description });
 
-  return response.json({ secret }, 201)
+  return response.json({ secret }, 201);
 }
 
 async function signup(context, params) {
@@ -85,7 +94,7 @@ async function signup(context, params) {
 
   if (Number(num) > 0) {
     context.errors = { email: 'That email is already taken.' };
-    return response.error.coded('signup.email_taken', 400)
+    return response.error.coded('signup.email_taken', 400);
   }
 
   const [err, user] = await User.signup(username, email, remoteAuth).then(
@@ -95,29 +104,30 @@ async function signup(context, params) {
 
   if (err) {
     if (err instanceof User.objects.Conflict) {
-      return response.error.coded('signup.username_taken', 400)
+      return response.error.coded('signup.username_taken', 400);
     }
 
-    throw err
+    throw err;
   }
 
-  return response.json(user, 201)
+  return response.json(user, 201);
 }
 
-async function memberships (context, { username }) {
-  const status = {
-    'active': 'active',
-    'pending': 'pending'
-  }[context.request.url.search.status] || 'active'
+async function memberships(context, { username }) {
+  const status =
+    {
+      active: 'active',
+      pending: 'pending'
+    }[context.request.url.search.status] || 'active';
 
   // you may only list pending memberships for yourself.
   if (username !== context.user.name && status === 'pending') {
-    return response.error.coded('member.list.bearer_unauthorized', 403)
+    return response.error.coded('member.list.bearer_unauthorized', 403);
   }
 
-  const perPage = Number(process.env.PER_PAGE) || 100
-  const page = Number(context.request.url.search.page) || 0
-  const start = page * perPage
+  const perPage = Number(process.env.PER_PAGE) || 100;
+  const page = Number(context.request.url.search.page) || 0;
+  const start = page * perPage;
 
   const memberships = await Namespace.objects
     .filter({
@@ -128,32 +138,32 @@ async function memberships (context, { username }) {
       active: true
     })
     .slice(start, start + perPage + 1)
-    .then()
+    .then();
 
-  const hasNext = memberships.length > perPage
-  const hasPrev = start > 0
+  const hasNext = memberships.length > perPage;
+  const hasPrev = start > 0;
 
   return response.json({
     objects: memberships,
     next: hasNext,
     prev: hasPrev
-  })
+  });
 }
 
-async function byToken (context, params) {
-  const token = context.request.headers.token
+async function byToken(context, params) {
+  const token = context.request.headers.token;
   if (!token) {
-    return response.error('Must provide token', 400)
+    return response.error('Must provide token', 400);
   }
 
-  const user = await Token.lookupUser(token)
+  const user = await Token.lookupUser(token);
   if (!user) {
     return response.error('Unauthenticated', 401, {
       'www-authenticate': 'Bearer'
-    })
+    });
   }
 
-  return response.json({user})
+  return response.json({ user });
 }
 
 async function accept(context, { namespace, host }) {

@@ -11,13 +11,13 @@ function packageExists(mapping) {
       namespace: 'namespace',
       host: 'host',
       name: 'name'
-    })(mapping)
+    })(mapping);
   }
 
-  const {namespace, host, name} = mapping
+  const { namespace, host, name } = mapping;
   return next => {
     return async (context, params) => {
-      const {[namespace]: ns, [host]: h, [name]: pkg} = params
+      const { [namespace]: ns, [host]: h, [name]: pkg } = params;
 
       const result = await Package.objects
         .get({
@@ -31,14 +31,11 @@ function packageExists(mapping) {
         .catch(Package.objects.NotFound, () => null);
 
       if (!result) {
-        return response.error(
-          `Package ${ns}@${h}/${pkg} not found`,
-          404
-        );
+        return response.error(`Package ${ns}@${h}/${pkg} not found`, 404);
       }
 
       context.pkg = result;
       return next(context, params);
     };
-  }
+  };
 }

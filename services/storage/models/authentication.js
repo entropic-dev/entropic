@@ -33,9 +33,9 @@ module.exports = class Authentication {
     this.active = active;
   }
 
-  async serialize () {
-    const user = await this.user
-    const { created, modified, active, provider, remote_identity } = this
+  async serialize() {
+    const user = await this.user;
+    const { created, modified, active, provider, remote_identity } = this;
     return {
       user,
       provider,
@@ -43,7 +43,7 @@ module.exports = class Authentication {
       created,
       modified,
       active
-    }
+    };
   }
 
   get user() {
