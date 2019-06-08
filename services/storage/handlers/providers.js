@@ -15,12 +15,6 @@ module.exports = [
 ];
 
 async function providerAuthDetail(context, { provider, id }) {
-  console.log({
-    active: true,
-    remote_identity: id,
-    provider,
-    'user.active': true
-  });
   const authn = await Authentication.objects
     .get({
       active: true,
