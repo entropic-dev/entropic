@@ -65,7 +65,7 @@ async function deleteTokens(context, { '*': tokens }) {
     });
 
   context.logger.info(`${count} token(s) deleted.`);
-  return response.empty();
+  return response.json({ count: Number(count) });
 }
 
 async function createToken(context, { username }) {
