@@ -397,7 +397,7 @@ async function versionCreate(context, { host, namespace, name, version }) {
       './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
 
-    if (/^\.\/package\/readme(\.(md|markdown))?/i.test(filename)) {
+    if (/^\.\/package\/readme(\.(md|mkd|markdown))?/i.test(filename)) {
       const chunks = [];
       formdata.derivedFiles['./readme.html'] = context.storage.add(
         part.pipe(
