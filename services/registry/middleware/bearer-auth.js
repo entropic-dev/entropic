@@ -32,6 +32,7 @@ function createBearerAuthMW({
       const key = `token_${hash}`;
       let data = await context.redis.getAsync(key);
 
+      // eslint-disable: no-empty
       try {
         data = JSON.parse(data);
         context.user = data;

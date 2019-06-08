@@ -7,7 +7,7 @@ const uuid = require('uuid');
 const Authentication = require('../models/authentication');
 
 module.exports = [
-  fork.get('/v1/authn/providers/provider/:name/id/:id', providerAuthDetail),
+  fork.get('/v1/authn/providers/provider/:provider/id/:id', providerAuthDetail),
 
   fork.get('/v1/authn/sessions/session/:session', sessionDetail),
   fork.post('/v1/authn/sessions', sessionCreate),
@@ -15,6 +15,12 @@ module.exports = [
 ];
 
 async function providerAuthDetail(context, { provider, id }) {
+  console.log({
+    active: true,
+    remote_identity: id,
+    provider,
+    'user.active': true
+  });
   const authn = await Authentication.objects
     .get({
       active: true,
@@ -28,7 +34,7 @@ async function providerAuthDetail(context, { provider, id }) {
     return response.error.coded('auth.not_found', 404);
   }
 
-  return await authn.serialize();
+  return response.json(await authn.serialize());
 }
 
 async function sessionDetail(context, { session }) {

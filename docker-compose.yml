@@ -65,7 +65,7 @@ services:
     #ports:
     #  - "3002:3002"
     env_file:
-      - ./services/web/.env
+      - ./services/storage/.env
 
 volumes:
   postgres_data:

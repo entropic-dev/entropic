@@ -1,7 +1,7 @@
 'use strict';
 
 const { Response, Headers } = require('node-fetch');
-const isDev = require('are-we-dev')
+const isDev = require('are-we-dev');
 
 module.exports = {
   authneeded,
@@ -79,20 +79,20 @@ function error(err, status = 500, extraHeaders = {}) {
   }
 
   if (isDev()) {
-    err.trace = new Error().stack
+    err.trace = new Error().stack;
   }
 
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;
 }
 
-error.coded = coded
+error.coded = coded;
 function coded(code, ...args) {
-  return error(Object.assign(new Error(code), { code }), ...args)
+  return error(Object.assign(new Error(code), { code }), ...args);
 }
 
 function empty(status = 204, headers = {}) {
-  return new Response('', { status, headers })
+  return new Response('', { status, headers });
 }
 
 function authneeded(message, status = 401, extraHeaders = {}) {

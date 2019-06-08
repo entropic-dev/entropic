@@ -3,8 +3,6 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const User = require('./user');
-
 module.exports = class Authentication {
   #user = null;
 
@@ -60,6 +58,8 @@ module.exports = class Authentication {
     this.user_id = this.#user.id;
   }
 };
+
+const User = require('./user');
 
 module.exports.objects = orm(module.exports, {
   id: joi

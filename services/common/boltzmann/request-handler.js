@@ -27,12 +27,12 @@ class Context {
     this._parsedUrl = null;
   }
 
-  get url () {
+  get url() {
     if (this._parsedUrl) {
-      return this._parsedUrl
+      return this._parsedUrl;
     }
-    this._parsedUrl = parse(this.request.url, true)
-    return this._parsedUrl
+    this._parsedUrl = parse(this.request.url, true);
+    return this._parsedUrl;
   }
 }
 

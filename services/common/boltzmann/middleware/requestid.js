@@ -9,7 +9,7 @@ module.exports = createRequestId;
 function createRequestId(
   requestIdHeader = process.env.REQUEST_ID_HEADER || 'request-id'
 ) {
-  const host = os.hostname()
+  const host = os.hostname();
   return function mw(next) {
     return async function inner(context) {
       const request = context.request;
