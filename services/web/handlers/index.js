@@ -27,5 +27,5 @@ async function homepage() {
         <h1><marquee>WELCOME TO ENTROPIC</marquee></h1>
       </body>
     </html>
-  `)
+  `);
 }

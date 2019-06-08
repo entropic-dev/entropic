@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-const querystring = require('querystring')
+const querystring = require('querystring');
 const fetch = require('node-fetch');
 
 class Provider {
@@ -48,6 +48,6 @@ const PROVIDERS = [
       return { id: login, username: login, email: email || '' };
     }
   )
-]
+];
 
-module.exports = PROVIDERS
+module.exports = PROVIDERS;

@@ -10,7 +10,7 @@ const { text } = require('micro');
 const { URL } = require('url');
 const CSRF = require('csrf');
 
-const providers = require('../lib/providers')
+const providers = require('../lib/providers');
 
 const TOKENS = new CSRF();
 
@@ -54,7 +54,7 @@ async function login(context) {
 async function oauthCallback(context, { provider: providerName }) {
   const clientState = context.session.get('state');
   context.session.delete('state');
-  const provider = providers.find(xs => xs.name === providerName)
+  const provider = providers.find(xs => xs.name === providerName);
 
   const url = new URL(`${process.env.EXTERNAL_HOST}${context.request.url}`);
 
@@ -89,15 +89,17 @@ async function oauthCallback(context, { provider: providerName }) {
   const { access_token: token } = querystring.parse(remoteBody);
   const remote = await provider.getIdentity(token);
 
-  const authn = await context.storageApi.getAuthentication({
-    remoteId: remote.id,
-    provider: provider.name
-  }).catch(err => {
-    if (err.status === 404) {
-      return null
-    }
-    throw err
-  });
+  const authn = await context.storageApi
+    .getAuthentication({
+      remoteId: remote.id,
+      provider: provider.name
+    })
+    .catch(err => {
+      if (err.status === 404) {
+        return null;
+      }
+      throw err;
+    });
 
   if (authn) {
     context.session.set('user', authn.user.name);
@@ -197,14 +199,13 @@ async function signupAction(context) {
     return signup(context);
   }
 
-  const [err, user] = await context.storageApi.signup({
-    username,
-    email,
-    remoteAuth
-  }).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  )
+  const [err, user] = await context.storageApi
+    .signup({
+      username,
+      email,
+      remoteAuth
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     switch (err.code) {
@@ -217,7 +218,7 @@ async function signupAction(context) {
         return signup(context);
       }
       default:
-        throw err
+        throw err;
     }
   }
 
@@ -233,13 +234,14 @@ async function tokens(context) {
     for: user,
     bearer: user,
     page: Number(context.url.query.page) || 0
-  })
+  });
   const cliLoginSession = context.session.get('cli');
 
   let description = context.description
     ? context.description
     : cliLoginSession
-    ? await context.storageApi.fetchCLISession({session: cliLoginSession}).description || ''
+    ? (await context.storageApi.fetchCLISession({ session: cliLoginSession })
+        .description) || ''
     : '';
 
   const banner = context.session.get('banner');
@@ -318,25 +320,24 @@ async function handleTokenAction(context) {
   context.description = description;
 
   if (action === 'create') {
-    const [err, result] = await context.storageApi.createToken({
-      for: user,
-      description,
-      bearer: user
-    }).then(
-      xs => [null, xs],
-      xs => [xs, null]
-    )
+    const [err, result] = await context.storageApi
+      .createToken({
+        for: user,
+        description,
+        bearer: user
+      })
+      .then(xs => [null, xs], xs => [xs, null]);
 
     if (err) {
       if (err.code === 'tokens.create.description_required') {
-        context.errors = ['Description is required.']
-        return tokens(context)
+        context.errors = ['Description is required.'];
+        return tokens(context);
       }
 
-      throw err
+      throw err;
     }
 
-    const { secret: tokenValue } = result
+    const { secret: tokenValue } = result;
 
     if (cliLoginSession) {
       context.session.set(
@@ -348,7 +349,10 @@ async function handleTokenAction(context) {
       `
       );
       context.session.delete('cli');
-      await context.storageApi.resolveCLISession({session: cliLoginSession, value: tokenValue})
+      await context.storageApi.resolveCLISession({
+        session: cliLoginSession,
+        value: tokenValue
+      });
       context.logger.info(
         `${user.name} created a token in a cli login session`
       );
@@ -373,9 +377,15 @@ async function handleTokenAction(context) {
       return tokens(context);
     }
 
-    const { count } = await context.storageApi.deleteToken({for: user, valueHashes: [value_hash]})
+    const { count } = await context.storageApi.deleteToken({
+      for: user,
+      valueHashes: [token]
+    });
 
-    context.session.set('banner', `Successfully deleted ${count} token${count === 1 ? '' :  's'}.`);
+    context.session.set(
+      'banner',
+      `Successfully deleted ${count} token${count === 1 ? '' : 's'}.`
+    );
     context.logger.info(`${user.name} deleted a token`);
     return response.redirect('/tokens');
   }
