@@ -1,6 +1,7 @@
 'use strict';
 
 const { Response, Headers } = require('node-fetch');
+const isDev = require('are-we-dev')
 
 module.exports = {
   authneeded,
@@ -76,6 +77,11 @@ function error(err, status = 500, extraHeaders = {}) {
   if (typeof err === 'string') {
     err = { message: err, code: 'ENOTSUPPLIED' };
   }
+
+  if (isDev()) {
+    err.trace = new Error().stack
+  }
+
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;
 }

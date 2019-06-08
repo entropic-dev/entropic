@@ -2,6 +2,8 @@
 
 module.exports = { anonymous, required }
 
+const { response } = require('boltzmann')
+
 function required (next) {
   return async function (context, params) {
     if (!context.user) {

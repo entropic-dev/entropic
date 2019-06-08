@@ -47,7 +47,7 @@ module.exports = class Client {
   }
 
   async getToken (key) {
-    return this.request('/v1/users/tokens/token', {
+    return this.request('/v1/tokens/token', {
       headers: { 'token': key }
     })
   }
@@ -244,7 +244,7 @@ module.exports = class Client {
     return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(version)}`, {
       method: 'PUT',
       headers: { ...request.headers, bearer },
-      raw: request // pipe the request through raw: it's multipart!
+      rawBody: request // pipe the request through raw: it's multipart!
     })
   }
 
@@ -285,10 +285,12 @@ module.exports = class Client {
       const body = await response.text()
       let message = body
       let code = 'unknown'
+      let trace = null
       try {
         const parsed = JSON.parse(body)
         message = parsed.message || body
         code = parsed.code || code
+        trace = parsed.trace || null
       } catch {
         ;
       }
@@ -297,6 +299,7 @@ module.exports = class Client {
       throw Object.assign(new Error(message), {
         status: response.status,
         headers: response.headers,
+        trace,
         body,
         code
       })

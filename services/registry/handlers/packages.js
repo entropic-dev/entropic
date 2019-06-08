@@ -1,20 +1,21 @@
 'use strict';
 
+const { response, fork } = require('boltzmann');
 const { Response } = require('node-fetch');
 const { json } = require('micro');
 
-const { response, fork } = require('boltzmann');
+const authn = require('../decorators/authn')
 
 module.exports = [
   fork.get('/v1/packages', packageList),
   fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
   fork.put(
     '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    packageCreate
+    authn.required(packageCreate)
   ),
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    packageDelete
+    authn.required(packageDelete)
   ),
 
   fork.get(
@@ -23,11 +24,11 @@ module.exports = [
   ),
   fork.put(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    versionCreate
+    authn.required(versionCreate)
   ),
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    versionDelete
+    authn.required(versionDelete)
   ),
 
   fork.get('/v1/objects/object/:algo/*', getObject)
@@ -43,7 +44,7 @@ async function packageList(context) {
 
   if (err) {
     // TODO: enumerate error
-    return response.error()
+    return response.error(err.message, err.status)
   }
 
   const { objects, next, prev, total } = result
@@ -91,7 +92,7 @@ async function packageCreate(
 
   if (err) {
     // TODO: enumerate errors
-    return response.error('Failed to replace package', 500)
+    return response.error(err.message, err.status)
   }
 
   return response.json(result, result.created === result.modified ? 201 : 200)

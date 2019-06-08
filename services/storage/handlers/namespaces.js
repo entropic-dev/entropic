@@ -222,8 +222,6 @@ async function pendingMaintainerships(context, params) {
     })
     .then();
 
-  console.log(pkgInvitations);
-
   const objects = [];
   for (const pkg of pkgInvitations) {
     objects.push(await pkg.serialize());

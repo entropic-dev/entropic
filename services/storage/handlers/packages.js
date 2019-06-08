@@ -15,6 +15,7 @@ const Maintainer = require('../models/maintainer');
 const Namespace = require('../models/namespace');
 const { response, fork } = require('boltzmann');
 const Package = require('../models/package');
+const authn = require('../decorators/authn');
 const check = require('../lib/validations');
 
 // Set these env vars to "Infinity" if you'd like to turn these checks off.
@@ -26,11 +27,11 @@ module.exports = [
   fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
   fork.put(
     '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    canWrite(packageCreate)
+    authn.required(canWrite(packageCreate))
   ),
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    canWrite(packageDelete)
+    authn.required(canWrite(packageDelete))
   ),
 
   fork.get(
@@ -39,11 +40,11 @@ module.exports = [
   ),
   fork.put(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    canWrite(versionCreate)
+    authn.required(canWrite(versionCreate))
   ),
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    canWrite(versionDelete)
+    authn.required(canWrite(versionDelete))
   ),
 
   fork.get('/v1/objects/object/:algo/*', getObject)

@@ -30,21 +30,23 @@ function createBearerAuthMW({
         .digest('base64')
 
       const key = `token_${hash}`
-      const data = await context.redis.getAsync(key)
+      let data = await context.redis.getAsync(key)
 
       try {
-        if (data) {
-          context.user = JSON.parse(data)
-        }
+        data = JSON.parse(data)
+        context.user = data
       } catch {
-        const [err, response] = await context.storageApi.getToken(bearer).then(
+      }
+
+      if (data === null) {
+        const [err, result] = await context.storageApi.getToken(bearer).then(
           xs => [null, xs],
           xs => [xs, null]
         )
 
         if (!err) {
-          await context.redis.setexAsync(key, sessionTimeout, JSON.stringify(response.user))
-          context.user = response.user
+          await context.redis.setexAsync(key, sessionTimeout, JSON.stringify(result.user))
+          context.user = result.user
         }
       }
 
