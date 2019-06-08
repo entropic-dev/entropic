@@ -6,22 +6,24 @@ const authn = require('../decorators/authn');
 module.exports = [
   fork.get('/v1/users/user/:username/memberships', authn.required(memberships)),
   fork.post(
-    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+    '/v1/users/user/:username/memberships/:namespace@:host',
     authn.required(accept)
   ),
-  fork.delete(
-    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
+  fork.del(
+    '/v1/users/user/:username/memberships/:namespace@:host',
     authn.required(decline)
   )
 ];
 
 async function memberships(context, { username }) {
-  const [err, result] = await context.storageApi.listUserMemberships({
-    for: username,
-    bearer: context.user.name,
-    page: context.url.query.page,
-    status: context.url.query.status
-  });
+  const [err, result] = await context.storageApi
+    .listUserMemberships({
+      for: username,
+      bearer: context.user.name,
+      page: context.url.query.page,
+      status: context.url.query.status
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     // TODO: enumerate error cases

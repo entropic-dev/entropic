@@ -12,6 +12,7 @@ const auth = require('./auth');
 function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
+    ...require('./users'),
     ...require('./packages'),
     ...require('./maintainers'),
     ...require('./namespaces'),

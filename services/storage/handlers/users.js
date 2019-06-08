@@ -143,8 +143,19 @@ async function memberships(context, { username }) {
   const hasNext = memberships.length > perPage;
   const hasPrev = start > 0;
 
+  const objects = [];
+  for (const xs of memberships) {
+    objects.push({
+      namespace: await xs.namespace,
+      created: xs.created,
+      modified: xs.modified,
+      active: xs.active,
+      accepted: xs.accepted
+    });
+  }
+
   return response.json({
-    objects: memberships,
+    objects,
     next: hasNext,
     prev: hasPrev
   });
