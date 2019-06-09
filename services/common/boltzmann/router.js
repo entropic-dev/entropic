@@ -6,7 +6,6 @@
 
 const response = require('./response');
 const fmw = require('find-my-way');
-const URL = require('url');
 
 function router(options) {
   const wayfinder = fmw(options);
@@ -15,9 +14,9 @@ function router(options) {
 
     return context => {
       const { request } = context;
-      const { pathname } = URL.parse(request.url);
+      const { url } = new URL(request.url);
 
-      const match = wayfinder.find(request.method, pathname);
+      const match = wayfinder.find(request.method, url.pathname);
 
       if (!match) {
         return response.error({ message: 'Not found', code: 'ENOTFOUND' }, 404);
