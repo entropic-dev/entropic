@@ -8,7 +8,6 @@ const { response } = require('boltzmann');
 module.exports = canWrite;
 
 function canWrite(next) {
-  // is there a current user?
   // does the package exist?
   // -> YES
   //    is the current user a maintainer or a member of a namespace that is a maintainer of package?
@@ -23,12 +22,6 @@ function canWrite(next) {
 
   return async (context, params) => {
     const { host, namespace, name } = params;
-    if (!context.user) {
-      return response.error(
-        'You must be logged in to perform this action',
-        403
-      );
-    }
 
     if (
       host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')

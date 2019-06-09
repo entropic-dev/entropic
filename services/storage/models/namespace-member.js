@@ -3,9 +3,6 @@
 const orm = require('ormnomnom');
 const joi = require('@hapi/joi');
 
-const User = require('./user');
-const Namespace = require('./namespace');
-
 module.exports = class NamespaceMember {
   #user = null;
   #namespace = null;
@@ -60,6 +57,9 @@ module.exports = class NamespaceMember {
     this.namespace_id = this.#namespace.id;
   }
 };
+
+const User = require('./user');
+const Namespace = require('./namespace');
 
 module.exports.objects = orm(module.exports, {
   id: joi

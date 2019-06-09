@@ -40,6 +40,33 @@ services:
     env_file:
       - ./services/registry/.env
 
+  web:
+    image: mhart/alpine-node:12
+    volumes:
+      - ./services/:/services
+    working_dir: /services/web
+    command: npm start
+    networks:
+      - entropic
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./services/web/.env
+
+  storage:
+    image: mhart/alpine-node:12
+    volumes:
+      - ./services/:/services
+    working_dir: /services/storage
+    command: npm start
+    networks:
+      - entropic
+    # ports are explicitly hidden, this is an internal service only.
+    #ports:
+    #  - "3002:3002"
+    env_file:
+      - ./services/storage/.env
+
 volumes:
   postgres_data:
   beanstalk_wal:
