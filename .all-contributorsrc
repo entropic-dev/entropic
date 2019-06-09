@@ -151,6 +151,24 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sbinlondon",
+      "name": "Kate Beard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/37520401?v=4",
+      "profile": "http://katebeard.co",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "zeke",
+      "name": "Zeke Sikelianos",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2289?v=4",
+      "profile": "http://zeke.sikelianos.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

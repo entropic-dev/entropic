@@ -43,7 +43,7 @@ async function invitations(opts) {
   }
 
   const response2 = await fetch(
-    `${opts.registry}/v1/users/user/${invitee}/memberships/pending`,
+    `${opts.registry}/v1/users/user/${invitee}/memberships?status=pending`,
     {
       headers: { authorization: `Bearer ${opts.token}` }
     }
