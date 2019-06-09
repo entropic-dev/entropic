@@ -16,7 +16,7 @@ function router(options) {
       const { request } = context;
       const { url } = new URL(request.url);
 
-      const match = wayfinder.find(request.method, url.pathname);
+      const match = wayfinder.find(request.method, url);
 
       if (!match) {
         return response.error({ message: 'Not found', code: 'ENOTFOUND' }, 404);
