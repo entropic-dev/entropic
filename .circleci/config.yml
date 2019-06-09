@@ -1,4 +1,18 @@
 version: 2
+
+setup: &setup
+  - checkout:
+      path: ~/repo
+  - restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "package-lock.json" }}
+        - v1-dependencies-
+  - run: npm install
+  - save_cache:
+      paths:
+        - node_modules
+      key: v1-dependencies-{{ checksum "package-lock.json" }}
+
 jobs:
   storage:
     docker:
@@ -8,18 +22,7 @@ jobs:
     working_directory: ~/repo/services/storage
 
     steps:
-      - checkout:
-          path: ~/repo
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
-      - run: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-
+      <<: *setup
       - run: PGHOST=localhost EXTERNAL_HOST=http://localhost:3000 npm test
 
   cli:
@@ -30,18 +33,7 @@ jobs:
     working_directory: ~/repo/cli
 
     steps:
-      - checkout:
-          path: ~/repo
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
-      - run: npm install
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package-lock.json" }}
-
+      <<: *setup
       - run: npm test
 
 workflows:
