@@ -21,8 +21,7 @@ jobs:
 
     working_directory: ~/repo/services/storage
 
-    steps:
-      <<: *setup
+    steps: &setup
       - run: PGHOST=localhost EXTERNAL_HOST=http://localhost:3000 npm test
 
   cli:
@@ -32,8 +31,7 @@ jobs:
 
     working_directory: ~/repo/cli
 
-    steps:
-      <<: *setup
+    steps: &setup
       - run: npm test
 
 workflows:
