@@ -25,9 +25,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "lint": "npm run lint-registry && npm run lint-cli && npm run lint-md",
+    "lint": "npm run lint-registry && npm run lint-cli && npm run lint-js && npm run lint-md",
     "lint-cli": "cd cli; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",
+    "lint-js": "prettier --check '**/*.js'",
     "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
     "lint-registry": "cd services/registry; npm run lint",
     "postinstall": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm i; cd -; done",
