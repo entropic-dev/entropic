@@ -1,11 +1,11 @@
 version: 2
 jobs:
-  registry:
+  storage:
     docker:
       - image: circleci/node:latest
       - image: circleci/postgres:latest
 
-    working_directory: ~/repo/services/registry
+    working_directory: ~/repo/services/storage
 
     steps:
       - checkout:
@@ -48,5 +48,5 @@ workflows:
   version: 2
   everything:
     jobs:
-      - registry
+      - storage
       - cli
