@@ -1,0 +1,21 @@
+# https://aur.archlinux.org/packages/nodejs-entropic/
+# Maintainer: Dian Fay <dian.m.fay@gmail.com>
+pkgname=nodejs-entropic
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="The Entropic package registry's ds command-line interface"
+arch=("x86_64")
+url="https://entropic.dev"
+license=("MIT")
+install=$pkgname.install
+source=(
+  https://www.entropic.dev/ds-latest.tgz
+)
+makedepends=(
+  "npm"
+)
+
+package() {
+  npm install -g --user root --prefix "$pkgdir"/usr "$srcdir"/ds-latest.tgz
+}
+md5sums=('cb96ef64adcafe8b93e912028eb2fc1c')
