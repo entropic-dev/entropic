@@ -2,10 +2,11 @@
 
 Entropic requires a new command-line client, called `ds` (or "entropy delta".) **`ds` requires at least Node 12.** Install the cli:
 
-## Curl
+## Curl or wget
 
 ```sh
 curl -sSL https://www.entropic.dev/install.sh | bash
+wget -O - https://www.entropic.dev/install.sh | bash
 ```
 
 ### Brew
