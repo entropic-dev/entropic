@@ -11,7 +11,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
             - v1-dependencies-
-      - run: npm install
+      - run: npm install prettier@1.17.1
       - run: npm run lint-check
 
   storage:
