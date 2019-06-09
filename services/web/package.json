@@ -1,8 +1,8 @@
 {
-  "name": "entropic-registry",
-  "description": "community package manager",
+  "name": "entropic-web",
+  "description": "community package manager but for spiders",
   "version": "0.0.1",
-  "author": "C J Silverio <ceejceej@gmail.com>",
+  "author": "Chris Dickinson <chris@neversaw.us>",
   "bugs": {
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
@@ -12,10 +12,13 @@
     "are-we-dev": "^1.0.0",
     "bole": "~3.0.2",
     "boltzmann": "file:../common/boltzmann",
+    "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
+    "csrf": "~3.1.0",
     "culture-ships": "~1.0.0",
     "dotenv": "~8.0.0",
     "escape-html": "^1.0.3",
+    "find-my-way": "~2.0.1",
     "graceful-fs": "^4.1.15",
     "is-email-maybe": "^1.0.1",
     "markdown": "^0.5.0",
@@ -35,12 +38,15 @@
   "devDependencies": {
     "babel-eslint": "~10.0.1",
     "bistre": "~1.0.1",
+    "db-migrate": "^0.11.5",
+    "db-migrate-pg": "^0.5.0",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "nyc": "~14.1.1",
+    "pgtools": "^0.3.0",
     "prettier": "~1.17.0",
     "test-listen": "^1.1.0"
   },
@@ -57,8 +63,7 @@
     "url": "git://github.com/entopic-dev/entropic.git"
   },
   "scripts": {
-    "coverage": "nyc mocha -R spec",
-    "dev": "NODE_ENV=dev ./server.js",
+    "coverage": "NODE_ENV=test nyc mocha -R spec",
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
     "posttest": "npm run lint",

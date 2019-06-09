@@ -1,13 +1,7 @@
 'use strict';
 
-const isNamespaceMember = require('../decorators/is-namespace-member');
-const packageExists = require('../decorators/package-exists');
-const findInvitee = require('../decorators/find-invitee');
-const canWrite = require('../decorators/can-write-package');
-const Maintainer = require('../models/maintainer');
-const Namespace = require('../models/namespace');
-const Package = require('../models/package');
 const { response, fork } = require('boltzmann');
+const authn = require('../decorators/authn');
 
 module.exports = [
   fork.get(
@@ -16,87 +10,69 @@ module.exports = [
   ),
   fork.post(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    findInvitee(canWrite(invite))
+    authn.required(invite)
   ),
   fork.del(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    findInvitee(canWrite(remove))
-  ),
-  fork.post(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
-    packageExists(isNamespaceMember(accept))
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/invitation/:member',
-    packageExists(isNamespaceMember(decline))
+    authn.required(remove)
   )
 ];
 
 async function maintainers(context, { namespace, host, name }) {
-  const pkg = await Package.objects
-    .get({
-      active: true,
+  const [err, maintainers] = await context.storageApi
+    .listPackageMaintainers({
+      namespace,
+      host,
       name,
-      'namespace.active': true,
-      'namespace.name': namespace
+      bearer: context.user ? context.user.name : null,
+      page: Number(context.url.query.page) || 0,
+      status: context.url.query.status
     })
-    .catch(Package.objects.NotFound, () => null);
+    .then(xs => [null, xs], xs => [xs, null]);
 
-  if (!pkg) {
+  if (err) {
+    if (err.status === 404) {
+      return response.error(
+        `"${namespace}@${host}/${name}" does not exist.`,
+        404
+      );
+    }
+
+    context.logger.error(err.message || err);
     return response.error(
-      `"${namespace}@${host}/${name}" does not exist.`,
-      404
+      `Caught error fetching maintainers for "${namespace}@${host}/${name}".`,
+      500
     );
   }
-
-  const namespaces = await Namespace.objects
-    .filter({
-      'maintainers.package_id': pkg.id,
-      'maintainers.accepted': true,
-      'maintainers.active': true
-    })
-    .then();
-
-  const objects = namespaces.map(ns => ns.name).sort();
-  return response.json({ objects });
+  return response.json(maintainers);
 }
 
 // Invite a maintainer. Maintainers are namespaces, which might be a single user or a group of users.
 // More correctly: maintainership is a relationship between a namespace and a package.
 async function invite(context, { namespace, host, name, invitee }) {
-  if (!context.pkg) {
-    return response.error(`"${namespace}@${host}/${name}" not found.`, 404);
-  }
-
-  if (!context.invitee) {
-    return response.error(`${invitee} not found.`, 404);
-  }
-
-  const existing = await Maintainer.objects
-    .get({
-      namespace: context.invitee,
-      package: context.pkg
+  const [err, invite] = await context.storageApi
+    .invitePackageMaintainer({
+      namespace,
+      host,
+      name,
+      bearer: context.user.name,
+      to: invitee
     })
-    .catch(Maintainer.objects.NotFound, () => null);
-  if (existing) {
-    if (existing.active === false) {
-      return response.message(
-        `${invitee} has already declined to maintain ${namespace}@${host}/${name}.`
-      );
-    }
-    if (existing.accepted === false) {
-      return response.message(
-        `${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`
-      );
-    }
-  }
+    .then(xs => [null, xs], xs => [xs, null]);
 
-  await Maintainer.objects.create({
-    namespace: context.invitee,
-    package: context.pkg,
-    accepted: false,
-    active: true
-  });
+  if (err) {
+    const msg = {
+      'maintainer.invite.invitee_dne': `Unknown namespace: "${invitee}".`,
+      'maintainer.invite.package_dne': `Unknown package: "${invitee}".`,
+      'maintainer.invite.already_accepted': `Namespace "${invitee}" is already a member.`,
+      'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
+    }[err.code];
+    return response.error(
+      msg ||
+        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
+      err.code
+    );
+  }
 
   context.logger.info(
     `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${
@@ -109,35 +85,32 @@ async function invite(context, { namespace, host, name, invitee }) {
 }
 
 async function remove(context, { namespace, host, name, invitee }) {
-  if (!context.pkg) {
+  const [err, invite] = await context.storageApi
+    .removePackageMaintainer({
+      namespace,
+      host,
+      name,
+      bearer: context.user.name,
+      to: invitee
+    })
+    .then(xs => [null, xs], xs => [xs, null]);
+
+  if (err) {
+    const msg = {
+      'maintainer.invite.invitee_dne': `Unknown namespace: "${invitee}".`,
+      'maintainer.invite.invitee_not_maintainer': `${invitee} was not a maintainer of ${namespace}@${host}/${name}.`,
+      'maintainer.invite.package_dne': `Unknown package: "${invitee}".`,
+      'maintainer.invite.already_accepted': `Namespace "${invitee}" is already a member.`,
+      'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
+    }[err.code];
+
     return response.error(
-      `"${namespace}@${host}/${name}" does not exist.`,
-      404
+      msg ||
+        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
+      err.code
     );
   }
 
-  if (!context.invitee) {
-    return response.error(`${invitee} does not exist.`, 404);
-  }
-
-  const maintainership = await Maintainer.objects
-    .filter({
-      package_id: context.pkg.id,
-      namespace_id: context.invitee.id,
-      active: true
-    })
-    .slice(0, 1)
-    .update({
-      modified: new Date(),
-      active: false
-    })
-    .then();
-
-  if (maintainership.length === 0) {
-    return response.message(
-      `${invitee} was not a maintainer of ${namespace}@${host}/${name}.`
-    );
-  }
   context.logger.info(
     `${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${
       context.user.name
@@ -146,71 +119,5 @@ async function remove(context, { namespace, host, name, invitee }) {
 
   return response.message(
     `${invitee} removed as maintainer of ${namespace}@${host}/${name}.`
-  );
-}
-
-async function accept(context, { namespace, host, name, member }) {
-  const invitation = await Maintainer.objects
-    .get({
-      namespace_id: context.member.id,
-      package_id: context.pkg.id,
-      active: true,
-      accepted: false
-    })
-    .catch(Maintainer.objects.NotFound, () => null);
-
-  if (!invitation) {
-    return response.error('invitation not found', 404);
-  }
-
-  await Maintainer.objects
-    .filter({
-      id: invitation.id
-    })
-    .update({
-      modified: new Date(),
-      accepted: true
-    });
-
-  context.logger.info(
-    `${
-      context.user.name
-    } accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
-  );
-  return response.message(
-    `${member} is now a maintainer for ${namespace}@${host}/${name}`
-  );
-}
-
-async function decline(context, { namespace, host, name, member }) {
-  const invitation = await Maintainer.objects
-    .get({
-      namespace_id: context.member.id,
-      package_id: context.pkg.id,
-      active: true,
-      accepted: false
-    })
-    .catch(Maintainer.objects.NotFound, () => null);
-
-  if (!invitation) {
-    return response.error('invitation not found', 404);
-  }
-
-  await Maintainer.objects
-    .filter({
-      id: invitation.id
-    })
-    .update({
-      modified: new Date(),
-      active: false
-    });
-
-  context.logger.info(
-    `${
-      context.user.name
-    } declined the invitation for ${member} to join ${namespace}@${host}/${name}`
-  );
-  return response.message(
-    `You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
 }

@@ -1,9 +1,11 @@
 'use strict';
 
 const { Response, Headers } = require('node-fetch');
+const isDev = require('are-we-dev');
 
 module.exports = {
   authneeded,
+  empty,
   bytes,
   error,
   html,
@@ -75,8 +77,22 @@ function error(err, status = 500, extraHeaders = {}) {
   if (typeof err === 'string') {
     err = { message: err, code: 'ENOTSUPPLIED' };
   }
+
+  if (isDev()) {
+    err.trace = new Error().stack;
+  }
+
   const r = new Response(JSON.stringify(err), { status, headers });
   return r;
+}
+
+error.coded = coded;
+function coded(code, ...args) {
+  return error(Object.assign(new Error(code), { code }), ...args);
+}
+
+function empty(status = 204, headers = {}) {
+  return new Response('', { status, headers });
 }
 
 function authneeded(message, status = 401, extraHeaders = {}) {
@@ -86,7 +102,7 @@ function authneeded(message, status = 401, extraHeaders = {}) {
     ...extraHeaders
   });
   if (typeof message === 'string') {
-    message = { error: message };
+    message = { message, code: 'authneeded' };
   }
   const r = new Response(JSON.stringify(message), { status, headers });
   return r;

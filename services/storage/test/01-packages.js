@@ -23,12 +23,12 @@ describe('entropic', () => {
           }
         );
 
-        response.status.must.eql(403);
+        response.status.must.eql(401);
         const data = await response.json();
         data.must.be.an.object();
         data.must.have.property('message');
         data.message.must.match('You must be logged in');
-      })
+      }).middleware([require('../middleware/internal-auth')])
     )
   );
 
@@ -45,7 +45,7 @@ describe('entropic', () => {
             method: 'PUT',
             body: '{}',
             headers: {
-              authorization: `Bearer ${token}`
+              bearer: 'malfoy'
             }
           }
         );
@@ -55,7 +55,7 @@ describe('entropic', () => {
         data.must.be.an.object();
         data.must.have.property('message');
         data.message.must.eql('You are not a member of "any-namespace"');
-      }).middleware([require('../middleware/bearer-auth')])
+      }).middleware([require('../middleware/internal-auth')])
     )
   );
 
@@ -72,7 +72,7 @@ describe('entropic', () => {
             method: 'PUT',
             body: '{}',
             headers: {
-              authorization: `Bearer ${token}`
+              bearer: 'malfoy'
             }
           }
         );
@@ -89,7 +89,7 @@ describe('entropic', () => {
           tags: {}
         });
       }).middleware([
-        require('../middleware/bearer-auth'),
+        require('../middleware/internal-auth'),
         require('./utils/logger')
       ])
     )
