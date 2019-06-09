@@ -14,7 +14,8 @@ function router(options) {
 
     return context => {
       const { request } = context;
-      const { url } = new URL(request.url);
+      const baseURL = 'http://' + request.headers.host + '/';
+      const { url } = new URL(request.url, baseURL);
 
       const match = wayfinder.find(request.method, url);
 
