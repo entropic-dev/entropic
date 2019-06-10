@@ -11,7 +11,7 @@ class Api {
     };
   }
 
-  whoami(token) {
+  whoAmI(token) {
     return fetch(`${this.baseUrl}/v1/auth/whoami`, {
       headers: this.headers(token)
     });

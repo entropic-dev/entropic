@@ -1,10 +1,10 @@
-class FakeApi {
+module.exports = class FakeApi {
   constructor(response, status) {
     this.desiredResponse = response;
     this.desiredStatus = status;
   }
 
-  async whoami() {
+  async whoAmI() {
     return new Promise((resolve, reject) => {
       resolve({
         status: this.desiredStatus,
@@ -13,6 +13,4 @@ class FakeApi {
       });
     });
   }
-}
-
-module.exports = FakeApi;
+};

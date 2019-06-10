@@ -8,6 +8,7 @@ const minimist = require('minimist');
 
 const { load } = require('./config');
 const Api = require('./api');
+const log = require('./logger');
 
 async function main(argv) {
   if (!argv[0]) {
@@ -44,7 +45,8 @@ async function main(argv) {
       ...registryConfig,
       ...args,
       argv: _,
-      api: new Api(registry)
+      api: new Api(registry),
+      log
     });
 
     return 0;

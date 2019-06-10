@@ -5,30 +5,25 @@ const sinon = require('sinon');
 const FakeApi = require('../../utils/FakeApi');
 
 test('whoami calls console.log with username when API response is successful', async t => {
-  const consoleLog = sinon.stub(console, 'log');
+  const log = sinon.stub(FakeLogger, 'log');
 
   const username = 'RaynorJim';
-
-  // TODO ... we shouldn't be using console.log directly
   await whoami({
+    log: FakeLogger,
     api: new FakeApi({ username }, 200)
   });
 
-  t.is(consoleLog.calledOnce, true);
-  t.is(consoleLog.calledWith(`username: ${username}`), true);
-  consoleLog.restore();
+  t.is(log.calledWith(username), true);
+  log.restore();
 });
 
 test('whoami calls error when not successful', async t => {
-  const logger = {
-    error() {}
-  };
-  const stubbedLogger = sinon.stub(logger, 'error');
+  const stubbedLogger = sinon.stub(FakeLogger, 'error');
 
   const error = 'You are forbidden!';
 
   await whoami({
-    log: logger,
+    log: FakeLogger,
     api: new FakeApi({ message: error }, 403)
   });
 
