@@ -1,7 +1,5 @@
 'use strict';
 
-const { parse } = require('url');
-
 const { build } = require('./middleware');
 
 module.exports = {
@@ -31,7 +29,7 @@ class Context {
     if (this._parsedUrl) {
       return this._parsedUrl;
     }
-    this._parsedUrl = parse(this.request.url, true);
+    this._parsedUrl = new URL(this.request.url);
     return this._parsedUrl;
   }
 }
