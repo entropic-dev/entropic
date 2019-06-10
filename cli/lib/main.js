@@ -7,6 +7,7 @@ module.exports = main;
 const minimist = require('minimist');
 
 const { load } = require('./config');
+const { Api } = require('./api');
 
 async function main(argv) {
   if (!argv[0]) {
@@ -41,7 +42,14 @@ async function main(argv) {
 
     // env is overridden by config, which is overridden by registry-specific
     // config, ...
-    await cmd({ ...env, ...config, ...registryConfig, ...args, argv: _ });
+    await cmd({
+      ...env,
+      ...config,
+      ...registryConfig,
+      ...args,
+      argv: _,
+      api: new Api(registry)
+    });
 
     return 0;
   } catch (err) {

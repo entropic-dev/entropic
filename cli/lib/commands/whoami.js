@@ -8,7 +8,8 @@ const { whoAmI } = require('../utils');
 const whoamiOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
   token: true,
-  log: { default: require('npmlog') }
+  log: { default: require('npmlog') },
+  api: true
 });
 
 async function whoami(opts) {
