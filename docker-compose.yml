@@ -86,7 +86,7 @@ services:
       REDIS_URL: redis://redis:6379
       PORT: 3002
       PGUSER: postgres
-      PGDATABASE: entorpic_dev
+      PGDATABASE: entropic_dev
 
 volumes:
   postgres_data:
