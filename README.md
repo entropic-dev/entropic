@@ -78,6 +78,8 @@ Publish a new package-version with `ds publish`.
 
 Entropic is, at the moment of this writing, the work of two people: [Chris Dickinson](https://github.com/chrisdickinson) and [C J Silverio](https://github.com/ceejbot). They are not sponsored by anybody nor do they represent anyone but themselves. Chris and Ceej are seeking additional contributors but wish to onboard newcomers slowly. The project is new enough that clear direction does not always exist in the code, so contributors will need to work closely with us. Read [CONTRIBUTING guide](./CONTRIBUTING.md)
 
+For more, see [Contributing](./.github/CONTRIBUTING.md) and our [Code of Conduct](./.github/CODE_OF_CONDUCT.md).
+
 ## Contributors
 
 <!-- markdownlint-disable MD033 -->
@@ -90,4 +92,4 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 
 ## LICENSE
 
-This project is released under the Apache 2.0 license.
+This project is released under the [Apache 2.0 license](./LICENSE).
