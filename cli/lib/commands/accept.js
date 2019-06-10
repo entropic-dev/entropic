@@ -38,16 +38,14 @@ async function accept(opts) {
 
     const invitee = opts.as;
 
-    uri = `${opts.registry}/v1/packages/package/${
-      parsed.canonical
-    }/maintainers/${invitee}/invitation`;
+    uri = `${opts.registry}/v1/namespaces/namespace/${invitee}/maintainerships/${parsed.canonical}`;
   } else {
     let ns = opts.namespace;
     if (!ns.includes('@')) {
       ns += '@' + opts.registry.replace(/^https?:\/\//, '');
     }
 
-    uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members/invitation`;
+    uri = `${opts.registry}/v1/users/user/memberships/invitations/${ns}`;
   }
 
   const response = await fetch(uri, {
