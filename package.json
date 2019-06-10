@@ -29,6 +29,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "ds": "npm --prefix cli run ds",
     "lint": "run-s -s lint-registry lint-cli lint-md",
     "lint-cli": "cd cli; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",

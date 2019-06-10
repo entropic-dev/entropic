@@ -65,6 +65,7 @@
     "url": "git://github.com/entopic-dev/entropic.git"
   },
   "scripts": {
+    "ds": "$npm_package_bin_ds",
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
     "test": "mocha -R spec"
