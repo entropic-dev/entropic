@@ -16,8 +16,6 @@ class Api {
       headers: this.headers(token)
     });
   }
-
-  
 }
 
 module.exports = {
