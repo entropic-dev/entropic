@@ -13,7 +13,11 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "husky": "2.4.0",
+    "lint-staged": "8.2.0",
     "markdownlint-cli": "^0.16.0",
+    "npm-run-all": "4.1.5",
+    "opt-cli": "1.6.0",
     "prettier": "~1.17.1"
   },
   "directories": {
@@ -25,7 +29,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "lint": "npm run lint-registry && npm run lint-cli && npm run lint-md",
+    "lint": "run-s -s lint-registry lint-cli lint-md",
     "lint-cli": "cd cli; npm run lint",
     "lint-fix": "prettier --write '**/*.js'",
     "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
@@ -33,5 +37,22 @@
     "postinstall": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm i; cd -; done",
     "start": "docker-compose up",
     "test": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm t; cd -; done"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint-registry",
+      "npm run lint-cli",
+      "prettier --write",
+      "git add"
+    ],
+    "*.md": [
+      "npm run lint-md",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "opt --in pre-commit --exec lint-staged"
+    }
   }
 }
