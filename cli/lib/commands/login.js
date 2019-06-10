@@ -17,7 +17,10 @@ async function login(opts) {
   opts = loginOpts(opts);
 
   const { username, token } = await profile.loginWeb(
-    async u => opener(u),
+    async url => {
+      console.log(`Opening ${url} in default browser...`);
+      return opener(url);
+    },
     opts
   );
 
