@@ -169,6 +169,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "samccone",
+      "name": "Sam Saccone",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/883126?v=4",
+      "profile": "https://github.com/samccone",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

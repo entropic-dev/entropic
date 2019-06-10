@@ -32,7 +32,7 @@ services:
     volumes:
       - ./services/:/services
     working_dir: /services/registry
-    command: npm start
+    command: sh -c "npm run prestart && npm run dev"
     networks:
       - entropic
     ports:
