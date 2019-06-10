@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 'use strict';
 
-const { pipeline } = require('stream');
 const FormData = require('form-data');
 const minimist = require('minimist');
 const fetch = require('node-fetch');

@@ -46,6 +46,16 @@ async function invitations(opts) {
   }
 
   const qualifier = opts.packages ? 'package ' : '';
+  const response2 = await fetch(
+    `${opts.registry}/v1/users/user/${invitee}/memberships?status=pending`,
+    {
+      headers: { authorization: `Bearer ${opts.token}` }
+    }
+  );
+  const ns = await response2.json();
+  if (Array.isArray(ns.objects)) {
+    result = result.concat(ns.objects);
+  }
 
   if (result.length === 0) {
     console.log(`${invitee} has no ${qualifier}invitations.`);

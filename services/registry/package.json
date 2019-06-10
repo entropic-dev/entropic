@@ -12,13 +12,10 @@
     "are-we-dev": "^1.0.0",
     "bole": "~3.0.2",
     "boltzmann": "file:../common/boltzmann",
-    "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
-    "csrf": "~3.1.0",
     "culture-ships": "~1.0.0",
     "dotenv": "~8.0.0",
     "escape-html": "^1.0.3",
-    "find-my-way": "~2.0.1",
     "graceful-fs": "^4.1.15",
     "is-email-maybe": "^1.0.1",
     "markdown": "^0.5.0",
@@ -38,15 +35,13 @@
   "devDependencies": {
     "babel-eslint": "~10.0.1",
     "bistre": "~1.0.1",
-    "db-migrate": "^0.11.5",
-    "db-migrate-pg": "^0.5.0",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
+    "nodemon": "^1.19.1",
     "nyc": "~14.1.1",
-    "pgtools": "^0.3.0",
     "prettier": "~1.17.0",
     "test-listen": "^1.1.0"
   },
@@ -63,16 +58,12 @@
     "url": "git://github.com/entopic-dev/entropic.git"
   },
   "scripts": {
-    "coverage": "NODE_ENV=test PGUSER=postgres PGDATABASE=entropic_test nyc mocha -R spec",
-    "createdb": "createdbjs -h $PGHOST -U postgres entropic_${NODE_ENV:-dev} || true",
-    "dev": "NODE_ENV=dev PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
+    "coverage": "nyc mocha -R spec",
+    "dev": "NODE_ENV=dev nodemon  ./server.js",
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
-    "migrate": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} db-migrate up --config db-migrate.json --env entropic",
     "posttest": "npm run lint",
-    "prestart": "NODE_ENV=dev npm run createdb >/dev/null; NODE_ENV=dev npm run migrate",
-    "pretest": "NODE_ENV=test npm run createdb >/dev/null; NODE_ENV=test npm run migrate",
-    "start": "PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
-    "test": "NODE_ENV=test PGUSER=postgres PGDATABASE=entropic_test mocha -R spec"
+    "start": "./server.js",
+    "test": "mocha -R spec"
   }
 }

@@ -142,6 +142,42 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "pranshuchittora",
+      "name": "Pranshu Chittora",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/32242596?v=4",
+      "profile": "https://pranshuchittora.github.io",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "sbinlondon",
+      "name": "Kate Beard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/37520401?v=4",
+      "profile": "http://katebeard.co",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "zeke",
+      "name": "Zeke Sikelianos",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2289?v=4",
+      "profile": "http://zeke.sikelianos.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "samccone",
+      "name": "Sam Saccone",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/883126?v=4",
+      "profile": "https://github.com/samccone",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

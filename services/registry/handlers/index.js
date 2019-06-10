@@ -4,23 +4,22 @@ module.exports = makeRouter;
 
 const ship = require('culture-ships').random();
 
-const isLoggedIn = require('../decorators/is-logged-in');
 const { response, fork } = require('boltzmann');
+const authn = require('../decorators/authn');
 const pkg = require('../package.json');
-const User = require('../models/user');
 const auth = require('./auth');
 
 function makeRouter() {
   const router = fork.router()(
     fork.get('/', version),
+    ...require('./users'),
     ...require('./packages'),
     ...require('./maintainers'),
     ...require('./namespaces'),
-    ...require('./www'),
 
-    fork.get('/-/v1/login/poll/:session', auth.poll),
-    fork.post('/-/v1/login', auth.login),
-    fork.get('/v1/auth/whoami', isLoggedIn(whoami)),
+    fork.get('/-/v1/login/poll/:session', authn.anonymous(auth.poll)),
+    fork.post('/-/v1/login', authn.anonymous(auth.login)),
+    fork.get('/v1/auth/whoami', authn.required(whoami)),
     fork.get('/ping', ping)
   );
 
@@ -35,11 +34,6 @@ async function version() {
     website: 'https://www.entropic.dev'
   };
   return response.json(data);
-}
-
-async function greeting() {
-  const objects = await User.objects.all().then();
-  return response.json({ objects });
 }
 
 async function ping() {

@@ -23,12 +23,9 @@ const myMiddles = [
   require('boltzmann/middleware/logger'),
   require('boltzmann/middleware/flush-request'),
   require('boltzmann/middleware/requestid'),
-  require('./middleware/postgres'),
-  require('./middleware/transaction'),
   require('boltzmann/middleware/redis'),
-  require('./middleware/session'),
-  require('./middleware/bearer-auth'),
-  require('./middleware/object-store')
+  require('boltzmann/middleware/storage-api'),
+  require('./middleware/bearer-auth')
 ];
 
 const main = () => {
@@ -38,7 +35,7 @@ const main = () => {
 
   // Docker gives containers 10 seconds to handle SIGTERM
   // before sending SIGKILL. Close all current connections
-  // graceully and exit with 0.
+  // gracefully and exit with 0.
   process.on('SIGTERM', () => {
     server.close(() => {
       process.exit(0);

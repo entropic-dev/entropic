@@ -34,6 +34,11 @@ module.exports = class Token {
     this.active = active;
   }
 
+  toJSON() {
+    const { user: _0, id: _1, user_id: _2, ...meta } = this;
+    return meta;
+  }
+
   static hasher(value) {
     return crypto
       .createHash('sha256')

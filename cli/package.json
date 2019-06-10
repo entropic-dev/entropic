@@ -28,6 +28,7 @@
   ],
   "dependencies": {
     "@iarna/toml": "^2.2.3",
+    "chalk": "^2.4.2",
     "figgy-pudding": "^3.5.1",
     "form-data": "^2.3.3",
     "graceful-fs": "^4.1.15",
@@ -43,6 +44,7 @@
     "user-home": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "^2.0.0",
     "babel-eslint": "~10.0.1",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",

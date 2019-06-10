@@ -8,3 +8,5 @@ allowed-list
 *~
 *.swp
 services/data/entropic-cache
+.opt-in
+.opt-out
