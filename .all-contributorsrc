@@ -178,6 +178,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "moogacs",
+      "name": "Mohamed Badawi",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2805614?v=4",
+      "profile": "http://m-mooga.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
