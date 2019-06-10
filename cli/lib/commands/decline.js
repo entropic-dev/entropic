@@ -38,7 +38,9 @@ async function decline(opts) {
 
     const invitee = opts.as;
 
-    uri = `${opts.registry}/v1/namespaces/namespace/${invitee}/maintainerships/${parsed.canonical}`;
+    uri = `${
+      opts.registry
+    }/v1/namespaces/namespace/${invitee}/maintainerships/${parsed.canonical}`;
   } else {
     let ns = opts.namespace;
     if (!ns.includes('@')) {

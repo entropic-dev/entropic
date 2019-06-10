@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "are-we-dev": "~1.0.0",
+    "bistre": "1.0.1",
     "bole": "~3.0.2",
     "find-my-way": "~2.0.1",
     "micro": "~9.3.4",

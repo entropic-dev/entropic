@@ -8,8 +8,6 @@
   },
   "dependencies": {
     "@hapi/joi": "~15.0.2",
-    "are-we-dev": "^1.0.0",
-    "bole": "~3.0.2",
     "boltzmann": "file:../common/boltzmann",
     "culture-ships": "~1.0.0",
     "dotenv": "~8.0.0",
@@ -19,7 +17,6 @@
   },
   "devDependencies": {
     "babel-eslint": "~10.0.1",
-    "bistre": "~1.0.1",
     "depcheck": "^0.8.0",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",

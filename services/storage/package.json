@@ -9,8 +9,6 @@
   "dependencies": {
     "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
-    "are-we-dev": "^1.0.0",
-    "bole": "~3.0.2",
     "boltzmann": "file:../common/boltzmann",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
@@ -37,7 +35,6 @@
   },
   "devDependencies": {
     "babel-eslint": "~10.0.1",
-    "bistre": "~1.0.1",
     "db-migrate": "^0.11.5",
     "db-migrate-pg": "^0.5.0",
     "eslint": "~5.16.0",
