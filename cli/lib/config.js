@@ -18,6 +18,10 @@ async function load(filename = path.join(home, '.entropicrc')) {
       return {};
     }
 
+    if (e.code === 'EISDIR') {    
+      throw new errors.CouldNotReadConfigFile(filename, 'File is a directory!');
+    }
+
     throw new errors.CouldNotReadConfigFile(filename, e);
   }
 
