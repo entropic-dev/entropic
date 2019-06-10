@@ -66,13 +66,12 @@ async function writeFile(loc, str) {
  * Check if a file exists
  */
 async function fileExists(loc) {
-
   let exists = true;
   try {
     fs.accessSync(loc);
-  } catch(e) {
+  } catch (e) {
     exists = false;
   }
-  
+
   return exists;
 }

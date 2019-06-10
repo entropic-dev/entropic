@@ -164,14 +164,9 @@ async function proceedIfFileExists(filePath, msg, rl) {
   // fileExists is sync
   if (fileExists(filePath)) {
     // Ask if we should proceed since the file exists
-    const proceed = await askQuestion(
-      msg,
-      rl,
-      validateYesNo,
-      lowercase
-    );
+    const proceed = await askQuestion(msg, rl, validateYesNo, lowercase);
 
-    return valid_yes_no[proceed]
+    return valid_yes_no[proceed];
   } else {
     return true;
   }
@@ -181,22 +176,24 @@ async function proceedIfFileExists(filePath, msg, rl) {
  * Exported function used as `ds init`
  */
 async function init(opts) {
-
   try {
-
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
 
-    const tomlExists = await proceedIfFileExists(tomlLocation(), questions.toml_exists, rl)
+    const tomlExists = await proceedIfFileExists(
+      tomlLocation(),
+      questions.toml_exists,
+      rl
+    );
 
     if (!tomlExists) {
-      console.log("Exiting.");
+      console.log('Exiting.');
       rl.close();
       return 0;
     }
-    
+
     let answers = {};
 
     answers['name'] = await askQuestion(questions.name, rl, validateName);
@@ -216,23 +213,26 @@ async function init(opts) {
     await writeFile(tomlLocation(), createToml(answers));
 
     if (answers['type'] === 'module') {
-      const writePkgJson = await proceedIfFileExists(packageJsonLocation(), questions.package_json_exists, rl)
+      const writePkgJson = await proceedIfFileExists(
+        packageJsonLocation(),
+        questions.package_json_exists,
+        rl
+      );
       if (!writePkgJson) {
-        console.log("Not writing package.json");
+        console.log('Not writing package.json');
       } else {
-        console.log("Writing package.json");
+        console.log('Writing package.json');
         await writeFile(packageJsonLocation(), createPackageJson());
       }
     }
 
     rl.close();
-    
   } catch (e) {
     console.error('There was an error creating your Package.toml');
     console.error(e);
     return 1;
   }
 
-  console.log("Finished.")
+  console.log('Finished.');
   return 0;
 }
