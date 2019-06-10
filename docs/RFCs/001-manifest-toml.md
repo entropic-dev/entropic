@@ -67,7 +67,7 @@ These keys are **NOT REQUIRED** be present when interacting with the CLI locally
 The manifest **MAY** contain the following fields:
 
 - `"entry"` - the filename and package-relative path, as a string, to the main entry point of the package. The root for the relative-path is the directory which contains the `[TK].toml` file. e.g `"./src/index.js"`.
-- `"type"` - if set to `"module"` this will output a [`package.json` with this included](https://nodejs.org/api/esm.html#esm_code_package_json_code_code_type_code_field), and will signal to the node interpreter to run this code an ES6 Module.
+- `"type"` - if set to `"module"` this will output a [`package.json` with this included](https://nodejs.org/api/esm.html#esm_code_package_json_code_code_type_code_field). The use of this field will explain to the interpreter how it should handle`.js` files.
 - `"license"` - a valid [SPDX license](https://spdx.org/licenses/) for your code. If a license is not provided then the code is considered to be `UNLICENSED`.
 - `"description"` - a short description of your package
 - `"homepage"` - a URL for your project's homepage
