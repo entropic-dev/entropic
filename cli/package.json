@@ -43,6 +43,7 @@
     "user-home": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "^2.0.0",
     "babel-eslint": "~10.0.1",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
