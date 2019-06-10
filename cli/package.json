@@ -64,6 +64,9 @@
     "type": "git",
     "url": "git://github.com/entopic-dev/entropic.git"
   },
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
