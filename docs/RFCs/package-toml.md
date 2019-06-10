@@ -59,7 +59,7 @@ version 0.5.0 or later as defined by the project.
 
 The manifest **MUST** contain the following top-level keys, in order to be published:
 
-- `"name"` - the canonical name of the package, as a string, including it's namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
+- `"name"` - the canonical name of the package, as a string, including its namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
 - `"version"` - a [SEMVER](https://semver.org/) designation conforming to version 2.0.0 of the semantic versioning specification. Due to how TOML parses numbers, this must be represented as a string. e.g. `"1.0.4"`
 
 These keys are **NOT REQUIRED** be present when interacting with the CLI locally (e.g. installing depedencies).
@@ -71,7 +71,7 @@ The manifest **MAY** contain the following fields:
 - `"license"` - a valid [SPDX license](https://spdx.org/licenses/) for your code. If a license is not provided then the code is considered to be `UNLICENSED`.
 - `"description"` - a short description of your package
 - `"homepage"` - a URL for your project's homepage
-- `"author"` - who wrote this package
+- `"author"` - who wrote this package. this is any valid email identifier, or an array of valid identifiers.
 - `"repository"` - where does this code live
 - `"directory"` - for monorepo development, where in the monorepo does this package live (see: [npm RFC 10](https://github.com/npm/rfcs/blob/latest/implemented/0010-monorepo-subdirectory-declaration.md))
 
@@ -94,7 +94,7 @@ When the `key` value is the qualified package name (e.g. `toddself@static-pkg.de
 
 ##### Aliases
 
-Aliases can be used to provide short-hand references to longer or unweildy package names. The only requirement is that they are valid package names and be unique.
+Aliases can be used to provide short-hand references to longer or unwieldy package names. The only requirement is that they are valid package names and be unique.
 
 They should point to sub-objects which **MAY** contain the following two keys or **MAY** be the short-hand representation of this data. One of these options **MUST** be chosen:
 
