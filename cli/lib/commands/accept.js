@@ -4,12 +4,12 @@ const fetch = require('../fetch');
 const figgy = require('figgy-pudding');
 const parsePackageSpec = require('../canonicalize-spec');
 
-module.exports = decline;
+module.exports = accept;
 
-// usage: ds decline --package name@host/pkg --as namespace
-//        ds decline --namespace name@host
+// usage: ds accept --package name@host/pkg --as namespace
+//        ds accept --namespace name@host
 
-const declineOpts = figgy({
+const acceptOpts = figgy({
   as: true,
   namespace: true,
   package: true,
@@ -18,13 +18,13 @@ const declineOpts = figgy({
   log: { default: require('npmlog') }
 });
 
-async function decline(opts) {
-  opts = declineOpts(opts);
+async function accept(opts) {
+  opts = acceptOpts(opts);
 
   if (!opts.as || (!opts.package && !opts.namespace)) {
     console.error(
-      'Usage: ds decline --package <package> --as <namespace>\n' +
-        '       ds decline --namespace <namespace>'
+      'Usage: ds accept --package <package> --as <namespace>\n' +
+        '       ds accept --namespace <namespace>'
     );
     return 1;
   }
@@ -49,7 +49,7 @@ async function decline(opts) {
   }
 
   const response = await fetch(uri, {
-    method: 'DELETE',
+    method: 'POST',
     headers: {
       authorization: `Bearer ${opts.token}`
     }
