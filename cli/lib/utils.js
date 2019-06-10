@@ -9,7 +9,7 @@ module.exports = {
   optionalEntries
 };
 
-const fs = require('fs').promises;
+const fs = require('fs');
 
 // Credit: https://github.com/semver/semver/issues/232#issue-48635632
 function isValidSemver(input) {
@@ -57,16 +57,22 @@ function createPackageJson() {
 
 /**
  * Writes a file given a location and string.
- * Wrap fs operations in case we need to provide
- * OS specific workarounds in the future
  */
 async function writeFile(loc, str) {
-  await fs.writeFile(loc, str);
+  return fs.writeFileSync(loc, str);
 }
 
 /**
  * Check if a file exists
  */
 async function fileExists(loc) {
-  return fs.access(loc);
+
+  let exists = true;
+  try {
+    fs.accessSync(loc);
+  } catch(e) {
+    exists = false;
+  }
+  
+  return exists;
 }

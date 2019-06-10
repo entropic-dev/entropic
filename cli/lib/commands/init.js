@@ -29,6 +29,10 @@ const questions = {
     message: 'Package.toml already exists. Continue (Y/N)?: ',
     required: true
   },
+  package_json_exists: {
+    message: 'package.json already exists. Continue (Y/N)?: ',
+    required: true
+  },
   name: {
     message: 'Name: ',
     required: true
@@ -72,6 +76,13 @@ const questions = {
  */
 function tomlLocation() {
   return `${process.cwd()}/Package.toml`;
+}
+
+/**
+ * Returns string for the path to write Package.toml
+ */
+function packageJsonLocation() {
+  return `${process.cwd()}/package.json`;
 }
 
 /**
@@ -128,7 +139,7 @@ async function askQuestion(question, rl, validator, transform = undefined) {
   const { message, required } = question;
 
   while (invalid) {
-    ans = await ask(MESSAGE, rl);
+    ans = await ask(message, rl);
 
     if (transform) {
       ans = transform(ans);
@@ -149,34 +160,43 @@ async function askQuestion(question, rl, validator, transform = undefined) {
   return ans;
 }
 
+async function proceedIfFileExists(filePath, msg, rl) {
+  // fileExists is sync
+  if (fileExists(filePath)) {
+    // Ask if we should proceed since the file exists
+    const proceed = await askQuestion(
+      msg,
+      rl,
+      validateYesNo,
+      lowercase
+    );
+
+    return valid_yes_no[proceed]
+  } else {
+    return true;
+  }
+}
+
 /**
  * Exported function used as `ds init`
  */
 async function init(opts) {
-  await writeFile(`${process.cwd()}/package.json`, createPackageJson());
 
   try {
+
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
 
-    if (fileExists(tomlLocation())) {
-      // Ask if we should proceed since the Package.toml exits
-      const proceed = await askQuestion(
-        questions.toml_exists,
-        rl,
-        validateYesNo,
-        lowercase
-      );
+    const tomlExists = await proceedIfFileExists(tomlLocation(), questions.toml_exists, rl)
 
-      if (valid_yes_no[proceed] === 0) {
-        console.log('Exiting.');
-        rl.close();
-        return 0;
-      }
+    if (!tomlExists) {
+      console.log("Exiting.");
+      rl.close();
+      return 0;
     }
-
+    
     let answers = {};
 
     answers['name'] = await askQuestion(questions.name, rl, validateName);
@@ -193,18 +213,26 @@ async function init(opts) {
     answers['author'] = await askQuestion(questions.author, rl);
     answers['repository'] = await askQuestion(questions.repository, rl);
 
-    rl.close();
-
     await writeFile(tomlLocation(), createToml(answers));
 
     if (answers['type'] === 'module') {
-      await writeFile(process.cwd(), createPackageJson());
+      const writePkgJson = await proceedIfFileExists(packageJsonLocation(), questions.package_json_exists, rl)
+      if (!writePkgJson) {
+        console.log("Not writing package.json");
+      } else {
+        console.log("Writing package.json");
+        await writeFile(packageJsonLocation(), createPackageJson());
+      }
     }
+
+    rl.close();
+    
   } catch (e) {
     console.error('There was an error creating your Package.toml');
     console.error(e);
     return 1;
   }
 
+  console.log("Finished.")
   return 0;
 }
