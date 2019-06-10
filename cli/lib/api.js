@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 class Api {
-  constructor(baseUrl, token) {
+  constructor(baseUrl) {
     this.baseUrl = baseUrl;
   }
 
