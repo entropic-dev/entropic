@@ -53,9 +53,31 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
 
+  docs:
+    docker:
+      - image: circleci/node:latest
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout:
+          path: ~/repo
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+
+      - run: npm run lint-md
+
 workflows:
   version: 2
   everything:
     jobs:
       - storage
       - cli
+      - docs
