@@ -7,7 +7,7 @@ module.exports = main;
 const minimist = require('minimist');
 
 const { load } = require('./config');
-const { Api } = require('./api');
+const Api = require('./api');
 
 async function main(argv) {
   if (!argv[0]) {

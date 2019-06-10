@@ -17,7 +17,6 @@ async function whoami(opts) {
 
   try {
     const username = await whoAmI();
-
     console.log(username);
     return 0;
   } catch (err) {

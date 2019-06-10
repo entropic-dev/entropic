@@ -11,13 +11,11 @@ class Api {
     };
   }
 
-  async whoami(token) {
-    return await fetch(`${this.baseUrl}/v1/auth/whoami`, {
+  whoami(token) {
+    return fetch(`${this.baseUrl}/v1/auth/whoami`, {
       headers: this.headers(token)
     });
   }
 }
 
-module.exports = {
-  Api
-};
+module.exports = Api;
