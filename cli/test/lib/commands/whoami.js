@@ -3,6 +3,7 @@ const whoami = require('../../../lib/commands/whoami');
 const sinon = require('sinon');
 
 const FakeApi = require('../../utils/FakeApi');
+const FakeLogger = require('../../utils/FakeLogger');
 
 test('whoami calls console.log with username when API response is successful', async t => {
   const log = sinon.stub(FakeLogger, 'log');
