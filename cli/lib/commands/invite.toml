@@ -1,5 +1,7 @@
+[help]
+en_us = '''
 Help for: ds invite [name] --to [pkg/namespace]
 
     Invite a namespace to join the maintainers list for a given package or 
     namespace.
-    
+'''

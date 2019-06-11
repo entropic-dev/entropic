@@ -1,56 +1,54 @@
 'use strict';
 
-const fs = require('fs');
+const { promises: fs } = require('fs');
 const path = require('path');
-const { promisify } = require('util');
-const readdirAsync = promisify(fs.readdir);
-const accessAsync = promisify(fs.access);
 
 const userHome = require('user-home');
-const getLocale = require('os-locale');
+const osLocale = require('os-locale');
+const toml = require('@iarna/toml');
+
+const t = require('../localization');
 
 module.exports = help;
 
 async function help(opts) {
   const command = opts.argv[0];
+
   if (!command) {
     await showBasicHelp();
   } else {
-    return new Promise(async (resolve, reject) => {
-      const locale = (await getLocale()).toLowerCase();
-      const localeFn = path.join(__dirname, `help-${command}-${locale}.txt`);
-      const defaultFn = path.join(__dirname, `help-${command}-en_us.txt`);
-      let fn = localeFn;
+    const commandConfigPath = path.resolve(__dirname, `${command}.toml`);
 
-      try {
-        await accessAsync(localeFn);
-      } catch (err) {
-        console.log(
-          `Could not find a help file for locale ${locale}, defaulting to English`
-        );
-        console.log(`You can contribute a translation for this help file!`);
-        fn = defaultFn;
-      }
+    let commandConfig;
 
-      fs.createReadStream(fn)
-        .on('error', async err => {
-          if (err.code === 'ENOENT') {
-            console.log(
-              `help has not been implemented yet for ${command}. You could build it!`
-            );
-            await showBasicHelp();
-            return resolve();
-          }
-          reject(err);
-        })
-        .on('end', () => resolve())
-        .pipe(process.stdout);
-    });
+    try {
+      await fs.access(commandConfigPath);
+      commandConfig = await fs.readFile(commandConfigPath, 'utf8');
+    } catch (err) {
+      console.log(
+        t('Help for command "{{command}}" doesn\'t exist yet. You can help out by contributing!', { command })
+      );
+      return 0;
+    }
+
+    commandConfig = toml.parse(commandConfig);
+
+    const locale = (await osLocale()).toLowerCase();
+
+    if (commandConfig.help[locale]) {
+      console.log(commandConfig.help[locale].trim());
+    } else {
+      console.log(commandConfig.help['default'].trim());
+      console.log();
+      console.log(
+        t('This command help is not yet translated to {{t:locale}}. You can help out by contributing!', { locale })
+      );
+    }
   }
 }
 
 async function showBasicHelp() {
-  const commands = (await readdirAsync(__dirname))
+  const commands = (await fs.readdir(__dirname))
     .filter(cmd => cmd.endsWith('.js'))
     .map(cmd => `\t${cmd.split('.')[0]}`)
     .join('\n');

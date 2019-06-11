@@ -1,3 +1,6 @@
+[help]
+en_us = '''
 Help for: ds download
 
     Fetch & insert into cache the content blobs for the named package-version.
+'''

@@ -6,6 +6,8 @@ module.exports = main;
 
 const minimist = require('minimist');
 
+const helpCommand = require('./commands/help');
+
 const { load } = require('./config');
 const Api = require('./api');
 const log = require('./logger');
@@ -20,12 +22,20 @@ async function main(argv) {
     try {
       cmd = require(`./commands/${argv[0]}`);
     } catch (e) {
-      cmd = require('./commands/help');
+      cmd = helpCommand;
     }
 
     const { _, ...args } = minimist(argv.slice(1));
+
+    if (args.help === true) {
+      helpCommand({ argv });
+      return 0;
+    }
+
     const config = await load();
+
     const env = {};
+
     for (const key in process.env) {
       if (key.startsWith('ent_')) {
         env[key.slice(4)] = process.env[key];

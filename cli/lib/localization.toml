@@ -1,0 +1,13 @@
+["Help for command \"{{command}}\" doesn't exist yet. You can help out by contributing!"]
+ru_ru = 'Помощь для команды "{{command}}" отсутвует. Вы можете помочь это исправить!'
+
+["This command help is not yet translated to {{t:locale}}. You can help out by contributing!"]
+ru_ru = "Помощь для этой команды еще не переведена на {{t:locale}}. Вы можете помочь это исправить!"
+
+["en_us"]
+en_us = "English"
+ru_ru = "английский"
+
+["ru_ru"]
+en_us = "Russian"
+ru_ru = "русский"

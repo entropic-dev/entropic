@@ -1,0 +1,21 @@
+[help]
+
+default = '''
+Help for: ds login
+    
+    Run this command to login to the preferred registry specified in your
+    ~/.entropicrc file. (Default: https://registry.entropic.dev). Running the 
+    command will open a browser window to authorize the registy access to
+    your Github account for authorization. Return to the terminal to complete
+    the login.
+'''
+
+ru_ru = '''
+Помощь для команды: ds login
+
+    Используйте эту комманду для того что бы войти в реестр, указанный в вашем
+    файле ~/.entropicrc (по умолчанию: https://registry.entropic.dev). Вызов этой
+    команды откроет окно браузера для авторизации доступа указанного рееста к
+    вашему аккаунту GitHub. После подтверждения, вернитесь в терминал для завершения
+    входа.
+'''
