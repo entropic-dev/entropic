@@ -27,6 +27,7 @@ async function login(opts) {
   current.registries = current.registries || {};
   current.registries[opts.registry] = current.registries[opts.registry] || {};
   current.registries[opts.registry].token = token;
+  current.registries[opts.registry].username = username;
 
   await save(current);
 }

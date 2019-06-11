@@ -233,7 +233,7 @@ async function tokens(context) {
   const { objects: tokens } = await context.storageApi.listTokens({
     for: user,
     bearer: user,
-    page: Number(context.url.query.page) || 0
+    page: Number(context.url.searchParams.get('page')) || 0
   });
   const cliLoginSession = context.session.get('cli');
 

@@ -44,6 +44,15 @@ jobs:
 
       - run: npm test
 
+      - run:
+          name: npm pack
+          command: |
+            mkdir -p /tmp/artifacts
+            cd /tmp/artifacts
+            npm pack ~/repo/cli
+      - store_artifacts:
+          path: /tmp/artifacts
+
 workflows:
   version: 2
   everything:

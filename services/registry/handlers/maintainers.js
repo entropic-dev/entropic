@@ -25,8 +25,8 @@ async function maintainers(context, { namespace, host, name }) {
       host,
       name,
       bearer: context.user ? context.user.name : null,
-      page: Number(context.url.query.page) || 0,
-      status: context.url.query.status
+      page: Number(context.url.searchParams.get('page')) || 0,
+      status: context.url.searchParams.get('status')
     })
     .then(xs => [null, xs], xs => [xs, null]);
 

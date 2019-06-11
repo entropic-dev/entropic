@@ -1,7 +1,6 @@
 {
   "name": "entropic",
   "description": "A new package registry with a new CLI, designed to be easy to stand up inside your network.",
-  "repository": "https://github.com/entropic-dev/entropic",
   "version": "1.0.0",
   "author": "C J Silverio <ceejceej@gmail.com>",
   "bugs": {
@@ -15,7 +14,8 @@
   "devDependencies": {
     "husky": "2.4.0",
     "lint-staged": "8.2.0",
-    "markdownlint-cli": "^0.16.0",
+    "markdownlint": "~0.15.0",
+    "markdownlint-cli": "~0.16.0",
     "npm-run-all": "4.1.5",
     "opt-cli": "1.6.0",
     "prettier": "~1.17.1"
@@ -24,21 +24,13 @@
     "doc": "docs"
   },
   "homepage": "https://github.com/entropic-dev/entropic#readme",
+  "husky": {
+    "hooks": {
+      "pre-commit": "opt --in pre-commit --exec lint-staged"
+    }
+  },
   "keywords": [],
   "license": "Apache-2.0",
-  "main": "index.js",
-  "private": true,
-  "scripts": {
-    "ds": "npm --prefix cli run ds",
-    "lint": "run-s -s lint-registry lint-cli lint-md",
-    "lint-cli": "cd cli; npm run lint",
-    "lint-fix": "prettier --write '**/*.js'",
-    "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
-    "lint-registry": "cd services/registry; npm run lint",
-    "postinstall": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm i; cd -; done",
-    "start": "docker-compose up",
-    "test": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm t; cd -; done"
-  },
   "lint-staged": {
     "*.js": [
       "npm run lint-registry",
@@ -51,9 +43,18 @@
       "git add"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "opt --in pre-commit --exec lint-staged"
-    }
+  "main": "index.js",
+  "private": true,
+  "repository": "https://github.com/entropic-dev/entropic",
+  "scripts": {
+    "ds": "npm --prefix cli run ds",
+    "lint": "run-s -s lint-registry lint-cli lint-md",
+    "lint-cli": "cd cli; npm run lint",
+    "lint-fix": "prettier --write '**/*.js'",
+    "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
+    "lint-registry": "cd services/registry; npm run lint",
+    "postinstall": "for d in cli services/{registry,workers,web,storage,common/boltzmann}; do cd $d; npm i; cd -; done",
+    "start": "docker-compose up",
+    "test": "for d in cli services/{registry,workers,web,storage,common/boltzmann}; do cd $d; npm t; cd -; done"
   }
 }

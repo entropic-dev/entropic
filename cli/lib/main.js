@@ -7,6 +7,8 @@ module.exports = main;
 const minimist = require('minimist');
 
 const { load } = require('./config');
+const Api = require('./api');
+const log = require('./logger');
 
 async function main(argv) {
   if (!argv[0]) {
@@ -14,11 +16,16 @@ async function main(argv) {
   }
 
   try {
-    const cmd = require(`./commands/${argv[0]}`);
+    const { _, ...args } = minimist(argv);
+
+    let cmd;
+    try {
+      cmd = require(`./commands/${_.shift()}`);
+    } catch (e) {
+      cmd = require('./commands/help');
+    }
 
     const config = await load();
-    const args = minimist(argv.slice(1));
-    const { _, ...rest } = args;
     const env = {};
     for (const key in process.env) {
       if (key.startsWith('ent_')) {
@@ -26,17 +33,21 @@ async function main(argv) {
       }
     }
 
-    const registry =
-      args.registry ||
-      config.registry ||
-      env.registry ||
-      'https://registry.entropic.dev';
+    const registry = args.registry || config.registry || env.registry || 'https://registry.entropic.dev';
 
     const registryConfig = (config.registries || {})[registry] || {};
 
     // env is overridden by config, which is overridden by registry-specific
     // config, ...
-    await cmd({ ...env, ...config, ...registryConfig, ...args, argv: _ });
+    await cmd({
+      ...env,
+      ...config,
+      ...registryConfig,
+      ...args,
+      argv: _,
+      api: new Api(registry),
+      log
+    });
 
     return 0;
   } catch (err) {
