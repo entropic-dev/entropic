@@ -37,7 +37,7 @@ module.exports = [
 async function packageList(context) {
   const [err, result] = await context.storageApi
     .listPackages({
-      page: Number(context.url.query.page) || 0
+      page: Number(context.url.searchParams.get('page')) || 0
     })
     .then(xs => [null, xs], xs => [xs, null]);
 

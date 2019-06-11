@@ -31,7 +31,7 @@ module.exports = [
 async function namespaces(context, params) {
   const [err, result] = await context.storageApi
     .listNamespaces({
-      page: Number(context.url.query.page) || 0
+      page: Number(context.url.searchParams.get('page')) || 0
     })
     .then(xs => [null, xs], xs => [xs, null]);
 
@@ -47,9 +47,9 @@ async function namespaces(context, params) {
 async function members(context, { namespace, host }) {
   const [err, result] = await context.storageApi
     .listNamespaceMembers({
-      page: Number(context.url.query.page) || 0,
+      page: Number(context.url.searchParams.get('page')) || 0,
       bearer: context.user ? context.user.name : null,
-      status: context.url.query.status,
+      status: context.url.searchParams.get('status'),
       namespace,
       host
     })
@@ -131,10 +131,10 @@ async function remove(context, { invitee, namespace, host }) {
 async function memberships(context, { user }) {
   const [err, result] = await context.storageApi
     .listNamespaceMembers({
-      page: Number(context.url.query.page) || 0,
+      page: Number(context.url.searchParams.get('page')) || 0,
       for: user,
       bearer: context.user.name,
-      status: context.url.query.status
+      status: context.url.searchParams.get('status')
     })
     .then(xs => [null, xs], xs => [xs, null]);
 
@@ -150,8 +150,8 @@ async function memberships(context, { user }) {
 async function maintainerships(context, { namespace, host }) {
   const [err, result] = await context.storageApi
     .listNamespaceMaintainerships({
-      page: Number(context.url.query.page) || 0,
-      status: context.url.query.status,
+      page: Number(context.url.searchParams.get('page')) || 0,
+      status: context.url.searchParams.get('status'),
       namespace,
       host,
       bearer: context.user.name

@@ -52,8 +52,8 @@
     "lint-fix": "prettier --write '**/*.js'",
     "lint-md": "markdownlint \"**/*.md\" -i \"**/node_modules/**\"",
     "lint-registry": "cd services/registry; npm run lint",
-    "postinstall": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm i; cd -; done",
+    "postinstall": "for d in cli services/{registry,workers,web,storage,common/boltzmann}; do cd $d; npm i; cd -; done",
     "start": "docker-compose up",
-    "test": "for d in cli services/{registry,workers,web,common/boltzmann}; do cd $d; npm t; cd -; done"
+    "test": "for d in cli services/{registry,workers,web,storage,common/boltzmann}; do cd $d; npm t; cd -; done"
   }
 }
