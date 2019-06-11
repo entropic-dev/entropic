@@ -15,10 +15,7 @@ const providers = require('../lib/providers');
 const TOKENS = new CSRF();
 
 module.exports = [
-  fork.get(
-    '/login/providers/:provider/callback',
-    redirectAuthenticated(oauthCallback)
-  ),
+  fork.get('/login/providers/:provider/callback', redirectAuthenticated(oauthCallback)),
   fork.get('/login', handleCLISession(redirectAuthenticated(login))),
   fork.get('/signup', redirectAuthenticated(signup)),
   fork.post('/signup', redirectAuthenticated(signupAction)),
@@ -40,9 +37,7 @@ async function login(context) {
         <ul>
         ${providers.map(
           provider => `
-            <a href="${provider.redirect(state)}">Login with ${
-            provider.name
-          }</a>
+            <a href="${provider.redirect(state)}">Login with ${provider.name}</a>
           `
         )}
         </ul>
@@ -148,23 +143,13 @@ async function signup(context) {
         <p>the static is the channel, do not touch that dial</p>
         <form action="/signup" method="POST">
           <p>
-            ${
-              context.errors && context.errors.username
-                ? `<p>${context.errors.username}</p>`
-                : ''
-            }
+            ${context.errors && context.errors.username ? `<p>${context.errors.username}</p>` : ''}
             <label for=username>Username</label>
-            <input id=username name=username type=text value="${escapeHtml(
-              username
-            )}" />
+            <input id=username name=username type=text value="${escapeHtml(username)}" />
           </p>
 
           <p>
-            ${
-              context.errors && context.errors.email
-                ? `<p>${context.errors.email}</p>`
-                : ''
-            }
+            ${context.errors && context.errors.email ? `<p>${context.errors.email}</p>` : ''}
             <label for=email>Email</label>
             <input id=email name=email type=text value="${escapeHtml(email)}"/>
           </p>
@@ -240,8 +225,7 @@ async function tokens(context) {
   let description = context.description
     ? context.description
     : cliLoginSession
-    ? (await context.storageApi.fetchCLISession({ session: cliLoginSession })
-        .description) || ''
+    ? (await context.storageApi.fetchCLISession({ session: cliLoginSession }).description) || ''
     : '';
 
   const banner = context.session.get('banner');
@@ -256,9 +240,7 @@ async function tokens(context) {
         <form method="POST" action="/tokens">
           <input name="action" value="create" type="hidden" />
           <input name="description" value="${escapeHtml(description)}" />
-          <input name="csrf_token" value="${escapeHtml(
-            context.csrf_token
-          )}" type="hidden" />
+          <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
           <input type="submit" value="create a new token" />
         </form>
         <hr />
@@ -285,13 +267,9 @@ async function tokens(context) {
                     ? `
                   <td>
                     <form method="POST" action="/tokens">
-                    <input name="csrf_token" value="${escapeHtml(
-                      context.csrf_token
-                    )}" type="hidden" />
+                    <input name="csrf_token" value="${escapeHtml(context.csrf_token)}" type="hidden" />
                     <input name="action" value="delete" type="hidden" />
-                      <input name="token" value="${escapeHtml(
-                        token.value_hash
-                      )}" type="hidden" />
+                      <input name="token" value="${escapeHtml(token.value_hash)}" type="hidden" />
                       <input type="submit" value="delete token" />
                     </form>
                   </td>
@@ -312,9 +290,7 @@ async function handleTokenAction(context) {
   // actions are:
   // - create
   // - delete
-  const { action, description, token } = querystring.parse(
-    await text(context.request)
-  );
+  const { action, description, token } = querystring.parse(await text(context.request));
   const user = context.session.get('user');
   const cliLoginSession = context.session.get('cli');
   context.description = description;
@@ -353,9 +329,7 @@ async function handleTokenAction(context) {
         session: cliLoginSession,
         value: tokenValue
       });
-      context.logger.info(
-        `${user.name} created a token in a cli login session`
-      );
+      context.logger.info(`${user.name} created a token in a cli login session`);
     } else {
       context.session.set(
         'banner',
@@ -382,10 +356,7 @@ async function handleTokenAction(context) {
       valueHashes: [token]
     });
 
-    context.session.set(
-      'banner',
-      `Successfully deleted ${count} token${count === 1 ? '' : 's'}.`
-    );
+    context.session.set('banner', `Successfully deleted ${count} token${count === 1 ? '' : 's'}.`);
     context.logger.info(`${user.name} deleted a token`);
     return response.redirect('/tokens');
   }

@@ -9,27 +9,12 @@ const authn = require('../decorators/authn');
 module.exports = [
   fork.get('/v1/packages', packageList),
   fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
-  fork.put(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    authn.required(packageCreate)
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    authn.required(packageDelete)
-  ),
+  fork.put('/v1/packages/package/:namespace([^@]+)@:host/:name', authn.required(packageCreate)),
+  fork.del('/v1/packages/package/:namespace([^@]+)@:host/:name', authn.required(packageDelete)),
 
-  fork.get(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    versionDetail
-  ),
-  fork.put(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    authn.required(versionCreate)
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    authn.required(versionDelete)
-  ),
+  fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version', versionDetail),
+  fork.put('/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version', authn.required(versionCreate)),
+  fork.del('/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version', authn.required(versionDelete)),
 
   fork.get('/v1/objects/object/:algo/*', getObject)
 ];
@@ -50,10 +35,7 @@ async function packageList(context) {
   return response.json({ objects, next, prev, total });
 }
 
-async function packageDetail(
-  context,
-  { host, namespace, name, retry = false }
-) {
+async function packageDetail(context, { host, namespace, name, retry = false }) {
   const [err, str] = await context.storageApi
     .getPackage({ namespace, host, name })
     .then(xs => [null, xs], xs => [xs, null]);
@@ -107,9 +89,7 @@ async function packageDelete(context, { host, namespace, name }) {
     return response.error('Failed to delete package', 500);
   }
 
-  context.logger.info(
-    `${namespace}@${host}/${name} marked as abandonware by ${context.user.name}`
-  );
+  context.logger.info(`${namespace}@${host}/${name} marked as abandonware by ${context.user.name}`);
 
   return response.text('', 204);
 }
@@ -172,9 +152,7 @@ async function versionDelete(context, { host, namespace, name, version }) {
 }
 
 async function getObject(context, { algo, '*': digest }) {
-  const [err, stream] = await context.storageApi
-    .getObject({ algo, digest })
-    .then(xs => [null, xs], xs => [xs, null]);
+  const [err, stream] = await context.storageApi.getObject({ algo, digest }).then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     // TODO: enumerate errors

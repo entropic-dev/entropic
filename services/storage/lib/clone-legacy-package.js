@@ -46,12 +46,7 @@ async function clone(pkg, storage) {
   const versions = Object.keys(json.versions);
   const pending = [];
   for (const version of versions) {
-    const versionData = syncVersion(
-      storage,
-      pkg,
-      version,
-      json.versions[version]
-    );
+    const versionData = syncVersion(storage, pkg, version, json.versions[version]);
     versionData.catch(() => {});
     pending.push(versionData);
   }

@@ -48,12 +48,7 @@ module.exports = class PackageVersion {
   }
 
   async toSSRI() {
-    const {
-      created,
-      modified,
-      derivedFiles,
-      ...content
-    } = await this.serialize();
+    const { created, modified, derivedFiles, ...content } = await this.serialize();
 
     const json = JSON.stringify(content);
     return [ssri.fromData(json), json];

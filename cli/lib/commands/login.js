@@ -16,10 +16,7 @@ const loginOpts = figgy({
 async function login(opts) {
   opts = loginOpts(opts);
 
-  const { username, token } = await profile.loginWeb(
-    async u => opener(u),
-    opts
-  );
+  const { username, token } = await profile.loginWeb(async u => opener(u), opts);
 
   // load _just_ the config file, not the config file + env + cli args.
   const current = await load();

@@ -13,17 +13,8 @@ const pipeline = promisify(_);
 const fetchObject = require('./fetch-object');
 
 // This used to be a different endpoint.
-async function fetchPackageVersion(
-  { registry, cache },
-  name,
-  version,
-  integrity
-) {
-  const data = await fetchObject(
-    { registry, cache },
-    integrity,
-    'please load it'
-  );
+async function fetchPackageVersion({ registry, cache }, name, version, integrity) {
+  const data = await fetchObject({ registry, cache }, integrity, 'please load it');
 
   return JSON.parse(String(data.data));
 }

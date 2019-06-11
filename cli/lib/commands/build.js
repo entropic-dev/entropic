@@ -97,11 +97,7 @@ function printTree(tree, level = 0) {
   let saw = 0;
   for (const dep in tree.installed) {
     ++saw;
-    console.log(
-      `${'  '.repeat(level)} - ${dep} @ ${tree.installed[dep].range} -> ${
-        tree.installed[dep].version
-      }`
-    );
+    console.log(`${'  '.repeat(level)} - ${dep} @ ${tree.installed[dep].range} -> ${tree.installed[dep].version}`);
     printTree(tree.installed[dep].tier, level + 1);
   }
 }
@@ -118,11 +114,7 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
 
   // todo list of "canonical dep name", "range", tree tier
   content.dependencies = content.dependencies || {};
-  const todo = Object.entries(content.dependencies).map(xs => [
-    parsePackageSpec(xs[0], defaultHost),
-    xs[1],
-    toplevel
-  ]);
+  const todo = Object.entries(content.dependencies).map(xs => [parsePackageSpec(xs[0], defaultHost), xs[1], toplevel]);
 
   // assume you have a set of installed deps at versions that starts empty, pointing at a parent list of installed deps at versions or null.
   // for each set of initial deps at the current level
@@ -165,12 +157,7 @@ async function buildFromMeta(opts, meta, loadingFiles, now = Date.now()) {
 
     const integrity = pkg.versions[version];
 
-    const data = await fetchPackageVersion(
-      opts,
-      dep.canonical,
-      version,
-      integrity
-    );
+    const data = await fetchPackageVersion(opts, dep.canonical, version, integrity);
 
     for (const file in data.files) {
       const fetcher = fetchObject(opts, data.files[file]).catch(() => {});

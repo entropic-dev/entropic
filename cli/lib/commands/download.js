@@ -35,18 +35,8 @@ async function download(opts) {
   const seenFiles = new Set();
   const now = Date.now();
 
-  const { range, ...parsed } = parsePackageSpec(
-    opts.argv[0],
-    opts.registry.replace(/^https?:\/\//, '')
-  );
-  const result = await visitPackage(
-    opts,
-    parsed,
-    now,
-    range,
-    seenFiles,
-    fetching
-  );
+  const { range, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
+  const result = await visitPackage(opts, parsed, now, range, seenFiles, fetching);
   await Promise.all(fetching);
 }
 
@@ -73,9 +63,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
       .byDigest(opts.cache, integrity)
       .catch(() => null)
       .then(content => {
-        return content
-          ? content
-          : fetchPackageVersion(opts, name, version, integrity);
+        return content ? content : fetchPackageVersion(opts, name, version, integrity);
       })
       .then(content => [version, content]);
 
@@ -83,9 +71,7 @@ async function visitPackage(opts, spec, now, range, seenFiles, fetching) {
   }
 
   if (!checks.length) {
-    opts.log.error(
-      `Failed to fetch resolve range for ${name}: ${range} matched no versions!`
-    );
+    opts.log.error(`Failed to fetch resolve range for ${name}: ${range} matched no versions!`);
     throw new Error();
   }
 

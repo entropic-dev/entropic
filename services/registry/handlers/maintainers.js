@@ -4,18 +4,9 @@ const { response, fork } = require('boltzmann');
 const authn = require('../decorators/authn');
 
 module.exports = [
-  fork.get(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers',
-    maintainers
-  ),
-  fork.post(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    authn.required(invite)
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    authn.required(remove)
-  )
+  fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers', maintainers),
+  fork.post('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee', authn.required(invite)),
+  fork.del('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee', authn.required(remove))
 ];
 
 async function maintainers(context, { namespace, host, name }) {
@@ -32,17 +23,11 @@ async function maintainers(context, { namespace, host, name }) {
 
   if (err) {
     if (err.status === 404) {
-      return response.error(
-        `"${namespace}@${host}/${name}" does not exist.`,
-        404
-      );
+      return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
     }
 
     context.logger.error(err.message || err);
-    return response.error(
-      `Caught error fetching maintainers for "${namespace}@${host}/${name}".`,
-      500
-    );
+    return response.error(`Caught error fetching maintainers for "${namespace}@${host}/${name}".`, 500);
   }
   return response.json(maintainers);
 }
@@ -67,21 +52,13 @@ async function invite(context, { namespace, host, name, invitee }) {
       'maintainer.invite.already_accepted': `Namespace "${invitee}" is already a member.`,
       'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
     }[err.code];
-    return response.error(
-      msg ||
-        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
-      err.code
-    );
+    return response.error(msg || `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`, err.code);
   }
 
   context.logger.info(
-    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${
-      context.user.name
-    }`
+    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${context.user.name}`
   );
-  return response.message(
-    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name}.`
-  );
+  return response.message(`${invitee} invited to join the maintainers of ${namespace}@${host}/${name}.`);
 }
 
 async function remove(context, { namespace, host, name, invitee }) {
@@ -104,20 +81,10 @@ async function remove(context, { namespace, host, name, invitee }) {
       'maintainer.invite.already_declined': `Namespace "${invitee}" has declined this invite.`
     }[err.code];
 
-    return response.error(
-      msg ||
-        `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`,
-      err.code
-    );
+    return response.error(msg || `Caught error inviting "${invitee}" to ${namespace}@${host}/${name}`, err.code);
   }
 
-  context.logger.info(
-    `${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${
-      context.user.name
-    }`
-  );
+  context.logger.info(`${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${context.user.name}`);
 
-  return response.message(
-    `${invitee} removed as maintainer of ${namespace}@${host}/${name}.`
-  );
+  return response.message(`${invitee} removed as maintainer of ${namespace}@${host}/${name}.`);
 }

@@ -49,11 +49,7 @@ function packageNameOK(name, namespace) {
   }
 }
 
-function validDependencyName(
-  spec,
-  warnings = [],
-  defaultHost = process.env.EXTERNAL_HOST.replace(/https?:\/\//, '')
-) {
+function validDependencyName(spec, warnings = [], defaultHost = process.env.EXTERNAL_HOST.replace(/https?:\/\//, '')) {
   if (spec[0] === '@' && spec.split('/').length === 2) {
     return validDependencyName(`legacy@${defaultHost}/${spec}`);
   }
@@ -62,9 +58,7 @@ function validDependencyName(
     return validDependencyName(`legacy@${defaultHost}/${spec}`);
   }
 
-  const { protocol, username, password, host, pathname } = new URL(
-    `ent://${spec}`
-  );
+  const { protocol, username, password, host, pathname } = new URL(`ent://${spec}`);
 
   if (protocol !== 'ent:') {
     warnings.push('Contained unexpected protocol portion');

@@ -13,9 +13,7 @@ async function createUser(username, email = `${username}@entropic.dev`) {
 }
 
 async function createToken(username) {
-  const user = username.id
-    ? username
-    : await User.objects.get({ active: true, name: username });
+  const user = username.id ? username : await User.objects.get({ active: true, name: username });
 
   return await Token.create({ for: user, description: 'just a test' });
 }

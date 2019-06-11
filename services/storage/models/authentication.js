@@ -6,17 +6,7 @@ const joi = require('@hapi/joi');
 module.exports = class Authentication {
   #user = null;
 
-  constructor({
-    id,
-    provider,
-    remote_identity,
-    access_token_enc,
-    user,
-    user_id,
-    created,
-    modified,
-    active
-  }) {
+  constructor({ id, provider, remote_identity, access_token_enc, user, user_id, created, modified, active }) {
     this.id = id;
 
     this.remote_identity = remote_identity;

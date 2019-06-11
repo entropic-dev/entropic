@@ -21,9 +21,7 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
     orm.setConnection(async () => {
       const connector = namespace.get('getConnection');
       if (typeof connector !== 'function') {
-        throw new Error(
-          'Accessing postgres outside the context of a request? UNACCEPTABLE'
-        );
+        throw new Error('Accessing postgres outside the context of a request? UNACCEPTABLE');
       }
 
       const connection = await connector();
@@ -62,7 +60,5 @@ function createPostgresPool(url = process.env.POSTGRES_URL) {
 }
 
 async function fail() {
-  throw new Error(
-    'Attempting to request postgres connection after handler has completed.'
-  );
+  throw new Error('Attempting to request postgres connection after handler has completed.');
 }

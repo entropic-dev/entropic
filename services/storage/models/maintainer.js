@@ -10,17 +10,7 @@ module.exports = class Maintainer {
   #package = null;
   #namespace = null;
 
-  constructor({
-    id,
-    package_id,
-    package: pkg,
-    namespace_id,
-    namespace,
-    created,
-    modified,
-    active,
-    accepted
-  }) {
+  constructor({ id, package_id, package: pkg, namespace_id, namespace, created, modified, active, accepted }) {
     this.id = id;
     this.package_id = package_id;
     this.#package = pkg ? Promise.resolve(pkg) : null;

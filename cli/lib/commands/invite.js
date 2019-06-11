@@ -23,13 +23,8 @@ async function invite(opts) {
   let uri;
 
   if (opts.package) {
-    const parsed = parsePackageSpec(
-      opts.package,
-      opts.registry.replace(/^https?:\/\//, '')
-    );
-    uri = `${opts.registry}/v1/packages/package/${
-      parsed.canonical
-    }/maintainers/${invitee}`;
+    const parsed = parsePackageSpec(opts.package, opts.registry.replace(/^https?:\/\//, ''));
+    uri = `${opts.registry}/v1/packages/package/${parsed.canonical}/maintainers/${invitee}`;
   } else {
     let ns = opts.namespace;
     if (!ns.includes('@')) {

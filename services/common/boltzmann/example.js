@@ -8,9 +8,6 @@ async function greeting(context, params) {
 
 const router = fork.router()(fork.get('/greet/:human', greeting));
 
-const server = make(router, [
-  require('./middleware/flush-request'),
-  require('./middleware/requestid')
-]);
+const server = make(router, [require('./middleware/flush-request'), require('./middleware/requestid')]);
 server.listen(process.env.PORT, '0.0.0.0');
 console.log(`now listening on ${process.env.PORT}`);

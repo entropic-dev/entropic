@@ -23,18 +23,14 @@ async function accept(opts) {
 
   if (!opts.as || (!opts.package && !opts.namespace)) {
     console.error(
-      'Usage: ds accept --package <package> --as <namespace>\n' +
-        '       ds accept --namespace <namespace>'
+      'Usage: ds accept --package <package> --as <namespace>\n' + '       ds accept --namespace <namespace>'
     );
     return 1;
   }
 
   let uri;
   if (opts.package) {
-    const parsed = parsePackageSpec(
-      opts.package,
-      opts.registry.replace(/^https?:\/\//, '')
-    );
+    const parsed = parsePackageSpec(opts.package, opts.registry.replace(/^https?:\/\//, ''));
 
     const invitee = opts.as;
 

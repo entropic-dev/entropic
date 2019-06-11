@@ -25,9 +25,7 @@ async function help(opts) {
       try {
         await accessAsync(localeFn);
       } catch (err) {
-        console.log(
-          `Could not find a help file for locale ${locale}, defaulting to English`
-        );
+        console.log(`Could not find a help file for locale ${locale}, defaulting to English`);
         console.log(`You can contribute a translation for this help file!`);
         fn = defaultFn;
       }
@@ -35,9 +33,7 @@ async function help(opts) {
       fs.createReadStream(fn)
         .on('error', async err => {
           if (err.code === 'ENOENT') {
-            console.log(
-              `help has not been implemented yet for ${command}. You could build it!`
-            );
+            console.log(`help has not been implemented yet for ${command}. You could build it!`);
             await showBasicHelp();
             return resolve();
           }

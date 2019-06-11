@@ -11,16 +11,7 @@ const User = require('./user');
 module.exports = class Token {
   #user = null;
 
-  constructor({
-    id,
-    user,
-    user_id,
-    value_hash,
-    description,
-    created,
-    modified,
-    active
-  }) {
+  constructor({ id, user, user_id, value_hash, description, created, modified, active }) {
     this.id = id;
 
     this.#user = user ? Promise.resolve(user) : null;

@@ -9,18 +9,9 @@ const Package = require('../models/package');
 const { response, fork } = require('boltzmann');
 
 module.exports = [
-  fork.get(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers',
-    maintainers
-  ),
-  fork.post(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    findInvitee(canWrite(invite))
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee',
-    findInvitee(canWrite(remove))
-  )
+  fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers', maintainers),
+  fork.post('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee', findInvitee(canWrite(invite))),
+  fork.del('/v1/packages/package/:namespace([^@]+)@:host/:name/maintainers/:invitee', findInvitee(canWrite(remove)))
 ];
 
 async function maintainers(context, { namespace, host, name }) {
@@ -34,10 +25,7 @@ async function maintainers(context, { namespace, host, name }) {
     .catch(Package.objects.NotFound, () => null);
 
   if (!pkg) {
-    return response.error(
-      `"${namespace}@${host}/${name}" does not exist.`,
-      404
-    );
+    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
   }
 
   const namespaces = await Namespace.objects
@@ -71,14 +59,10 @@ async function invite(context, { namespace, host, name, invitee }) {
     .catch(Maintainer.objects.NotFound, () => null);
   if (existing) {
     if (existing.active === false) {
-      return response.message(
-        `${invitee} has already declined to maintain ${namespace}@${host}/${name}.`
-      );
+      return response.message(`${invitee} has already declined to maintain ${namespace}@${host}/${name}.`);
     }
     if (existing.accepted === false) {
-      return response.message(
-        `${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`
-      );
+      return response.message(`${invitee} has already been invited to maintain ${namespace}@${host}/${name}.`);
     }
   }
 
@@ -90,21 +74,14 @@ async function invite(context, { namespace, host, name, invitee }) {
   });
 
   context.logger.info(
-    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${
-      context.user.name
-    }`
+    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name} by ${context.user.name}`
   );
-  return response.message(
-    `${invitee} invited to join the maintainers of ${namespace}@${host}/${name}.`
-  );
+  return response.message(`${invitee} invited to join the maintainers of ${namespace}@${host}/${name}.`);
 }
 
 async function remove(context, { namespace, host, name, invitee }) {
   if (!context.pkg) {
-    return response.error(
-      `"${namespace}@${host}/${name}" does not exist.`,
-      404
-    );
+    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
   }
 
   if (!context.invitee) {
@@ -125,17 +102,9 @@ async function remove(context, { namespace, host, name, invitee }) {
     .then();
 
   if (maintainership.length === 0) {
-    return response.message(
-      `${invitee} was not a maintainer of ${namespace}@${host}/${name}.`
-    );
+    return response.message(`${invitee} was not a maintainer of ${namespace}@${host}/${name}.`);
   }
-  context.logger.info(
-    `${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${
-      context.user.name
-    }`
-  );
+  context.logger.info(`${invitee} removed as maintainer of ${namespace}@${host}/${name} by ${context.user.name}`);
 
-  return response.message(
-    `${invitee} removed as maintainer of ${namespace}@${host}/${name}.`
-  );
+  return response.message(`${invitee} removed as maintainer of ${namespace}@${host}/${name}.`);
 }

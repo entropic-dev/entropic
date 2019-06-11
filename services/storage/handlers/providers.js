@@ -41,11 +41,7 @@ async function sessionDetail(context, { session }) {
   try {
     result = JSON.parse(data);
   } catch (err) {
-    context.logger.error(
-      `Caught error decoding session "${session}": String(data) = ${String(
-        data
-      )}; err = ${err}`
-    );
+    context.logger.error(`Caught error decoding session "${session}": String(data) = ${String(data)}; err = ${err}`);
     return response.error.coded('auth.session.bad_session', 500);
   }
 
@@ -56,11 +52,7 @@ async function sessionCreate(context, params) {
   const { description = 'a great login session' } = await json(context.request);
   const session = uuid.v4();
 
-  await context.redis.setexAsync(
-    `cli_${session}`,
-    5000,
-    JSON.stringify({ description })
-  );
+  await context.redis.setexAsync(`cli_${session}`, 5000, JSON.stringify({ description }));
 
   return response.json({ session });
 }
@@ -68,17 +60,11 @@ async function sessionCreate(context, params) {
 async function sessionUpdate(context, { session }) {
   const { value } = await json(context.request);
   if (!value) {
-    context.logger.error(
-      `Bad resolution for "${session}": String(value) = ${String(value)}`
-    );
+    context.logger.error(`Bad resolution for "${session}": String(value) = ${String(value)}`);
     return response.error.coded('auth.session.bad_resolution');
   }
 
-  await context.redis.setexAsync(
-    `cli_${session}`,
-    5000,
-    JSON.stringify({ value })
-  );
+  await context.redis.setexAsync(`cli_${session}`, 5000, JSON.stringify({ value }));
 
   return response.empty();
 }

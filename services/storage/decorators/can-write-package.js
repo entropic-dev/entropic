@@ -23,13 +23,8 @@ function canWrite(next) {
   return async (context, params) => {
     const { host, namespace, name } = params;
 
-    if (
-      host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')
-    ) {
-      return response.error(
-        `Cannot modify packages for remote host "${host}"`,
-        403
-      );
+    if (host !== String(process.env.EXTERNAL_HOST).replace(/^http(s)?:\/\//, '')) {
+      return response.error(`Cannot modify packages for remote host "${host}"`, 403);
     }
 
     const pkg = await Package.objects
@@ -57,17 +52,11 @@ function canWrite(next) {
         .then();
 
       if (!any) {
-        return response.error(
-          `You are not a maintainer of "${namespace}@${host}/${name}"`,
-          403
-        );
+        return response.error(`You are not a maintainer of "${namespace}@${host}/${name}"`, 403);
       }
 
       if (pkg.require_tfa && !context.user.tfa_active) {
-        return response.error(
-          `You must enable 2FA to edit "${namespace}@${host}/${name}"`,
-          403
-        );
+        return response.error(`You must enable 2FA to edit "${namespace}@${host}/${name}"`, 403);
       }
     } else {
       const [any = null] = await Namespace.objects

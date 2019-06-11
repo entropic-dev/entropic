@@ -8,11 +8,7 @@ const fetch = require('./fetch');
 const cacache = require('cacache');
 const ssri = require('ssri');
 
-async function fetchPackage(
-  { registry, cache, expires = 5 * 60 * 1000 },
-  name,
-  now = Date.now()
-) {
+async function fetchPackage({ registry, cache, expires = 5 * 60 * 1000 }, name, now = Date.now()) {
   let meta = await cacache
     .get(cache, `spackage:${name}`)
     .then(xs => JSON.parse(String(xs.data)))

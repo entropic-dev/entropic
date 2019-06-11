@@ -14,8 +14,7 @@ function createLogger() {
       logger.info(
         `${context.remote} ${response.status} ${context.request.method} ${
           context.request.url
-        } ${context.rawResponse.getHeader('Content-Length')} ${Date.now() -
-          context.start}ms`
+        } ${context.rawResponse.getHeader('Content-Length')} ${Date.now() - context.start}ms`
       );
       return response;
     }
@@ -23,9 +22,7 @@ function createLogger() {
     async function prodLogger(context, ...params) {
       const response = await next(context, params);
       logger.info({
-        message: `${response.status} ${context.request.method} ${
-          context.request.url
-        }`,
+        message: `${response.status} ${context.request.method} ${context.request.url}`,
         id: context.id,
         ip: context.remote,
         host: context.host,

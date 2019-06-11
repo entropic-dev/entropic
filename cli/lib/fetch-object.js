@@ -10,8 +10,7 @@ const ssri = require('ssri');
 
 const pipeline = promisify(_);
 
-const EMPTY_HASH =
-  'z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==';
+const EMPTY_HASH = 'z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==';
 const EMPTY_BUF = Buffer.from([]);
 
 async function fetchObject({ registry, cache }, integrity, load = false) {
@@ -27,9 +26,7 @@ async function fetchObject({ registry, cache }, integrity, load = false) {
     return load ? cacache.get(cache, integrity) : true;
   }
 
-  const response = await fetch(
-    `${registry}/v1/objects/object/${algo}/${encodeURIComponent(digest)}`
-  );
+  const response = await fetch(`${registry}/v1/objects/object/${algo}/${encodeURIComponent(digest)}`);
 
   if (response.status > 399) {
     throw new Error('error fetching object');

@@ -11,14 +11,8 @@ const User = require('../models/user');
 
 module.exports = [
   fork.get('/v1/users/user/:username/memberships', authn.required(memberships)),
-  fork.post(
-    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
-    authn.required(accept)
-  ),
-  fork.del(
-    '/v1/users/user/:username/memberships/invitation/:namespace@:host',
-    authn.required(decline)
-  ),
+  fork.post('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(accept)),
+  fork.del('/v1/users/user/:username/memberships/invitation/:namespace@:host', authn.required(decline)),
   fork.get('/v1/tokens/token', byToken),
   fork.del('/v1/tokens/token/*', deleteTokens),
   fork.get('/v1/users/user/:username/tokens', authn.required(tokens)),
@@ -69,9 +63,7 @@ async function deleteTokens(context, { '*': tokens }) {
 }
 
 async function createToken(context, { username }) {
-  const target = await User.objects
-    .get({ active: true, name: username })
-    .catch(User.objects.NotFound, () => null);
+  const target = await User.objects.get({ active: true, name: username }).catch(User.objects.NotFound, () => null);
 
   if (!target) {
     return response.error.coded('tokens.create.user_dne', 404);
@@ -97,10 +89,7 @@ async function signup(context, params) {
     return response.error.coded('signup.email_taken', 400);
   }
 
-  const [err, user] = await User.signup(username, email, remoteAuth).then(
-    xs => [null, xs],
-    xs => [xs, null]
-  );
+  const [err, user] = await User.signup(username, email, remoteAuth).then(xs => [null, xs], xs => [xs, null]);
 
   if (err) {
     if (err instanceof User.objects.Conflict) {
@@ -194,12 +183,8 @@ async function accept(context, { namespace, host }) {
     return response.error('invitation not found', 404);
   }
 
-  context.logger.info(
-    `${context.user.name} accepted the invitation to join ${namespace}@${host}`
-  );
-  return response.message(
-    `${context.user.name} is now a member of ${namespace}@${host}`
-  );
+  context.logger.info(`${context.user.name} accepted the invitation to join ${namespace}@${host}`);
+  return response.message(`${context.user.name} is now a member of ${namespace}@${host}`);
 }
 
 async function decline(context, { namespace, host }) {
@@ -224,10 +209,6 @@ async function decline(context, { namespace, host }) {
       active: false
     });
 
-  context.logger.info(
-    `${context.user.name} declined the invitation to join ${namespace}@${host}`
-  );
-  return response.message(
-    `You have declined the invitation to join ${namespace}@${host}`
-  );
+  context.logger.info(`${context.user.name} declined the invitation to join ${namespace}@${host}`);
+  return response.message(`You have declined the invitation to join ${namespace}@${host}`);
 }

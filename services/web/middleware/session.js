@@ -9,10 +9,7 @@ const uuid = require('uuid');
 
 const SessionMap = require('../lib/session-map');
 
-function createSessionMW({
-  sessionId = 's',
-  secret = process.env.SESSION_SECRET
-} = {}) {
+function createSessionMW({ sessionId = 's', secret = process.env.SESSION_SECRET } = {}) {
   return next => {
     const store = new RedisStore();
     return async context => {
@@ -20,9 +17,7 @@ function createSessionMW({
       const id = parsed[sessionId];
       const exists = Boolean(id);
 
-      const unwrappedId = id
-        ? await iron.unseal(id, secret, iron.defaults)
-        : null;
+      const unwrappedId = id ? await iron.unseal(id, secret, iron.defaults) : null;
       const map = await store.load(context, unwrappedId);
 
       context.session = map;
@@ -57,9 +52,7 @@ class RedisStore {
   constructor() {}
 
   async load(context, id) {
-    const sessionData = id
-      ? JSON.parse((await context.redis.getAsync(id)) || '{}')
-      : {};
+    const sessionData = id ? JSON.parse((await context.redis.getAsync(id)) || '{}') : {};
 
     return new SessionMap(Object.entries(sessionData));
   }
@@ -71,11 +64,7 @@ class RedisStore {
     }, {});
 
     id = id || generateSessionID();
-    await context.redis.setexAsync(
-      id,
-      Number(process.env.SESSION_EXPIRY_SECONDS) || 31536000,
-      JSON.stringify(object)
-    );
+    await context.redis.setexAsync(id, Number(process.env.SESSION_EXPIRY_SECONDS) || 31536000, JSON.stringify(object));
 
     return id;
   }

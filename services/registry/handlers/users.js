@@ -5,14 +5,8 @@ const authn = require('../decorators/authn');
 
 module.exports = [
   fork.get('/v1/users/user/:username/memberships', authn.required(memberships)),
-  fork.post(
-    '/v1/users/user/:username/memberships/:namespace@:host',
-    authn.required(accept)
-  ),
-  fork.del(
-    '/v1/users/user/:username/memberships/:namespace@:host',
-    authn.required(decline)
-  )
+  fork.post('/v1/users/user/:username/memberships/:namespace@:host', authn.required(accept)),
+  fork.del('/v1/users/user/:username/memberships/:namespace@:host', authn.required(decline))
 ];
 
 async function memberships(context, { username }) {
@@ -53,20 +47,13 @@ async function accept(context, { username, namespace, host }) {
     }[err.code];
 
     return response.error(
-      msg ||
-        `Caught error accepting "${namespace}@${host}" invite for "${
-          context.user.name
-        }"`,
+      msg || `Caught error accepting "${namespace}@${host}" invite for "${context.user.name}"`,
       err.status
     );
   }
 
-  context.logger.info(
-    `${context.user.name} accepted the invitation to join ${namespace}@${host}`
-  );
-  return response.message(
-    `${context.user.name} is now a member of ${namespace}@${host}`
-  );
+  context.logger.info(`${context.user.name} accepted the invitation to join ${namespace}@${host}`);
+  return response.message(`${context.user.name} is now a member of ${namespace}@${host}`);
 }
 
 async function decline(context, { username, namespace, host }) {
@@ -88,18 +75,11 @@ async function decline(context, { username, namespace, host }) {
     }[err.code];
 
     return response.error(
-      msg ||
-        `Caught error declining "${namespace}@${host}" invite for "${
-          context.user.name
-        }"`,
+      msg || `Caught error declining "${namespace}@${host}" invite for "${context.user.name}"`,
       err.status
     );
   }
 
-  context.logger.info(
-    `${context.user.name} declined the invitation to join ${namespace}@${host}`
-  );
-  return response.message(
-    `You have declined the invitation to join ${namespace}@${host}`
-  );
+  context.logger.info(`${context.user.name} declined the invitation to join ${namespace}@${host}`);
+  return response.message(`You have declined the invitation to join ${namespace}@${host}`);
 }

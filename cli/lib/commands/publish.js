@@ -38,9 +38,9 @@ async function publish(opts) {
 
   if (!host) {
     opts.log.error(
-      `You need to log in to "https://${
+      `You need to log in to "https://${spec.host}" publish packages. Run \`ds login --registry "https://${
         spec.host
-      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
+      }"\`.`
     );
     return 1;
   }
@@ -48,9 +48,7 @@ async function publish(opts) {
   const { token } = opts.registries[host];
 
   if (!token) {
-    opts.log.error(
-      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
-    );
+    opts.log.error(`You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`);
     return 1;
   }
 
@@ -65,9 +63,7 @@ async function publish(opts) {
   // then create a packlist
   // then create a multipart request and send it
   if (content.private) {
-    opts.log.error(
-      'This Package.toml is marked private. Cowardly refusing to publish.'
-    );
+    opts.log.error('This Package.toml is marked private. Cowardly refusing to publish.');
     return 1;
   }
 
@@ -94,20 +90,14 @@ async function publish(opts) {
   const mustCreate = pkgReq.status === 404;
 
   if (mustCreate) {
-    const request = await fetch(
-      `${host}/v1/packages/package/${spec.canonical}`,
-      {
-        body:
-          opts.require2fa || opts.requiretfa || opts.tfa
-            ? '{"require_tfa": true}'
-            : '{}',
-        method: 'PUT',
-        headers: {
-          authorization: `Bearer ${token}`,
-          'content-type': 'application/json'
-        }
+    const request = await fetch(`${host}/v1/packages/package/${spec.canonical}`, {
+      body: opts.require2fa || opts.requiretfa || opts.tfa ? '{"require_tfa": true}' : '{}',
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${token}`,
+        'content-type': 'application/json'
       }
-    );
+    });
 
     const body = await request.json();
     if (request.status > 399) {
@@ -128,18 +118,9 @@ async function publish(opts) {
 
   form.append('dependencies', JSON.stringify(content.dependencies || {}));
   form.append('devDependencies', JSON.stringify(content.devDependencies || {}));
-  form.append(
-    'optionalDependencies',
-    JSON.stringify(content.optionalDependencies || {})
-  );
-  form.append(
-    'peerDependencies',
-    JSON.stringify(content.peerDependencies || {})
-  );
-  form.append(
-    'bundledDependencies',
-    JSON.stringify(content.bundledDependencies || {})
-  );
+  form.append('optionalDependencies', JSON.stringify(content.optionalDependencies || {}));
+  form.append('peerDependencies', JSON.stringify(content.peerDependencies || {}));
+  form.append('bundledDependencies', JSON.stringify(content.bundledDependencies || {}));
 
   const keyed = xs => {
     const ext = path.extname(xs);
@@ -158,26 +139,18 @@ async function publish(opts) {
   });
 
   for (const file of files) {
-    const encoded = encodeURIComponent(
-      'package/' + file.split(path.sep).join('/')
-    );
+    const encoded = encodeURIComponent('package/' + file.split(path.sep).join('/'));
 
     // use append's ability to append a lazily evaluated function so we don't
     // try to open, say, 10K fds at once.
-    form.append(
-      'entry[]',
-      next => next(createReadStream(path.join(location, file))),
-      {
-        filename: encoded
-      }
-    );
+    form.append('entry[]', next => next(createReadStream(path.join(location, file))), {
+      filename: encoded
+    });
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
   const request = await fetch(
-    `${host}/v1/packages/package/${
-      spec.canonical
-    }/versions/${encodeURIComponent(content.version)}`,
+    `${host}/v1/packages/package/${spec.canonical}/versions/${encodeURIComponent(content.version)}`,
     {
       method: 'PUT',
       body: form.pipe(zlib.createDeflate()),

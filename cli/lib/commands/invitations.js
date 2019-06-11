@@ -54,9 +54,7 @@ async function invitations(opts) {
 
   console.log(
     `${invitee} has ` +
-      (result.length === 1
-        ? `one ${qualifier}invitation.`
-        : `${result.length} ${qualifier}invitations.`) +
+      (result.length === 1 ? `one ${qualifier}invitation.` : `${result.length} ${qualifier}invitations.`) +
       '\nTo accept:\n'
   );
 
@@ -64,7 +62,5 @@ async function invitations(opts) {
     console.log(`  ds join ${dest.name} --as ${invitee}`);
   });
 
-  console.log(
-    `\nTo decline an invitation: ds decline <group|package> --as ${invitee}`
-  );
+  console.log(`\nTo decline an invitation: ds decline <group|package> --as ${invitee}`);
 }

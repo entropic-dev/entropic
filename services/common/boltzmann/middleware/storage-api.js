@@ -4,9 +4,7 @@ module.exports = createStorageApi;
 
 const StorageAPI = require('../client');
 
-function createStorageApi({
-  url = process.env.STORAGE_API_URL || 'http://localhost:3002'
-} = {}) {
+function createStorageApi({ url = process.env.STORAGE_API_URL || 'http://localhost:3002' } = {}) {
   return next => {
     return async function(context) {
       context.storageApi = new StorageAPI({

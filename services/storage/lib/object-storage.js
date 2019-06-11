@@ -7,10 +7,7 @@ const ssri = require('ssri');
 const uuid = require('uuid');
 
 module.exports = class ObjectStore {
-  constructor(
-    strategy,
-    algorithms = (process.env.STORAGE_HASHES || 'sha512').split(',')
-  ) {
+  constructor(strategy, algorithms = (process.env.STORAGE_HASHES || 'sha512').split(',')) {
     this.strategy = strategy;
     this.algorithms = algorithms;
   }
@@ -104,10 +101,7 @@ module.exports = class ObjectStore {
       const uniq = uuid.v4();
       await fs.writeFile(`${this.dir}/${algo}/tmp/${uniq}`, data);
       try {
-        await fs.link(
-          `${this.dir}/${algo}/tmp/${uniq}`,
-          `${this.dir}/${algo}/${digest}`
-        );
+        await fs.link(`${this.dir}/${algo}/tmp/${uniq}`, `${this.dir}/${algo}/${digest}`);
       } catch (err) {
         if (err.code !== 'EEXIST') {
           throw err;

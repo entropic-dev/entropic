@@ -7,17 +7,7 @@ const joi = require('@hapi/joi');
 orm.describeConflict('users_name_idx', 'Usernames must be unique.');
 
 module.exports = class User {
-  constructor({
-    id,
-    name,
-    email,
-    tfa_secret,
-    backup_codes,
-    tfa_active,
-    created,
-    modified,
-    active
-  }) {
+  constructor({ id, name, email, tfa_secret, backup_codes, tfa_active, created, modified, active }) {
     this.id = id;
     this.name = name;
     this.email = email;
@@ -46,11 +36,7 @@ module.exports = class User {
         user,
         remote_identity: remoteAuth.id,
         provider: remoteAuth.provider,
-        access_token_enc: await iron.seal(
-          remoteAuth.token,
-          process.env.OAUTH_PASSWORD,
-          iron.defaults
-        ),
+        access_token_enc: await iron.seal(remoteAuth.token, process.env.OAUTH_PASSWORD, iron.defaults),
         metadata: {}
       });
     }

@@ -23,18 +23,14 @@ async function decline(opts) {
 
   if (!opts.as || (!opts.package && !opts.namespace)) {
     console.error(
-      'Usage: ds decline --package <package> --as <namespace>\n' +
-        '       ds decline --namespace <namespace>'
+      'Usage: ds decline --package <package> --as <namespace>\n' + '       ds decline --namespace <namespace>'
     );
     return 1;
   }
 
   let uri;
   if (opts.package) {
-    const parsed = parsePackageSpec(
-      opts.package,
-      opts.registry.replace(/^https?:\/\//, '')
-    );
+    const parsed = parsePackageSpec(opts.package, opts.registry.replace(/^https?:\/\//, ''));
 
     const invitee = opts.as;
 

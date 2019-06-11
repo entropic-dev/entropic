@@ -39,13 +39,7 @@ async function members(opts) {
     return 0;
   }
 
-  console.log(
-    `${ns} has ` +
-      (body.objects.length == 1
-        ? 'one member'
-        : `${body.objects.length} members`) +
-      ':'
-  );
+  console.log(`${ns} has ` + (body.objects.length == 1 ? 'one member' : `${body.objects.length} members`) + ':');
 
   body.objects.forEach(n => {
     console.log(`    ${n}`);
@@ -53,14 +47,9 @@ async function members(opts) {
 }
 
 async function listPackageMaintainers(opts) {
-  const { _, ...parsed } = parsePackageSpec(
-    opts.argv[0],
-    opts.registry.replace(/^https?:\/\//, '')
-  );
+  const { _, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
 
-  const uri = `${opts.registry}/v1/packages/package/${
-    parsed.canonical
-  }/maintainers`;
+  const uri = `${opts.registry}/v1/packages/package/${parsed.canonical}/maintainers`;
 
   const response = await fetch(uri);
   const body = await response.json();
@@ -72,9 +61,7 @@ async function listPackageMaintainers(opts) {
 
   console.log(
     `${parsed.canonical} has ` +
-      (body.objects.length == 1
-        ? 'one maintainer'
-        : `${body.objects.length} maintainer`) +
+      (body.objects.length == 1 ? 'one maintainer' : `${body.objects.length} maintainer`) +
       ':'
   );
 

@@ -7,17 +7,7 @@ module.exports = class NamespaceMember {
   #user = null;
   #namespace = null;
 
-  constructor({
-    id,
-    user_id,
-    user,
-    namespace_id,
-    namespace,
-    created,
-    modified,
-    active,
-    accepted
-  }) {
+  constructor({ id, user_id, user, namespace_id, namespace, created, modified, active, accepted }) {
     this.id = id;
     this.user_id = user_id;
     this.#user = user ? Promise.resolve(user) : null;

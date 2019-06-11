@@ -5,9 +5,7 @@ const crypto = require('crypto');
 
 module.exports = createBearerAuthMW;
 
-function createBearerAuthMW({
-  sessionTimeout = Number(process.env.SESSION_TIMEOUT) || 5 * 60
-} = {}) {
+function createBearerAuthMW({ sessionTimeout = Number(process.env.SESSION_TIMEOUT) || 5 * 60 } = {}) {
   return next => {
     return async context => {
       const bearer = context.request.headers['authorization']
@@ -18,9 +16,7 @@ function createBearerAuthMW({
       }
 
       if (!bearer.startsWith('ent_')) {
-        return response.authneeded(
-          'Your auth token is not a valid entropic token.'
-        );
+        return response.authneeded('Your auth token is not a valid entropic token.');
       }
 
       // getting access to the redis doesn't get you the tokens.
@@ -39,16 +35,10 @@ function createBearerAuthMW({
       } catch {}
 
       if (data === null) {
-        const [err, result] = await context.storageApi
-          .getToken(bearer)
-          .then(xs => [null, xs], xs => [xs, null]);
+        const [err, result] = await context.storageApi.getToken(bearer).then(xs => [null, xs], xs => [xs, null]);
 
         if (!err) {
-          await context.redis.setexAsync(
-            key,
-            sessionTimeout,
-            JSON.stringify(result.user)
-          );
+          await context.redis.setexAsync(key, sessionTimeout, JSON.stringify(result.user));
           context.user = result.user;
         }
       }

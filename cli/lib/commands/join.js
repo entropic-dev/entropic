@@ -29,18 +29,11 @@ async function join(opts) {
   let uri;
 
   if (opts.argv[0].includes('/')) {
-    const { _, ...parsed } = parsePackageSpec(
-      opts.argv[0],
-      opts.registry.replace(/^https?:\/\//, '')
-    );
-    uri = `${opts.registry}/v1/packages/package/${
-      parsed.canonical
-    }/maintainers/${invitee}/invitation`;
+    const { _, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
+    uri = `${opts.registry}/v1/packages/package/${parsed.canonical}/maintainers/${invitee}/invitation`;
   } else {
     const ns = opts.argv[0] + (opts.argv[0].includes('@') ? '' : `@${host}`);
-    uri = `${
-      opts.registry
-    }/v1/namespaces/namespace/${ns}/members/${invitee}/invitation`;
+    uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members/${invitee}/invitation`;
   }
 
   const response = await fetch(uri, {

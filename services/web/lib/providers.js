@@ -18,9 +18,7 @@ class Provider {
       this.redirectUrl +
       `?` +
       querystring.stringify({
-        redirect_uri: `${process.env.EXTERNAL_HOST}/login/providers/${
-          this.name
-        }/callback`,
+        redirect_uri: `${process.env.EXTERNAL_HOST}/login/providers/${this.name}/callback`,
         state,
         client_id: this.id
       })

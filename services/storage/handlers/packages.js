@@ -25,19 +25,10 @@ const MAX_FILES = Number(process.env.MAX_FILES) || 2000000;
 module.exports = [
   fork.get('/v1/packages', packageList),
   fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name', packageDetail),
-  fork.put(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    authn.required(canWrite(packageCreate))
-  ),
-  fork.del(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name',
-    authn.required(canWrite(packageDelete))
-  ),
+  fork.put('/v1/packages/package/:namespace([^@]+)@:host/:name', authn.required(canWrite(packageCreate))),
+  fork.del('/v1/packages/package/:namespace([^@]+)@:host/:name', authn.required(canWrite(packageDelete))),
 
-  fork.get(
-    '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
-    versionDetail
-  ),
+  fork.get('/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version', versionDetail),
   fork.put(
     '/v1/packages/package/:namespace([^@]+)@:host/:name/versions/:version',
     authn.required(canWrite(versionCreate))
@@ -67,10 +58,7 @@ async function packageList(context) {
   return response.json({ objects });
 }
 
-async function packageDetail(
-  context,
-  { host, namespace, name, retry = false }
-) {
+async function packageDetail(context, { host, namespace, name, retry = false }) {
   const pkg = await Package.objects
     .get({
       active: true,
@@ -83,11 +71,7 @@ async function packageDetail(
     .catch(Package.objects.NotFound, () => null);
 
   if (!pkg) {
-    if (
-      namespace === 'legacy' &&
-      host === process.env.EXTERNAL_HOST.replace(/^https?:\/\//, '') &&
-      !retry
-    ) {
+    if (namespace === 'legacy' && host === process.env.EXTERNAL_HOST.replace(/^https?:\/\//, '') && !retry) {
       const client = await context.getPostgresClient();
 
       await client.query('BEGIN');
@@ -107,10 +91,7 @@ async function packageDetail(
   return response.json(await pkg.serialize());
 }
 
-async function packageCreate(
-  context,
-  { host, namespace: namespaceName, name }
-) {
+async function packageCreate(context, { host, namespace: namespaceName, name }) {
   const namespace = await Namespace.objects
     .get({
       name: namespaceName,
@@ -125,9 +106,7 @@ async function packageCreate(
   }
 
   if (namespaceName !== 'legacy' && name[0] === '@') {
-    return response.error(
-      `Invalid package name "${name}": name cannot be scoped`
-    );
+    return response.error(`Invalid package name "${name}": name cannot be scoped`);
   }
 
   const error = check.packageNameOK(name, namespaceName);
@@ -142,10 +121,7 @@ async function packageCreate(
   };
 
   if (update.require_tfa && !context.user.tfa_active) {
-    return response.error(
-      `You cannot require 2fa on a package without activating it for your account`,
-      400
-    );
+    return response.error(`You cannot require 2fa on a package without activating it for your account`, 400);
   }
 
   let result = null;
@@ -175,9 +151,7 @@ async function packageCreate(
     });
   }
 
-  context.logger.info(
-    `${namespaceName}@${host}/${name} created by ${context.user.name}`
-  );
+  context.logger.info(`${namespaceName}@${host}/${name} created by ${context.user.name}`);
 
   return response.json(await result.serialize(), context.pkg ? 200 : 201);
 }
@@ -190,10 +164,7 @@ async function packageDelete(context, { host, namespace, name }) {
   // Support users can transfer the package to a new user using the usual
   // package transfer machinery.
   if (!context.pkg) {
-    return response.error(
-      `"${namespace}@${host}/${name}" does not exist.`,
-      404
-    );
+    return response.error(`"${namespace}@${host}/${name}" does not exist.`, 404);
   }
 
   const modified = new Date();
@@ -239,9 +210,7 @@ async function packageDelete(context, { host, namespace, name }) {
     accepted: true
   });
 
-  context.logger.info(
-    `${namespace}@${host}/${name} marked as abandonware by ${context.user.name}`
-  );
+  context.logger.info(`${namespace}@${host}/${name} marked as abandonware by ${context.user.name}`);
 
   return response.text('', 204);
 }
@@ -261,10 +230,7 @@ async function versionDetail(context, { host, namespace, name, version }) {
     .catch(PackageVersion.objects.NotFound, () => null);
 
   if (!v) {
-    return response.error(
-      `Could not find "${namespace}@${host}/${name} at ${version}"`,
-      404
-    );
+    return response.error(`Could not find "${namespace}@${host}/${name} at ${version}"`, 404);
   }
 
   return response.json(await v.serialize());
@@ -275,18 +241,12 @@ async function versionCreate(context, { host, namespace, name, version }) {
   // if it does, that's a 409
   // is the version valid semver? if not, that's a 400
   if (!context.pkg) {
-    return response.error(
-      `"${namespace}@${host}/${name} does not exist. Create it!`,
-      404
-    );
+    return response.error(`"${namespace}@${host}/${name} does not exist. Create it!`, 404);
   }
 
   const cleaned = semver.clean(version);
   if (cleaned !== version) {
-    return response.error(
-      `"${version}" is not valid semver; try "${cleaned}" instead.`,
-      400
-    );
+    return response.error(`"${version}" is not valid semver; try "${cleaned}" instead.`, 400);
   }
 
   if (!semver.valid(version)) {
@@ -364,13 +324,8 @@ async function versionCreate(context, { host, namespace, name, version }) {
           const { canonical } = validated;
 
           // XXX: how do we validate npm-style short deps like `github/bloo`?
-          if (
-            typeof value[dep] !== 'string' ||
-            !semver.validRange(value[dep])
-          ) {
-            validationError = new Error(
-              `invalid semver range in "${key}" for "${dep}": "${value[dep]}"`
-            );
+          if (typeof value[dep] !== 'string' || !semver.validRange(value[dep])) {
+            validationError = new Error(`invalid semver range in "${key}" for "${dep}": "${value[dep]}"`);
           }
 
           outgoing[canonical] = value[dep];
@@ -393,8 +348,7 @@ async function versionCreate(context, { host, namespace, name, version }) {
       validationError = err;
     });
 
-    const filename =
-      './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
+    const filename = './' + decodeURIComponent(String(part.filename)).replace(/^\/+/g, '');
     formdata.files[filename] = context.storage.add(part);
 
     if (/^\.\/package\/readme(\.(md|mkd|markdown))?/i.test(filename)) {
@@ -450,25 +404,18 @@ async function versionCreate(context, { host, namespace, name, version }) {
   }
 
   if (filecount > MAX_FILES) {
-    return response.error(
-      `Exceeded maximum number of files in a version.`,
-      400
-    );
+    return response.error(`Exceeded maximum number of files in a version.`, 400);
   }
 
   await Promise.all(
     Object.keys(formdata.files).map(filename => {
-      return formdata.files[filename].then(
-        integrity => (formdata.files[filename] = integrity)
-      );
+      return formdata.files[filename].then(integrity => (formdata.files[filename] = integrity));
     })
   );
 
   await Promise.all(
     Object.keys(formdata.derivedFiles).map(filename => {
-      return formdata.derivedFiles[filename].then(
-        integrity => (formdata.derivedFiles[filename] = integrity)
-      );
+      return formdata.derivedFiles[filename].then(integrity => (formdata.derivedFiles[filename] = integrity));
     })
   );
 
@@ -489,11 +436,7 @@ async function versionCreate(context, { host, namespace, name, version }) {
     version_integrities: versions
   });
 
-  context.logger.info(
-    `${namespace}@${host}/${name} at ${version} published by ${
-      context.user.name
-    }`
-  );
+  context.logger.info(`${namespace}@${host}/${name} at ${version} published by ${context.user.name}`);
 
   return response.json(await pkgVersion.serialize(), 201);
 }

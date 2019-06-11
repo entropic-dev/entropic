@@ -16,26 +16,11 @@ async function syncVersion(token, pkg, version, packumentVersion, progress) {
 
   const form = new FormData();
 
-  form.append(
-    'dependencies',
-    JSON.stringify(packumentVersion.dependencies || {})
-  );
-  form.append(
-    'devDependencies',
-    JSON.stringify(packumentVersion.devDependencies || {})
-  );
-  form.append(
-    'optionalDependencies',
-    JSON.stringify(packumentVersion.optionalDependencies || {})
-  );
-  form.append(
-    'peerDependencies',
-    JSON.stringify(packumentVersion.peerDependencies || {})
-  );
-  form.append(
-    'bundledDependencies',
-    JSON.stringify(packumentVersion.bundledDependencies || {})
-  );
+  form.append('dependencies', JSON.stringify(packumentVersion.dependencies || {}));
+  form.append('devDependencies', JSON.stringify(packumentVersion.devDependencies || {}));
+  form.append('optionalDependencies', JSON.stringify(packumentVersion.optionalDependencies || {}));
+  form.append('peerDependencies', JSON.stringify(packumentVersion.peerDependencies || {}));
+  form.append('bundledDependencies', JSON.stringify(packumentVersion.bundledDependencies || {}));
 
   const tarball = pacote.tarball.stream(`${pkg}@${version}`);
   const untar = tar.t();
@@ -57,9 +42,7 @@ async function syncVersion(token, pkg, version, packumentVersion, progress) {
   });
 
   const createPackageVersion = await fetch(
-    `${REG}/packages/package/legacy@${HOST}/${enc(pkg)}/versions/${enc(
-      version
-    )}`,
+    `${REG}/packages/package/legacy@${HOST}/${enc(pkg)}/versions/${enc(version)}`,
     {
       method: 'PUT',
       body: form,
@@ -70,19 +53,9 @@ async function syncVersion(token, pkg, version, packumentVersion, progress) {
     }
   );
 
-  const deps = [
-    'dependencies',
-    'devDependencies',
-    'optionalDependencies',
-    'peerDependencies'
-  ];
+  const deps = ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies'];
 
-  const allDeps = new Set(
-    deps.reduce(
-      (acc, xs) => [...acc, ...Object.keys(packumentVersion[xs] || {})],
-      []
-    )
-  );
+  const allDeps = new Set(deps.reduce((acc, xs) => [...acc, ...Object.keys(packumentVersion[xs] || {})], []));
 
   progress(`${pkg}@${version} done (found ${allDeps.size} deps)`);
   return [...allDeps];
@@ -92,22 +65,17 @@ async function syncPackage(token, pkg, progress) {
   progress(`${pkg} start`);
   const json = await pacote.packument(pkg);
 
-  const createPackage = await fetch(
-    `${REG}/packages/package/legacy@${HOST}/${enc(pkg)}`,
-    {
-      method: 'PUT',
-      body: '{}',
-      headers: {
-        'content-type': 'application/json',
-        authorization: `Bearer ${token}`
-      }
+  const createPackage = await fetch(`${REG}/packages/package/legacy@${HOST}/${enc(pkg)}`, {
+    method: 'PUT',
+    body: '{}',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${token}`
     }
-  );
+  });
 
   if (createPackage.status > 399) {
-    progress(
-      `${pkg} saw ${createPackage.status}: ${await createPackage.text()}`
-    );
+    progress(`${pkg} saw ${createPackage.status}: ${await createPackage.text()}`);
     return;
   }
 
@@ -124,41 +92,19 @@ async function syncPackage(token, pkg, progress) {
   }
 
   if (createPackage.status === 200) {
-    return [
-      ...new Set(
-        versions
-          .map(v => Object.keys(json.versions[v].dependencies || {}))
-          .flat()
-      )
-    ];
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())];
   }
 
   if (createPackage.status > 399) {
-    progress(
-      `package failed with ${
-        createPackage.status
-      }: ${await createPackage.text()}`
-    );
-    return [
-      ...new Set(
-        versions
-          .map(v => Object.keys(json.versions[v].dependencies || {}))
-          .flat()
-      )
-    ];
+    progress(`package failed with ${createPackage.status}: ${await createPackage.text()}`);
+    return [...new Set(versions.map(v => Object.keys(json.versions[v].dependencies || {})).flat())];
   }
 
   progress(`${pkg}: versions "${versions.join('", "')}"`);
   const deps = [];
   for (const version of versions) {
     deps.push(
-      await syncVersion(
-        token,
-        pkg,
-        version,
-        json.versions[version],
-        progress
-      ).catch(err => {
+      await syncVersion(token, pkg, version, json.versions[version], progress).catch(err => {
         progress(`could not sync ${pkg}@${version}: ${err.message}`);
       })
     );
@@ -169,12 +115,7 @@ async function syncPackage(token, pkg, progress) {
   return [...new Set(deps.flat())];
 }
 
-async function main({
-  token,
-  _: [pkg],
-  recursive = false,
-  __seen = new Set()
-}) {
+async function main({ token, _: [pkg], recursive = false, __seen = new Set() }) {
   if (__seen.has(pkg)) {
     return;
   }

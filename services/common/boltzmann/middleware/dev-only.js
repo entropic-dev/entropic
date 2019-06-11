@@ -17,14 +17,8 @@ function dev(
         clearTimeout(context[hangWarning]);
       }
       context[hangWarning] = setTimeout(() => {
-        console.error(
-          `⚠️ Response from ${nextName} > ${warnAt}ms fetching "${req.method} ${
-            req.url
-          }".`
-        );
-        console.error(
-          `\x1b[0;37m - (Tune timeout using DEV_LATENCY_WARNING_MS env variable.)\x1b[0;0m`
-        );
+        console.error(`⚠️ Response from ${nextName} > ${warnAt}ms fetching "${req.method} ${req.url}".`);
+        console.error(`\x1b[0;37m - (Tune timeout using DEV_LATENCY_WARNING_MS env variable.)\x1b[0;0m`);
       }, warnAt);
 
       if (context[hangError]) {
@@ -36,9 +30,7 @@ function dev(
             req.url
           }". (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)`
         );
-        console.error(
-          `\x1b[0;37m - (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)\x1b[0;0m`
-        );
+        console.error(`\x1b[0;37m - (Tune timeout using DEV_LATENCY_ERROR_MS env variable.)\x1b[0;0m`);
       }, errorAt);
 
       try {

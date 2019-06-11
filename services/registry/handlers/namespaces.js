@@ -6,18 +6,9 @@ const authn = require('../decorators/authn');
 module.exports = [
   fork.get('/v1/namespaces', namespaces),
   fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', members),
-  fork.post(
-    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
-    authn.required(invite)
-  ),
-  fork.del(
-    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
-    authn.required(remove)
-  ),
-  fork.get(
-    '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships',
-    authn.required(maintainerships)
-  ),
+  fork.post('/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee', authn.required(invite)),
+  fork.del('/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee', authn.required(remove)),
+  fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships', authn.required(maintainerships)),
   fork.post(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/maintainerships/:packageNS@:packageHost/:packageName',
     authn.required(accept)
@@ -84,15 +75,10 @@ async function invite(context, { invitee, namespace, host }) {
       'member.invite.declined': `${invitee} has already been invited to join ${namespace}@${host}`
     }[err.code];
 
-    return response.error(
-      msg || `Caught error inviting member to "${namespace}@${host}"`,
-      err.status
-    );
+    return response.error(msg || `Caught error inviting member to "${namespace}@${host}"`, err.status);
   }
 
-  context.logger.info(
-    `${invitee} invited to join ${namespace}@${host} by ${context.user.name}`
-  );
+  context.logger.info(`${invitee} invited to join ${namespace}@${host} by ${context.user.name}`);
   return response.message(`${invitee} invited to join ${namespace}@${host}.`);
 }
 
@@ -114,15 +100,10 @@ async function remove(context, { invitee, namespace, host }) {
       'member.invite.invitee_not_member': `"${invitee}" is not a member of "${namespace}@${host}" and has no pending invitation`
     }[err.code];
 
-    return response.error(
-      msg || `Caught error removing member from "${namespace}@${host}"`,
-      err.status
-    );
+    return response.error(msg || `Caught error removing member from "${namespace}@${host}"`, err.status);
   }
 
-  context.logger.info(
-    `${invitee} removed from ${namespace}@${host} by ${context.user.name}`
-  );
+  context.logger.info(`${invitee} removed from ${namespace}@${host} by ${context.user.name}`);
 
   return response.message(`${invitee} removed from ${namespace}@${host}.`);
 }
@@ -167,10 +148,7 @@ async function maintainerships(context, { namespace, host }) {
   return response.json({ objects, next, prev, total });
 }
 
-async function accept(
-  context,
-  { namespace, host, packageNS, packageHost, packageName }
-) {
+async function accept(context, { namespace, host, packageNS, packageHost, packageName }) {
   const [err] = await context.storageApi
     .acceptPackageMaintainership({
       maintainer: { namespace, host },
@@ -187,8 +165,7 @@ async function accept(
     }[err.code];
 
     return response.error(
-      msg ||
-        `Caught error accepting invitation to ${packageNS}@${packageHost}/${packageName}`,
+      msg || `Caught error accepting invitation to ${packageNS}@${packageHost}/${packageName}`,
       err.code
     );
   }
@@ -203,10 +180,7 @@ async function accept(
   );
 }
 
-async function decline(
-  context,
-  { namespace, host, packageNS, packageHost, packageName }
-) {
+async function decline(context, { namespace, host, packageNS, packageHost, packageName }) {
   const [err] = await context.storageApi
     .declinePackageMaintainership({
       maintainer: { namespace, host },
@@ -223,8 +197,7 @@ async function decline(
     }[err.code];
 
     return response.error(
-      msg ||
-        `Caught error declining invitation to ${packageNS}@${packageHost}/${packageName}`,
+      msg || `Caught error declining invitation to ${packageNS}@${packageHost}/${packageName}`,
       err.code
     );
   }

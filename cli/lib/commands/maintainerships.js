@@ -22,9 +22,7 @@ async function maintainerships(opts) {
   if (!invitee.includes('@')) {
     invitee += '@' + opts.registry.replace(/^https?:\/\//, '');
   }
-  const uri = `${
-    opts.registry
-  }/v1/namespaces/namespace/${invitee}/maintainerships`;
+  const uri = `${opts.registry}/v1/namespaces/namespace/${invitee}/maintainerships`;
   const response = await fetch(uri, {
     headers: {
       authorization: `Bearer ${opts.token}`
@@ -47,11 +45,7 @@ async function maintainerships(opts) {
   }
 
   console.log(
-    `${invitee} maintains ` +
-      (body.objects.length == 1
-        ? 'one package'
-        : `${body.objects.length} packages`) +
-      ':'
+    `${invitee} maintains ` + (body.objects.length == 1 ? 'one package' : `${body.objects.length} packages`) + ':'
   );
 
   body.objects.forEach(p => {
@@ -91,9 +85,7 @@ async function listNamespaceMemberships(opts) {
 
   console.log(
     `${invitee} is a member of ` +
-      (body.objects.length == 1
-        ? 'one namespace'
-        : `${body.objects.length} namespaces`) +
+      (body.objects.length == 1 ? 'one namespace' : `${body.objects.length} namespaces`) +
       ':'
   );
 

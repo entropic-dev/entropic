@@ -9,13 +9,7 @@ const DEFAULT_HOST = os.hostname();
 const e = encodeURIComponent;
 
 module.exports = class Client {
-  constructor({
-    url = process.env.STORAGE_API_URL,
-    requestId,
-    userAgent,
-    hostname = DEFAULT_HOST,
-    logger
-  }) {
+  constructor({ url = process.env.STORAGE_API_URL, requestId, userAgent, hostname = DEFAULT_HOST, logger }) {
     this.url = url;
     this.requestId = requestId;
     this.userAgent = `${hostname}(${userAgent})`;
@@ -31,9 +25,7 @@ module.exports = class Client {
   }
 
   async getAuthentication({ remoteId, provider }) {
-    return this.request(
-      `/v1/authn/providers/provider/${e(provider)}/id/${e(remoteId)}`
-    );
+    return this.request(`/v1/authn/providers/provider/${e(provider)}/id/${e(remoteId)}`);
   }
 
   async signup({ username, email, remoteAuth }) {
@@ -98,49 +90,30 @@ module.exports = class Client {
     });
   }
 
-  async listPackageMaintainers({
-    namespace,
-    host,
-    name,
-    page,
-    status = 'active'
-  }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers`,
-      {
-        query: page ? { page } : null
-      }
-    );
+  async listPackageMaintainers({ namespace, host, name, page, status = 'active' }) {
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers`, {
+      query: page ? { page } : null
+    });
   }
 
   async invitePackageMaintainer({ namespace, host, name, bearer, to }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers/${e(
-        to
-      )}`,
-      {
-        method: 'POST',
-        body: {},
-        headers: {
-          bearer
-        }
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers/${e(to)}`, {
+      method: 'POST',
+      body: {},
+      headers: {
+        bearer
       }
-    );
+    });
   }
 
   async removePackageMaintainer({ namespace, host, name, bearer, to }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers/${e(
-        to
-      )}`,
-      {
-        method: 'DELETE',
-        body: {},
-        headers: {
-          bearer
-        }
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/maintainers/${e(to)}`, {
+      method: 'DELETE',
+      body: {},
+      headers: {
+        bearer
       }
-    );
+    });
   }
 
   async acceptPackageMaintainership({ maintainer, package: pkg, bearer }) {
@@ -181,13 +154,7 @@ module.exports = class Client {
     );
   }
 
-  async listNamespaceMaintainerships({
-    namespace,
-    host,
-    status = 'active',
-    page,
-    bearer
-  }) {
+  async listNamespaceMaintainerships({ namespace, host, status = 'active', page, bearer }) {
     return this.request(
       `
       /v1/namespaces/namespace/${e(namespace)}@${host}/maintainerships
@@ -211,57 +178,42 @@ module.exports = class Client {
   }
 
   async listNamespaceMembers({ page, status, namespace, host, bearer }) {
-    return this.request(
-      `/v1/namespaces/namespace/${e(namespace)}@${host}/members`,
-      {
-        headers: { bearer },
-        query: { page, status }
-      }
-    );
+    return this.request(`/v1/namespaces/namespace/${e(namespace)}@${host}/members`, {
+      headers: { bearer },
+      query: { page, status }
+    });
   }
 
   async inviteNamespaceMember({ namespace, host, invitee, bearer }) {
-    return this.request(
-      `/v1/namespaces/namespace/${e(namespace)}@${host}/members/${e(invitee)}`,
-      {
-        method: 'POST',
-        body: {},
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/namespaces/namespace/${e(namespace)}@${host}/members/${e(invitee)}`, {
+      method: 'POST',
+      body: {},
+      headers: { bearer }
+    });
   }
 
   async removeNamespaceMember({ namespace, host, invitee, bearer }) {
-    return this.request(
-      `/v1/namespaces/namespace/${e(namespace)}@${host}/members/${e(invitee)}`,
-      {
-        method: 'DELETE',
-        body: {},
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/namespaces/namespace/${e(namespace)}@${host}/members/${e(invitee)}`, {
+      method: 'DELETE',
+      body: {},
+      headers: { bearer }
+    });
   }
 
   async acceptNamespaceMembership({ namespace, host, invitee, bearer }) {
-    return this.request(
-      `/v1/users/user/${e(invitee)}/memberships/${e(namespace)}@${host}}`,
-      {
-        method: 'POST',
-        body: {},
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/users/user/${e(invitee)}/memberships/${e(namespace)}@${host}}`, {
+      method: 'POST',
+      body: {},
+      headers: { bearer }
+    });
   }
 
   async declineNamespaceMembership({ namespace, host, invitee, bearer }) {
-    return this.request(
-      `/v1/users/user/${e(invitee)}/memberships/${e(namespace)}@${host}}`,
-      {
-        method: 'DELETE',
-        body: {},
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/users/user/${e(invitee)}/memberships/${e(namespace)}@${host}}`, {
+      method: 'DELETE',
+      body: {},
+      headers: { bearer }
+    });
   }
 
   async listUserMemberships({ for: user, page, status = 'active', bearer }) {
@@ -278,92 +230,50 @@ module.exports = class Client {
   }
 
   async getPackage({ namespace, host, name }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}`
-    );
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}`);
   }
 
   async replacePackage({ namespace, host, name, require_tfa, bearer }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}`,
-      {
-        method: 'PUT',
-        body: require_tfa ? { require_tfa } : {},
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}`, {
+      method: 'PUT',
+      body: require_tfa ? { require_tfa } : {},
+      headers: { bearer }
+    });
   }
 
   async deletePackage({ namespace, host, name, bearer }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}`,
-      {
-        method: 'DELETE',
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}`, {
+      method: 'DELETE',
+      headers: { bearer }
+    });
   }
 
   async getPackageVersion({ namespace, host, name, version }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(
-        version
-      )}`
-    );
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(version)}`);
   }
 
-  async createPackageVersion({
-    namespace,
-    host,
-    name,
-    version,
-    request,
-    bearer
-  }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(
-        version
-      )}`,
-      {
-        method: 'PUT',
-        headers: { ...request.headers, bearer },
-        rawBody: request // pipe the request through raw: it's multipart!
-      }
-    );
+  async createPackageVersion({ namespace, host, name, version, request, bearer }) {
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(version)}`, {
+      method: 'PUT',
+      headers: { ...request.headers, bearer },
+      rawBody: request // pipe the request through raw: it's multipart!
+    });
   }
 
   async deletePackageVersion({ namespace, host, name, version, bearer }) {
-    return this.request(
-      `/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(
-        version
-      )}`,
-      {
-        method: 'DELETE',
-        headers: { bearer }
-      }
-    );
+    return this.request(`/v1/packages/package/${e(namespace)}@${host}/${e(name)}/versions/${e(version)}`, {
+      method: 'DELETE',
+      headers: { bearer }
+    });
   }
 
   async getObject({ algo, digest }) {
-    const response = await this.request(
-      `/v1/objects/object/${algo}/${digest}`,
-      { json: false }
-    );
+    const response = await this.request(`/v1/objects/object/${algo}/${digest}`, { json: false });
 
     return response.body;
   }
 
-  async request(
-    path,
-    {
-      method = 'GET',
-      query,
-      headers = {},
-      body = null,
-      rawBody = null,
-      json = true
-    } = {}
-  ) {
+  async request(path, { method = 'GET', query, headers = {}, body = null, rawBody = null, json = true } = {}) {
     const start = Date.now();
 
     const qs = query ? '?' + querystring.stringify(query) : '';
@@ -391,11 +301,7 @@ module.exports = class Client {
         trace = parsed.trace || null;
       } catch {}
 
-      this.logger.error(
-        `caught ${
-          response.status
-        } from ${method} ${path}: message=${message}, code=${code}`
-      );
+      this.logger.error(`caught ${response.status} from ${method} ${path}: message=${message}, code=${code}`);
       throw Object.assign(new Error(message), {
         status: response.status,
         headers: response.headers,
