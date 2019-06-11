@@ -111,7 +111,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/18172185?v=4",
       "profile": "https://aaronross.tech",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -177,6 +178,24 @@
       "profile": "https://github.com/samccone",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "moogacs",
+      "name": "Mohamed Badawi",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2805614?v=4",
+      "profile": "http://m-mooga.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "1stvamp",
+      "name": "Wes Mason",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/35831?v=4",
+      "profile": "http://1stvamp.org/",
+      "contributions": [
+        "code"
       ]
     }
   ],
