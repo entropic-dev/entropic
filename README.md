@@ -1,6 +1,6 @@
 # Entropic: a federated package registry for anything
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors) [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat-square)](./.github/CODE_OF_CONDUCT.md)
+[![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors) [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat-square)](./.github/CODE_OF_CONDUCT.md)
 
 A new package registry with a new CLI, designed to be easy to stand up inside your network. Entropic features an entirely new file-centric API and a content-addressable storage system that attempts to minimize the amount of data you must retrieve over a network. This file-centric approach also applies to the publication API. See the [API section of the manifesto](https://github.com/entropic-dev/entropic/tree/master/docs#apis) for more details about the API offered.
 
