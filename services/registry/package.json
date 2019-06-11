@@ -7,34 +7,20 @@
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
-    "@hapi/iron": "^5.1.0",
     "@hapi/joi": "~15.0.2",
     "are-we-dev": "^1.0.0",
     "bole": "~3.0.2",
     "boltzmann": "file:../common/boltzmann",
-    "cookie": "^0.3.1",
     "culture-ships": "~1.0.0",
     "dotenv": "~8.0.0",
-    "escape-html": "^1.0.3",
-    "graceful-fs": "^4.1.15",
-    "is-email-maybe": "^1.0.1",
-    "markdown": "^0.5.0",
     "micro": "~9.3.4",
-    "mkdirp": "~0.5.1",
-    "multiparty": "^4.2.1",
     "node-fetch": "~2.5.0",
-    "npm-user-validate": "^1.0.0",
-    "ormnomnom": "^5.2.2",
-    "pacote": "~9.5.0",
-    "pg": "~7.4.0",
-    "semver": "^6.0.0",
-    "ssri": "^6.0.1",
-    "uuid": "~3.3.2",
-    "validate-npm-package-name": "^3.0.0"
+    "uuid": "~3.3.2"
   },
   "devDependencies": {
     "babel-eslint": "~10.0.1",
     "bistre": "~1.0.1",
+    "depcheck": "^0.8.0",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
@@ -64,6 +50,7 @@
     "lint-fix": "prettier --write '**/*.js'",
     "posttest": "npm run lint",
     "start": "./server.js",
-    "test": "mocha -R spec"
+    "test": "mocha -R spec",
+    "audit-deps": "depcheck ."
   }
 }
