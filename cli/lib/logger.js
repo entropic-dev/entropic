@@ -13,4 +13,5 @@ module.exports = class Logger {
       console.log(stacktrace);
     }
   }
+  static http(msg) {}
 };
