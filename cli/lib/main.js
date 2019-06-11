@@ -20,7 +20,11 @@ async function main(argv) {
 
     let cmd;
     try {
-      cmd = require(`./commands/${_.shift()}`);
+      if (args.version || args.v) {
+        cmd = require('./commands/--version');
+      } else {
+        cmd = require(`./commands/${_.shift()}`);
+      }
     } catch (e) {
       cmd = require('./commands/help');
     }
