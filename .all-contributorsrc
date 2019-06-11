@@ -206,6 +206,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "enykeev",
+      "name": "Kirill Enykeev",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1357357?v=4",
+      "profile": "http://mechanica.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
