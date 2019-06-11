@@ -29,7 +29,7 @@ class Context {
     if (this._parsedUrl) {
       return this._parsedUrl;
     }
-    this._parsedUrl = new URL(this.request.url);
+    this._parsedUrl = new URL(this.request.url, 'http://entropic.dev');
     return this._parsedUrl;
   }
 }

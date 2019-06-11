@@ -20,8 +20,8 @@ async function memberships(context, { username }) {
     .listUserMemberships({
       for: username,
       bearer: context.user.name,
-      page: context.url.query.page,
-      status: context.url.query.status
+      page: context.url.searchParams.get('page'),
+      status: context.url.searchParams.get('status')
     })
     .then(xs => [null, xs], xs => [xs, null]);
 

@@ -32,7 +32,7 @@ async function tokens(context, { username }) {
   }
 
   const PER_PAGE = 100;
-  const offset = (Number(context.url.query.page) || 0) * PER_PAGE;
+  const offset = (Number(context.url.searchParams.get('page')) || 0) * PER_PAGE;
 
   const tokens = await Token.objects
     .filter({
