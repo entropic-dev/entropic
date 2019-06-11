@@ -16,15 +16,14 @@ async function main(argv) {
   }
 
   try {
-    const { _, ...args } = minimist(argv);
-
     let cmd;
     try {
-      cmd = require(`./commands/${_.shift()}`);
+      cmd = require(`./commands/${argv[0]}`);
     } catch (e) {
       cmd = require('./commands/help');
     }
 
+    const { _, ...args } = minimist(argv.slice(1));
     const config = await load();
     const env = {};
     for (const key in process.env) {
