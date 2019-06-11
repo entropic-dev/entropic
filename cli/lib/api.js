@@ -11,6 +11,10 @@ class Api {
     };
   }
 
+  ping() {
+    return fetch(`${this.baseUrl}/ping`);
+  }
+
   whoAmI(token) {
     return fetch(`${this.baseUrl}/v1/auth/whoami`, {
       headers: this.headers(token)

@@ -4,8 +4,18 @@ module.exports = class FakeApi {
     this.desiredStatus = status;
   }
 
+  async ping() {
+    return new Promise((resolve, _reject) => {
+      resolve({
+        status: this.desiredStatus,
+        message: 'OK',
+        text: () => new Promise((jsonRes, _jsonRej) => jsonRes(this.desiredResponse))
+      });
+    });
+  }
+
   async whoAmI() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       resolve({
         status: this.desiredStatus,
         message: 'OK',

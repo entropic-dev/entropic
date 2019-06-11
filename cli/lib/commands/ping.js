@@ -3,29 +3,35 @@
 module.exports = ping;
 
 const figgy = require('figgy-pudding');
-const fetch = require('../fetch');
 
 const pingOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
   argv: true,
-  log: { default: require('npmlog') }
+  log: true,
+  api: true
 });
+
+function getElapsedTimeInMs(start) {
+  return (Date.now() - start)/1000;
+}
 
 // usage: ds ping
 
 async function ping(opts) {
   opts = pingOpts(opts);
 
-  console.log(`PING: ${opts.registry}`);
+  opts.log.log(`PING: ${opts.registry}`)
 
   const start = Date.now();
-  const response = await fetch(`${opts.registry}/ping`);
 
+  let response = null;
   let body = null;
+
   try {
+    response = await opts.api.ping();
     body = await response.text();
   } catch (err) {
-    opts.log.error(`Caught error requesting "${opts.registry}/ping"`);
+    opts.log.error(`Caught error requesting "${opts.registry}/ping"`, err);
     return 1;
   }
 
@@ -34,8 +40,6 @@ async function ping(opts) {
     return 1;
   }
 
-  const time = Date.now() - start;
-
-  console.log(`PONG: (${time / 1000}ms) ${body}`);
+  opts.log.log(`PONG: (${getElapsedTimeInMs(start)}) ${body}`);
   return 0;
 }
