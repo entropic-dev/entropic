@@ -10,3 +10,7 @@ allowed-list
 services/data/entropic-cache
 .opt-in
 .opt-out
+
+# IDEs
+.idea
+.vscode
