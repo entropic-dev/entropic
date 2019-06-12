@@ -11,7 +11,7 @@ const { load } = require('./config');
 const Api = require('./api');
 const log = require('./logger');
 
-async function unpack(argv, { log = log, load = load }) {
+async function unpack(argv, { log = log, load = load } = {}) {
   let [commandName = 'help'] = argv;
   if (/[/\\]/.test(commandName)) {
     log.log(`Ignoring malformed command name: ${JSON.stringify(commandName)}`);
@@ -58,7 +58,7 @@ async function unpack(argv, { log = log, load = load }) {
 
 async function main(argv) {
   try {
-    const { cmd, bundle } = await unpack(argv, log);
+    const { cmd, bundle } = await unpack(argv);
     await cmd(bundle);
     return 0;
   } catch (err) {
