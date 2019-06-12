@@ -21,3 +21,8 @@ Then go to <http://localhost:3000>.
 
 To run linting and formatting pre-commit, add a file in the project root called
 `.opt-in` with the content `pre-commit`.
+
+## Windows
+
+If you're on Windows, your best bet is to use
+[WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
