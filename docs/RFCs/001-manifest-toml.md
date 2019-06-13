@@ -86,7 +86,7 @@ The manifest file **MAY** contain zero or more subsections as defined below.
 
 #### Dependency Lists
 
-Dependencies lists contain all the resources that are required for this package, in various scenarios. Dependencies consist of a `key/value` pair where the `key` is a string that provides a unique name for the package in this project. This `key` can be either the qualified package name from the package's manifest, or an <a href="#alias">alias</a> for the package.
+Dependencies lists contain all the resources that are required for this package, in various scenarios. Dependencies consist of a `key/value` pair where the `key` is a string that provides a unique name for the package in this project. This `key` can be either the qualified package name from the package's manifest, a short-hand legacy reference (a bare package name e.g. `loadash` will expand out to `legacy@<current registry>/lodash`) or an <a href="#alias">alias</a> for the package.
 
 When the `key` value is the qualified package name (e.g. `toddself@static-pkg.dev/package2toml`), then the `value` **MAY** be either a semver range for the package or the <a href="#alias">alias</a> definition.
 
@@ -105,7 +105,7 @@ Shorthand: `"name@version"`
 
 The object **MAY** also contain:
 
-- `"patch"` - a `key`/`value` pair that allows specific overrides in the dependencies of the dependency. e.g. if this package depends on `lodash`, you could specifiy that you want it to use `underscore` instead: `"patch": {"legacy@npmjs.com/lodash": "toddself@static-pkg.dev/underscore"}`
+- `"patch"` - a `key`/`value` pair that allows specific overrides in the dependencies of the dependency. e.g. if this package depends on `lodash`, you could specifiy that you want it to use `underscore` instead: `"patch": {"legacy@registry.entropic.dev/lodash": "toddself@static-pkg.dev/underscore"}`
 
 This section could be used to also specify platform exclusion/inclusion for some dependencies. Some thought might be needed to figure out how to make this workable across the wide range of computer platforms that implementations might be written for.
 
@@ -130,7 +130,7 @@ To alias a package and specify a patch:
 "name" = "toddself@static-pkg.dev/package2toml"
 "version" = "^1.0.0"
 [dependencies.package2toml.patch]
-"legacy@npmjs.com/lodash" = "toddself@static-pkg.dev/underscore@1.0.5"
+"legacy@registry.entropic.dev/lodash" = "toddself@static-pkg.dev/underscore@1.0.5"
 ```
 
 #### Dependency Types
@@ -139,7 +139,7 @@ You **MAY** declare dependency types for:
 
 - `[dependencies]` - these are the packages that are required to run this package. They will be installed automatically when this package is required by another package, or when you specifically install the dependencies for this package manually.
 - `[devDependencies]` - these are packages that are required to develop this package. They will be installed only when you install the dependencies for this package manually. If a package depends on the current package, they will **NOT** be installed as part of that dependency graph.
-- `[peerDependencies]` - these packages are rqeuired to run this package, however, they will not be installed and should be additionally depended on or installed by either the parent package or along side this package for development.
+- `[peerDependencies]` - these packages are required to run this package, however, they will not be installed and should be additionally depended on or installed by either the parent package or along side this package for development.
 - `[optionalDependencies]` - these packages are not required to run this software, but may provide additional options or features in this package. They must be required or installed by the parent package or along side this package for development.
 
 ### Example [TK].toml
