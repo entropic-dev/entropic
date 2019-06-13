@@ -1,0 +1,27 @@
+---
+name: ds
+summary: "ds: entropy delta; the entropic client"
+description: |
+  A client for the federated entropy package registry,
+base: core18
+grade: devel
+adopt-info: ds
+
+parts:
+  ds:
+    override-pull: |
+      snapcraftctl pull
+      DS_SNAP_VERSION=${DS_SNAP_VERSION:-master}
+      snapcraftctl set-version "${DS_SNAP_VERSION}"
+    source: .
+    plugin: nodejs
+    nodejs-version: 12.4.0
+    nodejs-package-manager: npm
+
+apps:
+  ds:
+    command: ds
+    plugs:
+      - home
+      - network-bind
+      - network
