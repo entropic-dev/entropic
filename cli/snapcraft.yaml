@@ -1,5 +1,5 @@
 ---
-name: ds
+name: entropic-ds
 summary: "ds: entropy delta; the entropic client"
 description: |
   A client for the federated entropy package registry,
