@@ -44,7 +44,7 @@ async function main(argv) {
       ...registryConfig,
       ...args,
       argv: _,
-      api: new Api(registry),
+      api: new Api(registry, registryConfig.token),
       log
     });
 
