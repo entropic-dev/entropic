@@ -21,7 +21,7 @@ If you're using Arch Linux, install the [`nodejs-entropic`](https://aur.archlinu
 
 ### Snap packages (multiple Linux distributions)
 
-If you're using a Linxu distro that support `snapd`, you can install using `snap`:
+If you're using a Linxu distro that supports `snapd`, you can install using `snap`:
 
 ```sh
 # You might need to `sudo snap` if you aren't logged in with `snap login`
