@@ -10,6 +10,7 @@ allowed-list
 services/data/entropic-cache
 .opt-in
 .opt-out
+*.snap
 
 # IDEs
 .idea
