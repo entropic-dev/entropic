@@ -8,8 +8,6 @@ function extractNamespace(cmdLineArgument) {
       ns += '@' + opts.registry.replace(/^https?:\/\//, '');
     }
 
-    console.log(ns)
-  
     return ns;
   }
 

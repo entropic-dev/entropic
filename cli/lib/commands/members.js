@@ -1,6 +1,5 @@
 'use strict';
 
-const fetch = require('node-fetch');
 const figgy = require('figgy-pudding');
 const parsePackageSpec = require('../canonicalize-spec');
 
@@ -12,10 +11,10 @@ module.exports = members;
 // usage: ds members name@host[/pkg]
 
 const membersOpts = figgy({
+  api: true,
   argv: true,
+  log: true,
   registry: { default: 'https://registry.entropic.dev' },
-  log: { default: require('npmlog') },
-  api: true
 });
 
 async function members(opts) {

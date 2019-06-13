@@ -6,140 +6,70 @@ const { createReadStream, promises: fs } = require('fs');
 const packlist = require('npm-packlist');
 const figgy = require('figgy-pudding');
 const FormData = require('form-data');
-const fetch = require('../fetch');
 const semver = require('semver');
 const path = require('path');
-const zlib = require('zlib');
 
 const loadPackageToml = require('../load-package-toml');
 const parseSpec = require('../canonicalize-spec');
 
 const publishOpts = figgy({
+  api: true,
+  log: true,
   registries: true,
   registry: true,
-  token: true,
   require2fa: true,
   requiretfa: true,
-  tfa: true,
-  log: { default: require('npmlog') }
+  tfa: true
 });
 
-async function publish(opts) {
-  opts = publishOpts(opts);
-  const { location, content } = await loadPackageToml(process.cwd());
-  const spec = parseSpec(content.name, opts.registry);
+function validate(content) {
+  const { name, version } = content;
+  const bits = name.split('/');
 
-  const host =
-    `https://${spec.host}` in opts.registries
-      ? `https://${spec.host}`
-      : `http://${spec.host}` in opts.registries
-      ? `http://${spec.host}`
-      : null;
-
-  if (!host) {
-    opts.log.error(
-      `You need to log in to "https://${
-        spec.host
-      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
-    );
-    return 1;
-  }
-
-  const { token } = opts.registries[host];
-
-  if (!token) {
-    opts.log.error(
-      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
-    );
-    return 1;
-  }
-
-  // refuse to publish if:
-  //    there's no token
-  //    Package.toml can't be found
-  //    Package.toml name isnt in the form "foo/bar"
-  //    Package.toml contains "private": true
-  //    Package.toml contains no semver "version"
-  // try to determine whether the package exists or not
-  //    create it if it doesn't
-  // then create a packlist
-  // then create a multipart request and send it
+  // Refuse to publish if:
+  //    - there's no token
+  //    - Package.toml can't be found
+  //    - Package.toml name isnt in the form "foo/bar"
+  //    - Package.toml contains "private": true
+  //    - Package.toml contains no semver "version"
   if (content.private) {
-    opts.log.error(
-      'This Package.toml is marked private. Cowardly refusing to publish.'
-    );
-    return 1;
+    return {
+      valid: false,
+      reason: 'This Package.toml is marked private. Cowardly refusing to publish.'
+    }
   }
 
-  const bits = content.name.split('/');
   if (bits.length !== 2) {
-    opts.log.error('Packages published to entropic MUST be namespaced.');
-    return 1;
+    console.log(bits)
+    return {
+      valid: false,
+      reason: 'Packages published to entropic MUST be namespaced.'
+    }
   }
 
   if (bits[0].split('@').length !== 2) {
-    opts.log.error(
-      'Expected the namespace portion of the package name to contain a hostname (e.g.: "carl@sagan.galaxy/billions")'
-    );
-    return 1;
-  }
-
-  if (content.version !== semver.clean(content.version || '')) {
-    opts.log.error('Expected valid semver "version" field at top level.');
-    return 1;
-  }
-
-  const pkgReq = await fetch(`${host}/v1/packages/package/${spec.canonical}`);
-
-  const mustCreate = pkgReq.status === 404;
-
-  if (mustCreate) {
-    const request = await fetch(
-      `${host}/v1/packages/package/${spec.canonical}`,
-      {
-        body:
-          opts.require2fa || opts.requiretfa || opts.tfa
-            ? '{"require_tfa": true}'
-            : '{}',
-        method: 'PUT',
-        headers: {
-          authorization: `Bearer ${token}`,
-          'content-type': 'application/json'
-        }
-      }
-    );
-
-    const body = await request.json();
-    if (request.status > 399) {
-      opts.log.error('Failed to create package:');
-      opts.log.error(body.message || body);
-      return 1;
-    }
-  } else if (pkgReq.status < 300) {
-    const result = await pkgReq.json();
-    if (result.versions[content.version]) {
-      opts.log.warn('It looks like this version has already been published.');
-      opts.log.warn('Trying anyway, because hope springs eternal.');
+    return {
+      valid: false,
+      reason: 'Expected the namespace portion of the package name to contain a hostname (e.g.: "carl@sagan.galaxy/billions")'
     }
   }
 
-  const files = await packlist({ path: location });
+  if (version !== semver.clean(version || '')) {
+    return {
+      valid: false,
+      reason: 'Expected valid semver "version" field at top level.'
+    }
+  }
+
+  return {valid: true, reason: undefined}
+}
+
+function createFormData(content, files, location) {
   const form = new FormData();
-
-  form.append('dependencies', JSON.stringify(content.dependencies || {}));
-  form.append('devDependencies', JSON.stringify(content.devDependencies || {}));
-  form.append(
-    'optionalDependencies',
-    JSON.stringify(content.optionalDependencies || {})
-  );
-  form.append(
-    'peerDependencies',
-    JSON.stringify(content.peerDependencies || {})
-  );
-  form.append(
-    'bundledDependencies',
-    JSON.stringify(content.bundledDependencies || {})
-  );
+  
+  ['dependencies', 'devDependencies', 'peerDependencies', 'bundledDependencies'].forEach(dep =>{
+    form.append(dep, JSON.stringify(content[dep] || {}));
+  });
 
   const keyed = xs => {
     const ext = path.extname(xs);
@@ -174,27 +104,90 @@ async function publish(opts) {
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
-  const request = await fetch(
-    `${host}/v1/packages/package/${
-      spec.canonical
-    }/versions/${encodeURIComponent(content.version)}`,
-    {
-      method: 'PUT',
-      body: form.pipe(zlib.createDeflate()),
-      headers: {
-        'transfer-encoding': 'chunked',
-        'content-encoding': 'deflate',
-        authorization: `Bearer ${token}`,
-        ...form.getHeaders()
-      }
-    }
-  );
+  return form;
+}
 
-  const body = await request.json();
-  if (!request.ok) {
-    opts.log.error(body.message || body);
+async function publish(opts) {
+  opts = publishOpts(opts);
+  const { location, content } = await loadPackageToml(process.cwd());
+  const spec = parseSpec(content.name, opts.registry);
+
+  const host =
+    `https://${spec.host}` in opts.registries
+      ? `https://${spec.host}`
+      : `http://${spec.host}` in opts.registries
+      ? `http://${spec.host}`
+      : null;
+
+  if (!host) {
+    opts.log.error(
+      `You need to log in to "https://${
+        spec.host
+      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
+    );
     return 1;
   }
 
-  console.log(`+ ${spec.canonical} @ ${content.version}`);
+  const { token } = opts.registries[host];
+
+  // User is not logged in
+  if (!token) {
+    opts.log.error(
+      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
+    );
+    return 1;
+  }
+
+  opts.log.log(`- Login verified for ${host}`)
+
+  // pre-publish validation
+  const validationResult = validate(content);
+  if (!validationResult.valid) {
+    opts.log.error(validationResult.reason);
+    return 1;
+  }
+
+  // Try to determine whether the package exists or not
+  //    - create it if it doesn't
+  // Then create a packlist
+  // Then create a multipart request and send it
+  const pkgExistence = await opts.api.pkgCheck(spec.canonical);
+  const mustCreate = pkgExistence.status === 404;
+  const pkgAlreadyExists = pkgExistence.status < 300
+
+  if (mustCreate) {
+    opts.log.log("- Creating a new package ...")
+  
+    const tfa = opts.require2fa || opts.requiretfa || opts.tfa;
+    const request = await opts.api.createPkg(spec.canonical, tfa)
+    const body = await request.json();
+
+    if (request.status > 399) {
+      opts.log.error('Failed to create package:');
+      opts.log.error(body.message || body);
+      return 1;
+    }
+  } else if (pkgAlreadyExists) {
+    const result = await pkgExistence.json();
+    if (result.versions[content.version]) {
+      opts.log.warn('- A previous version has already been published.');
+      opts.log.warn('- Attempting, because hope springs eternal.');
+    }
+  }
+
+  const files = await packlist({ path: location });
+  const form = createFormData(content, files, location);
+
+  opts.log.log(`- Creating version ${content.version}`)
+  const encodedPkgVersion = encodeURIComponent(content.version);
+  const request = await opts.api.updatePkg(form,spec.canonical,encodedPkgVersion)
+  
+  const body = await request.json();
+  if (!request.ok) {
+    opts.log.error(`x ${body.message || body}`);
+    return 1;
+  }
+
+  opts.log.success(`+ ${spec.canonical} @ ${content.version}`);
+  return 0;
 }
