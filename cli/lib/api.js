@@ -24,6 +24,7 @@ class Api {
   //
   
   /**
+   * Lists namespace members
    * 
    * @param {*} ns 
    */
@@ -32,14 +33,16 @@ class Api {
   }
 
   /**
+   * Returns package maintainers
    * 
-   * @param {*} ns 
+   * @param {*} canonicalPkgName 
    */
   packageMaintainers(canonicalPkgName) {
     return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}/maintainers`);  
   }
 
   /**
+   * Checks if a package exists
    * 
    * @param {*} canonicalPkgName 
    */
@@ -47,6 +50,12 @@ class Api {
     return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}`);
   }
 
+  /**
+   * Creates a package without any files
+   * 
+   * @param {*} canonicalPkgName 
+   * @param {*} tfa 
+   */
   createPkg(canonicalPkgName, tfa) {
     return this._request(
       `${this.baseUrlV1}/packages/package/${canonicalPkgName}`,
@@ -61,6 +70,13 @@ class Api {
     );
   }
 
+  /**
+   * Updates existing package
+   * 
+   * @param {*} form 
+   * @param {*} canonicalPkgName 
+   * @param {*} version 
+   */
   updatePkg(form, canonicalPkgName, version) {
     const uri = `${this.baseUrlV1}/packages/package/${
       canonicalPkgName
@@ -86,8 +102,7 @@ class Api {
 
 
   /**
-   * 
-   * @param {*} ns 
+   * Returns current logged in user
    */
   whoAmI() {
     return this._request(`${this.baseUrlV1}/auth/whoami`, {
@@ -97,8 +112,7 @@ class Api {
 
 
   /**
-   * 
-   * @param {*} ns 
+   * entropic ping pong
    */
   ping() {
     return this._request(`${this.baseUrl}/ping`);
