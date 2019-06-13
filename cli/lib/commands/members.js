@@ -1,8 +1,11 @@
 'use strict';
 
-const fetch = require('../fetch');
+const fetch = require('node-fetch');
 const figgy = require('figgy-pudding');
 const parsePackageSpec = require('../canonicalize-spec');
+
+const { getNamespaceMembers } = require("../core");
+const Validate = require("../validate")
 
 module.exports = members;
 
@@ -10,36 +13,23 @@ module.exports = members;
 
 const membersOpts = figgy({
   argv: true,
-  registry: true,
-  log: { default: require('npmlog') }
+  registry: { default: 'https://registry.entropic.dev' },
+  log: { default: require('npmlog') },
+  api: true
 });
 
 async function members(opts) {
   opts = membersOpts(opts);
 
-  if (opts.argv.length !== 1) {
-    console.error('Usage: ds members <namespace|package>');
-    return 1;
-  }
+  Validate.members(opts.argv)
 
   if (opts.argv[0].includes('/')) {
     return listPackageMaintainers(opts);
   }
 
-  // list namespace members
-  let ns = opts.argv[0];
-  if (!ns.includes('@')) {
-    ns += '@' + opts.registry.replace(/^https?:\/\//, '');
-  }
-  const uri = `${opts.registry}/v1/namespaces/namespace/${ns}/members`;
-  const response = await fetch(uri);
-  const body = await response.json();
-  if (!Array.isArray(body.objects) || body.objects.length === 0) {
-    console.log(`${ns} has no members.`);
-    return 0;
-  }
+  const { body, ns } = await getNamespaceMembers(opts, opts.argv[0])
 
-  console.log(
+  opts.log.log(
     `${ns} has ` +
       (body.objects.length == 1
         ? 'one member'
@@ -48,7 +38,7 @@ async function members(opts) {
   );
 
   body.objects.forEach(n => {
-    console.log(`    ${n}`);
+    opts.log.success(`  - ${n}`);
   });
 }
 
@@ -62,15 +52,15 @@ async function listPackageMaintainers(opts) {
     parsed.canonical
   }/maintainers`;
 
-  const response = await fetch(uri);
+  const response = await opts.api.packageMaintainers(parsed.canonical)
   const body = await response.json();
 
   if (!Array.isArray(body.objects) || body.objects.length === 0) {
-    console.log(`${parsed.canonical} has no maintainers.`);
+    opts.log.log(`${parsed.canonical} has no maintainers.`);
     return 0;
   }
 
-  console.log(
+  opts.log.log(
     `${parsed.canonical} has ` +
       (body.objects.length == 1
         ? 'one maintainer'
@@ -79,6 +69,6 @@ async function listPackageMaintainers(opts) {
   );
 
   body.objects.forEach(n => {
-    console.log(`    ${n}`);
+    opts.log.success(`  - ${n}`);
   });
 }
