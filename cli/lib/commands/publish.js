@@ -36,38 +36,39 @@ function validate(content) {
     return {
       valid: false,
       reason: 'This Package.toml is marked private. Cowardly refusing to publish.'
-    }
+    };
   }
 
   if (bits.length !== 2) {
-    console.log(bits)
+    console.log(bits);
     return {
       valid: false,
       reason: 'Packages published to entropic MUST be namespaced.'
-    }
+    };
   }
 
   if (bits[0].split('@').length !== 2) {
     return {
       valid: false,
-      reason: 'Expected the namespace portion of the package name to contain a hostname (e.g.: "carl@sagan.galaxy/billions")'
-    }
+      reason:
+        'Expected the namespace portion of the package name to contain a hostname (e.g.: "carl@sagan.galaxy/billions")'
+    };
   }
 
   if (version !== semver.clean(version || '')) {
     return {
       valid: false,
       reason: 'Expected valid semver "version" field at top level.'
-    }
+    };
   }
 
-  return {valid: true, reason: undefined}
+  return { valid: true, reason: undefined };
 }
 
 function createFormData(content, files, location) {
   const form = new FormData();
-  
-  ['dependencies', 'devDependencies', 'peerDependencies', 'bundledDependencies'].forEach(dep =>{
+
+  ['dependencies', 'devDependencies', 'peerDependencies', 'bundledDependencies'].forEach(dep => {
     form.append(dep, JSON.stringify(content[dep] || {}));
   });
 
@@ -88,19 +89,13 @@ function createFormData(content, files, location) {
   });
 
   for (const file of files) {
-    const encoded = encodeURIComponent(
-      'package/' + file.split(path.sep).join('/')
-    );
+    const encoded = encodeURIComponent('package/' + file.split(path.sep).join('/'));
 
     // use append's ability to append a lazily evaluated function so we don't
     // try to open, say, 10K fds at once.
-    form.append(
-      'entry[]',
-      next => next(createReadStream(path.join(location, file))),
-      {
-        filename: encoded
-      }
-    );
+    form.append('entry[]', next => next(createReadStream(path.join(location, file))), {
+      filename: encoded
+    });
   }
   form.append('x-clacks-overhead', 'GNU/Terry Pratchett'); // this is load bearing, obviously
 
@@ -121,9 +116,9 @@ async function publish(opts) {
 
   if (!host) {
     opts.log.error(
-      `You need to log in to "https://${
+      `You need to log in to "https://${spec.host}" publish packages. Run \`ds login --registry "https://${
         spec.host
-      }" publish packages. Run \`ds login --registry "https://${spec.host}"\`.`
+      }"\`.`
     );
     return 1;
   }
@@ -132,13 +127,11 @@ async function publish(opts) {
 
   // User is not logged in
   if (!token) {
-    opts.log.error(
-      `You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`
-    );
+    opts.log.error(`You need to log in to "${host}" publish packages. Run \`ds login --registry "${host}"\`.`);
     return 1;
   }
 
-  opts.log.log(`- Login verified for ${host}`)
+  opts.log.log(`- Login verified for ${host}`);
 
   // pre-publish validation
   const validationResult = validate(content);
@@ -153,13 +146,13 @@ async function publish(opts) {
   // Then create a multipart request and send it
   const pkgExistence = await opts.api.pkgCheck(spec.canonical);
   const mustCreate = pkgExistence.status === 404;
-  const pkgAlreadyExists = pkgExistence.status < 300
+  const pkgAlreadyExists = pkgExistence.status < 300;
 
   if (mustCreate) {
-    opts.log.log("- Creating a new package ...")
-  
+    opts.log.log('- Creating a new package ...');
+
     const tfa = opts.require2fa || opts.requiretfa || opts.tfa;
-    const request = await opts.api.createPkg(spec.canonical, tfa)
+    const request = await opts.api.createPkg(spec.canonical, tfa);
     const body = await request.json();
 
     if (request.status > 399) {
@@ -178,10 +171,10 @@ async function publish(opts) {
   const files = await packlist({ path: location });
   const form = createFormData(content, files, location);
 
-  opts.log.log(`- Creating version ${content.version}`)
+  opts.log.log(`- Creating version ${content.version}`);
   const encodedPkgVersion = encodeURIComponent(content.version);
-  const request = await opts.api.updatePkg(form,spec.canonical,encodedPkgVersion)
-  
+  const request = await opts.api.updatePkg(form, spec.canonical, encodedPkgVersion);
+
   const body = await request.json();
   if (!request.ok) {
     opts.log.error(`x ${body.message || body}`);

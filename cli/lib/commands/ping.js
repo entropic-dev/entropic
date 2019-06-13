@@ -12,7 +12,7 @@ const pingOpts = figgy({
 });
 
 function getElapsedTimeInMs(start) {
-  return (Date.now() - start)/1000;
+  return (Date.now() - start) / 1000;
 }
 
 // usage: ds ping
@@ -20,7 +20,7 @@ function getElapsedTimeInMs(start) {
 async function ping(opts) {
   opts = pingOpts(opts);
 
-  opts.log.log(`PING: ${opts.registry}`)
+  opts.log.log(`PING: ${opts.registry}`);
 
   const start = Date.now();
 

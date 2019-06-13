@@ -1,12 +1,11 @@
 const fetch = require('node-fetch');
 const zlib = require('zlib');
 
-
 class Api {
   constructor(baseUrl, token) {
     this.token = token;
     this.baseUrl = baseUrl;
-    this.baseUrlV1 = `${baseUrl}/v1`
+    this.baseUrlV1 = `${baseUrl}/v1`;
   }
 
   headers() {
@@ -14,37 +13,37 @@ class Api {
       authorization: `Bearer ${this.token}`
     };
   }
-  
+
   _request(uri, opts) {
-    return fetch(uri, opts)
+    return fetch(uri, opts);
   }
 
   //
-  // V1 API Endpoints 
+  // V1 API Endpoints
   //
-  
+
   /**
    * Lists namespace members
-   * 
-   * @param {*} ns 
+   *
+   * @param {*} ns
    */
   members(ns) {
-    return this._request(`${this.baseUrlV1}/namespaces/namespace/${ns}/members`)
+    return this._request(`${this.baseUrlV1}/namespaces/namespace/${ns}/members`);
   }
 
   /**
    * Returns package maintainers
-   * 
-   * @param {*} canonicalPkgName 
+   *
+   * @param {*} canonicalPkgName
    */
   packageMaintainers(canonicalPkgName) {
-    return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}/maintainers`);  
+    return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}/maintainers`);
   }
 
   /**
    * Checks if a package exists
-   * 
-   * @param {*} canonicalPkgName 
+   *
+   * @param {*} canonicalPkgName
    */
   pkgCheck(canonicalPkgName) {
     return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}`);
@@ -52,54 +51,46 @@ class Api {
 
   /**
    * Creates a package without any files
-   * 
-   * @param {*} canonicalPkgName 
-   * @param {*} tfa 
+   *
+   * @param {*} canonicalPkgName
+   * @param {*} tfa
    */
   createPkg(canonicalPkgName, tfa) {
-    return this._request(
-      `${this.baseUrlV1}/packages/package/${canonicalPkgName}`,
-      {
-        body: tfa ? '{"require_tfa": true}': '{}',
-        method: 'PUT',
-        headers: {
-          authorization: `Bearer ${this.token}`,
-          'content-type': 'application/json'
-        }
+    return this._request(`${this.baseUrlV1}/packages/package/${canonicalPkgName}`, {
+      body: tfa ? '{"require_tfa": true}' : '{}',
+      method: 'PUT',
+      headers: {
+        authorization: `Bearer ${this.token}`,
+        'content-type': 'application/json'
       }
-    );
+    });
   }
 
   /**
    * Updates existing package
-   * 
-   * @param {*} form 
-   * @param {*} canonicalPkgName 
-   * @param {*} version 
+   *
+   * @param {*} form
+   * @param {*} canonicalPkgName
+   * @param {*} version
    */
   updatePkg(form, canonicalPkgName, version) {
-    const uri = `${this.baseUrlV1}/packages/package/${
-      canonicalPkgName
-    }/versions/${version}`;
+    const uri = `${this.baseUrlV1}/packages/package/${canonicalPkgName}/versions/${version}`;
 
-    return this._request(uri,
-      {
-        method: 'PUT',
-        body: form.pipe(zlib.createDeflate()),
-        headers: {
-          'transfer-encoding': 'chunked',
-          'content-encoding': 'deflate',
-          authorization: `Bearer ${this.token}`,
-          ...form.getHeaders()
-        }
+    return this._request(uri, {
+      method: 'PUT',
+      body: form.pipe(zlib.createDeflate()),
+      headers: {
+        'transfer-encoding': 'chunked',
+        'content-encoding': 'deflate',
+        authorization: `Bearer ${this.token}`,
+        ...form.getHeaders()
       }
-    );
+    });
   }
 
-  // 
+  //
   // NON-VERSION API ENDPOINTS
   //
-
 
   /**
    * Returns current logged in user
@@ -110,13 +101,12 @@ class Api {
     });
   }
 
-
   /**
    * entropic ping pong
    */
   ping() {
     return this._request(`${this.baseUrl}/ping`);
-  }  
+  }
 }
 
 module.exports = Api;
