@@ -64,7 +64,7 @@
   },
   "scripts": {
     "coverage": "NODE_ENV=test PGUSER=postgres PGDATABASE=entropic_test nyc mocha -R spec",
-    "createdb": "createdbjs -h $PGHOST -U postgres entropic_${NODE_ENV:-dev} || true",
+    "createdb": "createdbjs -h ${PGHOST:-localhost} -U postgres entropic_${NODE_ENV:-dev} || true",
     "dev": "NODE_ENV=dev PGUSER=postgres PGDATABASE=entropic_${NODE_ENV:-dev} ./server.js",
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
