@@ -23,4 +23,4 @@ If you're using Arch Linux, install the [`nodejs-entropic`](https://aur.archlinu
 ### Windows
 
 If you have Git installed you can download [installation script](https://www.entropic.dev/install.sh) and execute it with double click. 
-There's no standalone MSI installer though at the moment.
+There's no standalone MSI installer at the moment.
