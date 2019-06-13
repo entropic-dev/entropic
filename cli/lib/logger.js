@@ -1,9 +1,6 @@
 const chalk = require('chalk');
 
 module.exports = class Logger {
-  static log(msg) {
-    console.log(chalk.default.yellow(msg));
-  }
   static error(msg, stacktrace = undefined) {
     console.log(chalk.default.red(msg));
 
@@ -13,4 +10,17 @@ module.exports = class Logger {
       console.log(stacktrace);
     }
   }
+  
+  static log(msg) {
+    console.log(chalk.default.yellow(msg));
+  }
+
+  static success(msg) {
+    console.log(chalk.default.green(msg));
+  }
+  
+  static warn(msg) {
+    console.log(chalk.default.yellow(msg));
+  }
+
 };
