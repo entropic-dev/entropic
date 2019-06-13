@@ -3,12 +3,11 @@
 const figgy = require('figgy-pudding');
 const parsePackageSpec = require('../canonicalize-spec');
 
-const { getNamespaceMembers } = require('../core');
+const namespaceMembers = require('../core/namespaceMembers');
+const listPackageMaintainers = require('../core/listPackageMaintainers');
 const Validate = require('../validate');
 
 module.exports = members;
-
-// usage: ds members name@host[/pkg]
 
 const membersOpts = figgy({
   api: true,
@@ -17,44 +16,45 @@ const membersOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' }
 });
 
+const getQuantity = (iter, noun) => {
+  const len = iter.length;
+  return len === 0 ? `no ${noun}s` : (len === 1 ? `1 ${noun}:` : `${len} ${noun}s`)
+}
+
+/**
+ * usage: ds members name@host[/pkg]
+ * 
+ * @param {*} opts 
+ */
 async function members(opts) {
   opts = membersOpts(opts);
 
-  Validate.members(opts.argv);
+  const validation = Validate.members(opts.argv);
+  if(!validation.valid) {
+    opts.log.error("Incorrect usage of ds members")
+    opts.log.log(`-  ${validation.usage}`);
+    return 1;
+  }
+
+  let who = undefined;
+  let noun = undefined;
+  let iter = [];
 
   if (opts.argv[0].includes('/')) {
-    return listPackageMaintainers(opts);
+    const { _, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
+    
+    who = parsed.canonical;
+    noun = "maintainer";
+    iter = await listPackageMaintainers(opts.api, parsed.canonical);
+
+  } else {
+    const { members, ns } = await namespaceMembers(opts.api, opts.argv[0]);
+
+    who = ns;
+    iter = members;
+    noun = "member"
   }
 
-  const { body, ns } = await getNamespaceMembers(opts, opts.argv[0]);
-
-  opts.log.log(`${ns} has ` + (body.objects.length == 1 ? 'one member' : `${body.objects.length} members`) + ':');
-
-  body.objects.forEach(n => {
-    opts.log.success(`  - ${n}`);
-  });
-}
-
-async function listPackageMaintainers(opts) {
-  const { _, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
-
-  const uri = `${opts.registry}/v1/packages/package/${parsed.canonical}/maintainers`;
-
-  const response = await opts.api.packageMaintainers(parsed.canonical);
-  const body = await response.json();
-
-  if (!Array.isArray(body.objects) || body.objects.length === 0) {
-    opts.log.log(`${parsed.canonical} has no maintainers.`);
-    return 0;
-  }
-
-  opts.log.log(
-    `${parsed.canonical} has ` +
-      (body.objects.length == 1 ? 'one maintainer' : `${body.objects.length} maintainer`) +
-      ':'
-  );
-
-  body.objects.forEach(n => {
-    opts.log.success(`  - ${n}`);
-  });
+  opts.log.log(`${who} has ${getQuantity(iter, noun)}`);
+  iter.forEach(n => opts.log.success(`  - ${n}`));
 }
