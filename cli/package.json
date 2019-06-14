@@ -73,15 +73,15 @@
     "lint-fix": "prettier --write '**/*.js'",
     "test": "ava"
   },
-    "ava": {
-      "files": [
-        "test/**/*"
-      ],
-      "helpers": [
-        "test/utils/**/*"
-      ],
-      "sources": [
-        "lib/**/*"
-      ]
-    }
+  "ava": {
+    "files": [
+      "test/**/*"
+    ],
+    "helpers": [
+      "test/utils/**/*"
+    ],
+    "sources": [
+      "lib/**/*"
+    ]
+  }
 }
