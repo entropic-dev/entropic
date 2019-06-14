@@ -26,7 +26,16 @@ function createRedisMW({
   redisURL = process.env.REDIS_URL || 'redis://localhost:6379'
 } = {}) {
   return next => {
-    const client = redis.createClient(redisURL);
+    const client = redis.createClient(redisURL, {
+      retry_strategy: function (options) {
+        if (options.attempt > 10) {
+          // Fail with redis error
+          return;
+        }
+        // reconnect after
+        return Math.min(options.attempt * 50, 250);
+      },
+    });
 
     return context => {
       context.redis = client;
