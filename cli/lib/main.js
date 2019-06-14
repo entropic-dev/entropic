@@ -7,11 +7,11 @@ module.exports.unpack = unpack;
 
 const minimist = require('minimist');
 
-const { load } = require('./config');
+const config = require('./config');
+const logger = require('./logger');
 const Api = require('./api');
-const log = require('./logger');
 
-async function unpack(argv, { log = log, load = load } = {}) {
+async function unpack(argv, { log = logger, load = config.load } = {}) {
   let [commandName = 'help'] = argv;
   if (/[/\\]/.test(commandName)) {
     log.log(`Ignoring malformed command name: ${JSON.stringify(commandName)}`);
