@@ -237,7 +237,7 @@ async function tokens(context) {
   });
   const cliLoginSession = context.session.get('cli');
 
-  let description = context.description
+  const description = context.description
     ? context.description
     : cliLoginSession
     ? (await context.storageApi.fetchCLISession({ session: cliLoginSession })
