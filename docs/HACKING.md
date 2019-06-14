@@ -8,7 +8,16 @@
 
 Once you have Node, Docker, and Docker Compose,
 `cp services/registry/.env-example services/registry/.env`
-(and make any adjustments you like), `npm i`, and `npm start` (or `docker-compose up`).
+`cp services/storage/.env-example services/storage/.env`
+`cp services/web/.env-example services/web/.env`
+and make any adjustments you like or add these lines to your /etc/hosts
+
+127.0.0.1   storage
+127.0.0.1   redis
+127.0.0.1   db
+
+run `npm i` in services/registry/, services/storage/, services/web, services/workers
+then `npm start` (or `docker-compose up`) in main directory
 
 Then go to <http://localhost:3000>.
 
