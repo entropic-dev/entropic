@@ -1,9 +1,9 @@
 'use strict';
 
-module.exports = whoami;
+module.exports = whomaiCommand;
 
 const figgy = require('figgy-pudding');
-const { whoAmI } = require('../core');
+const whoami = require('../core/whoami');
 
 const whoamiOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
@@ -12,15 +12,15 @@ const whoamiOpts = figgy({
   api: true
 });
 
-async function whoami(opts) {
+async function whomaiCommand(opts) {
   opts = whoamiOpts(opts);
 
   try {
-    const username = await whoAmI(opts);
+    const username = await whoami(opts.api);
     opts.log.log(username);
     return 0;
   } catch (err) {
-    opts.log.error(`Caught error requesting "${registry}/v1/auth/whoami"`, err);
+    opts.log.error(`Caught error requesting "${opts.registry}/v1/auth/whoami"`, err);
     return 1;
   }
 }

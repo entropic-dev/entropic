@@ -58,7 +58,7 @@ const validate = {
    */
   members: args => {
     return {
-      valid: !args || args.length !== 1,
+      valid: args.length === 1,
       usage: 'ds members <namespace|package>'
     };
   }

@@ -95,7 +95,7 @@ class Api {
   /**
    * Returns current logged in user
    */
-  whoAmI() {
+  whoami() {
     return this._request(`${this.baseUrlV1}/auth/whoami`, {
       headers: this.headers(this.token)
     });

@@ -18,20 +18,20 @@ const membersOpts = figgy({
 
 const getQuantity = (iter, noun) => {
   const len = iter.length;
-  return len === 0 ? `no ${noun}s` : (len === 1 ? `1 ${noun}:` : `${len} ${noun}s`)
-}
+  return len === 0 ? `no ${noun}s` : len === 1 ? `1 ${noun}:` : `${len} ${noun}s`;
+};
 
 /**
  * usage: ds members name@host[/pkg]
- * 
- * @param {*} opts 
+ *
+ * @param {*} opts
  */
 async function members(opts) {
   opts = membersOpts(opts);
 
   const validation = Validate.members(opts.argv);
-  if(!validation.valid) {
-    opts.log.error("Incorrect usage of ds members")
+  if (!validation.valid) {
+    opts.log.error('Incorrect usage of ds members');
     opts.log.log(`-  ${validation.usage}`);
     return 1;
   }
@@ -42,17 +42,16 @@ async function members(opts) {
 
   if (opts.argv[0].includes('/')) {
     const { _, ...parsed } = parsePackageSpec(opts.argv[0], opts.registry.replace(/^https?:\/\//, ''));
-    
-    who = parsed.canonical;
-    noun = "maintainer";
-    iter = await listPackageMaintainers(opts.api, parsed.canonical);
 
+    who = parsed.canonical;
+    noun = 'maintainer';
+    iter = await listPackageMaintainers(opts.api, parsed.canonical);
   } else {
     const { members, ns } = await namespaceMembers(opts.api, opts.argv[0]);
 
     who = ns;
     iter = members;
-    noun = "member"
+    noun = 'member';
   }
 
   opts.log.log(`${who} has ${getQuantity(iter, noun)}`);
