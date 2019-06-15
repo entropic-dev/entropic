@@ -1,25 +1,22 @@
 module.exports = class FakeApi {
-  constructor(response, status) {
-    this.desiredResponse = response;
-    this.desiredStatus = status;
+  constructor(mockValueObj) {
+    Object.keys(mockValueObj).forEach(
+      key =>
+        (this[key] = function() {
+          return this._wrappedResponse(mockValueObj[key]);
+        })
+    );
   }
 
-  async ping() {
-    return new Promise((resolve, _reject) => {
-      resolve({
-        status: this.desiredStatus,
-        message: 'OK',
-        text: () => new Promise((jsonRes, _jsonRej) => jsonRes(this.desiredResponse))
-      });
-    });
-  }
+  _wrappedResponse(values) {
+    const { status, response, ok } = values;
 
-  async whoAmI() {
     return new Promise((resolve, _reject) => {
       resolve({
-        status: this.desiredStatus,
-        message: 'OK',
-        json: () => new Promise((jsonRes, _jsonRej) => jsonRes(this.desiredResponse))
+        ok,
+        status,
+        text: () => new Promise((jsonRes, _jsonRej) => jsonRes(response)),
+        json: () => new Promise((jsonRes, _jsonRej) => jsonRes(response))
       });
     });
   }
