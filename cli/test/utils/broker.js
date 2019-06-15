@@ -1,24 +1,24 @@
 'use strict';
 
-const { MessageBroker, MESSAGE_EVENTS } = require("../../lib/MessageBroker")
+const { MessageBroker, MESSAGE_EVENTS } = require('../../lib/MessageBroker');
 
 module.exports = {
-    createFakeBroker
-}
+  createFakeBroker
+};
 
 function createFakeBroker() {
-    const broker = new MessageBroker();
+  const broker = new MessageBroker();
 
-    broker.message = [];
-    broker.errors = [];
+  broker.message = [];
+  broker.errors = [];
 
-    broker.on(MESSAGE_EVENTS.INFO, msg => {
-        broker.message.push(msg);
-    });
+  broker.on(MESSAGE_EVENTS.INFO, msg => {
+    broker.message.push(msg);
+  });
 
-    broker.on(MESSAGE_EVENTS.ERROR, msg => {
-        broker.errors.push(msg);
-    });
+  broker.on(MESSAGE_EVENTS.ERROR, msg => {
+    broker.errors.push(msg);
+  });
 
-    return broker;
-};
+  return broker;
+}

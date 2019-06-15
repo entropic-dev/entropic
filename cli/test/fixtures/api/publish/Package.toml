@@ -1,0 +1,5 @@
+name = "test@registry.entropic.dev/ds"
+version = "0.0.0"
+
+[dependencies]
+"@iarna/toml" = "^2.2.3"
