@@ -20,7 +20,7 @@ async function whoami(opts) {
     opts.log.log(username);
     return 0;
   } catch (err) {
-    opts.log.error(err.message, err);
+    opts.log.error(`Caught error requesting "${registry}/v1/auth/whoami"`, err);
     return 1;
   }
 }
