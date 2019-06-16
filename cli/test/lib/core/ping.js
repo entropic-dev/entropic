@@ -1,12 +1,12 @@
 const test = require('ava');
-const FakeApi = require('../utils/FakeApi');
+const FakeApi = require('../../utils/FakeApi');
 
 // Mock private function that uses Date.now to
 // get consistent return value
 const rewire = require('rewire');
-const ping = rewire('../../lib/core/ping');
+const ping = rewire('../../../lib/core/ping');
 
-test.serial('it returns the correct properties', async t => {
+test.only('it returns the correct properties', async t => {
   const api = new FakeApi({
     ping: {
       status: 200,

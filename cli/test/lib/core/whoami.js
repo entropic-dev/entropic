@@ -1,7 +1,7 @@
 const test = require('ava');
-const FakeApi = require('../utils/FakeApi');
+const FakeApi = require('../../utils/FakeApi');
 
-const whoami = require('../../lib/core/whoami');
+const whoami = require('../../../lib/core/whoami');
 
 test("it returns a user's username given a valid api response", async t => {
   const username = 'SirBazALot';

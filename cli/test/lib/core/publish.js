@@ -1,21 +1,18 @@
 const test = require('ava');
-const FakeApi = require('../utils/FakeApi');
-const publish = require('../../lib/core/publish');
+const FakeApi = require('../../utils/FakeApi');
+const publish = require('../../../lib/core/publish');
 
-const { createFakeBroker } = require('../utils/broker');
-const { fakeApiSuccessfulResponses, tomlContent } = require('../fixtures/api/publish');
-const loadPackageToml = require('../../lib/load-package-toml');
+const { createFakeBroker } = require('../../utils/broker');
+const { fakeApiSuccessfulResponses } = require('../../fixtures/api/publish');
+const loadPackageToml = require('../../../lib/load-package-toml');
 
-const a = require;
-
-const sinon = require('sinon');
 const path = require('path');
 
 test.serial('it runs successfully and logs the expected messages', async t => {
   const fakeBroker = createFakeBroker();
   const api = new FakeApi(fakeApiSuccessfulResponses);
 
-  const tomlObject = await loadPackageToml(path.join(__dirname, '../fixtures/api/publish'));
+  const tomlObject = await loadPackageToml(path.join(__dirname, '../../fixtures/api/publish'));
 
   await publish(
     {
