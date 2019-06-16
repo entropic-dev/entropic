@@ -36,7 +36,6 @@ test.serial('calls PING and PONG', async t => {
 
   const pingCalled = log.calledWith(sinon.match(/^PING:/));
   const pongCalled = log.calledWith(sinon.match(/^PONG:/));
-  console.log(pingCalled)
   t.is(pingCalled && pongCalled, true);
   log.restore();
 });
