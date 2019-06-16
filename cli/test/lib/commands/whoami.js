@@ -11,22 +11,27 @@ test('whoami calls console.log with username when API response is successful', a
   const username = 'RaynorJim';
   await whoami({
     log: FakeLogger,
-    api: new FakeApi({ username }, 200)
+    api: new FakeApi({
+      whoami: { status: 200, response: { username } }
+    })
   });
 
   t.is(log.calledWith(username), true);
   log.restore();
 });
 
-test('whoami calls error when not successful', async t => {
+test.serial('whoami calls error when not successful', async t => {
   const stubbedLogger = sinon.stub(FakeLogger, 'error');
 
-  const error = 'You are forbidden!';
+  const errorMsg = `Caught error requesting "https://fakeregistry.entropic.dev/auth/whoami"`;
 
   await whoami({
+    registry: 'https://fakeregistry.entropic.dev',
     log: FakeLogger,
-    api: new FakeApi({ message: error }, 403)
+    api: new FakeApi({
+      whoami: { status: 403, response: {  message: "forbidden" } }
+    })
   });
 
-  t.is(stubbedLogger.calledWith(error), true);
+  t.is(stubbedLogger.calledWith(errorMsg), true);
 });

@@ -10,7 +10,9 @@ test.serial('ping logs twice', async t => {
 
   await ping({
     log: FakeLogger,
-    api: new FakeApi('GCU Fate Amenable To Change', 200)
+    api: new FakeApi({
+      ping: { status: 200, response: 'GCU Fate Amenable To Change' }
+    })
   });
 
   t.is(log.calledTwice, true);
@@ -20,13 +22,21 @@ test.serial('ping logs twice', async t => {
 test.serial('calls PING and PONG', async t => {
   const log = sinon.stub(FakeLogger, 'log');
 
+  const api = new FakeApi({
+    ping: {
+      status: 200,
+      response: 'GCU Fate Amenable To Change'
+    }
+  });
+
   await ping({
     log: FakeLogger,
-    api: new FakeApi('GCU Fate Amenable To Change', 200)
+    api
   });
 
   const pingCalled = log.calledWith(sinon.match(/^PING:/));
   const pongCalled = log.calledWith(sinon.match(/^PONG:/));
+  console.log(pingCalled)
   t.is(pingCalled && pongCalled, true);
   log.restore();
 });
@@ -35,10 +45,17 @@ test.serial('error', async t => {
   const log = sinon.stub(FakeLogger, 'error');
   const fakeRegistryUrl = 'http://fakeentropic.dev';
 
+  const api = new FakeApi({
+    ping: {
+      status: 403,
+      response: { message: "forbidden!" }
+    }
+  });
+
   await ping({
     registry: fakeRegistryUrl,
     log: FakeLogger,
-    api: new FakeApi('No', 403)
+    api
   });
 
   t.is(log.calledOnce, true);
