@@ -52,6 +52,7 @@
     "mocha": "~6.1.4",
     "must": "~0.13.4",
     "prettier": "~1.17.1",
+    "rewire": "^4.0.1",
     "sinon": "^7.3.2"
   },
   "directories": {
