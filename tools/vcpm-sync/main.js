@@ -205,11 +205,11 @@ if (require.main === module) {
   main(minimist(process.argv.slice(2)))
     .then(code => {
       if (Number(code)) {
-        process.exit(code);
+        process.exitCode = code;
       }
     })
     .catch(err => {
       console.error(err.stack);
-      process.exit(1);
+      process.exitCode = 1;
     });
 }
