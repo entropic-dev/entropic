@@ -80,6 +80,14 @@ Entropic is, at the moment of this writing, the work of two people: [Chris Dicki
 
 For more, see [Contributing](./.github/CONTRIBUTING.md) and our [Code of Conduct](./.github/CODE_OF_CONDUCT.md).
 
+## Moderators
+
+- **[ceejbot](https://github.com/ceejbot)**
+- **[chrisdickison](https://github.com/chrisdickinson)**
+- **[toddself](https://github.com/toddself)**
+- **[varjmes](https://github.com/varjmes)**
+- **[aredridel](https://github.com/aredridel)**
+
 ## Contributors
 
 <!-- markdownlint-disable MD033 -->
