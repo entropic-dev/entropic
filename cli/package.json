@@ -78,10 +78,10 @@
   },
   "ava": {
     "files": [
-      "test/**/*"
+      "**/*.spec.js"
     ],
     "helpers": [
-      "test/utils/**/*"
+      "test/**/*"
     ],
     "sources": [
       "lib/**/*"
