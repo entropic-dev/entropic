@@ -62,7 +62,7 @@ The manifest **MUST** contain the following top-level keys, in order to be publi
 - `"name"` - the canonical name of the package, as a string, including its namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
 - `"version"` - a [SEMVER](https://semver.org/) designation conforming to version 2.0.0 of the semantic versioning specification. Due to how TOML parses numbers, this must be represented as a string. e.g. `"1.0.4"`
 
-These keys are **NOT REQUIRED** be present when interacting with the CLI locally (e.g. installing depedencies).
+These keys are **NOT REQUIRED** be present when interacting with the CLI locally (e.g. installing dependencies).
 
 The manifest **MAY** contain the following fields:
 
@@ -86,7 +86,7 @@ The manifest file **MAY** contain zero or more subsections as defined below.
 
 #### Dependency Lists
 
-Dependencies lists contain all the resources that are required for this package, in various scenarios. Dependencies consist of a `key/value` pair where the `key` is a string that provides a unique name for the package in this project. This `key` can be either the qualified package name from the package's manifest, a short-hand legacy reference (a bare package name e.g. `loadash` will expand out to `legacy@<current registry>/lodash`) or an <a href="#alias">alias</a> for the package.
+Dependencies lists contain all the resources that are required for this package, in various scenarios. Dependencies consist of a `key/value` pair where the `key` is a string that provides a unique name for the package in this project. This `key` can be either the qualified package name from the package's manifest, a short-hand legacy reference (a bare package name e.g. `lodash` will expand out to `legacy@<current registry>/lodash`) or an <a href="#alias">alias</a> for the package.
 
 When the `key` value is the qualified package name (e.g. `toddself@static-pkg.dev/package2toml`), then the `value` **MAY** be either a semver range for the package or the <a href="#alias">alias</a> definition.
 
@@ -105,7 +105,7 @@ Shorthand: `"name@version"`
 
 The object **MAY** also contain:
 
-- `"patch"` - a `key`/`value` pair that allows specific overrides in the dependencies of the dependency. e.g. if this package depends on `lodash`, you could specifiy that you want it to use `underscore` instead: `"patch": {"legacy@registry.entropic.dev/lodash": "toddself@static-pkg.dev/underscore"}`
+- `"patch"` - a `key`/`value` pair that allows specific overrides in the dependencies of the dependency. e.g. if this package depends on `lodash`, you could specify that you want it to use `underscore` instead: `"patch": {"legacy@registry.entropic.dev/lodash": "toddself@static-pkg.dev/underscore"}`
 
 This section could be used to also specify platform exclusion/inclusion for some dependencies. Some thought might be needed to figure out how to make this workable across the wide range of computer platforms that implementations might be written for.
 
