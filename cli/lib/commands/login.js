@@ -18,7 +18,7 @@ async function login(opts) {
 
   const { username, token } = await profile.loginWeb(
     async url => {
-      console.log(`Opening ${url} in default browser...`);
+      console.log(`Here's your login url:\n  ${url}\nA browser window should open momentarily (If it doesn't, open the above link manually.)`);
       return opener(url);
     },
     opts
