@@ -237,7 +237,7 @@ All of the below positions are granted based on the project team's needs, as wel
 
 You can spot a collaborator on the repo by looking for the `[Collaborator]` or `[Owner]` tags next to their names.
 
-See the [entropic process document](./docs/entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
+See the [entropic process document](../docs/rfcs/0001-entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
 
 Permission | Description
 --- | ---
