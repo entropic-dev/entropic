@@ -1,5 +1,20 @@
 version: 2
 jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: npm install
+      - run: 
+          name: Docker compose up
+          command: |
+            set -ex
+            cp ./services/registry/.env-example ./services/registry/.env
+            cp ./services/web/.env-example ./services/web/.env
+            cp ./services/storage/.env-example ./services/storage/.env
+            docker-compose up -d
+            sleep 10
+            curl localhost:3000
   storage:
     docker:
       - image: circleci/node:latest
@@ -57,5 +72,6 @@ workflows:
   version: 2
   everything:
     jobs:
+      - build
       - storage
       - cli
