@@ -83,7 +83,7 @@ So you wanna contribute some code! That's great! This project uses GitHub Pull R
 
 If this seems like a lot or you aren't able to do all this setup, you might also be able to [edit the files directly](https://help.github.com/articles/editing-files-in-another-user-s-repository/) without having to do any of this setup. Yes, [even code](#contribute-code).
 
-If you want to go the usual route and run the project locally, though, please read the [the setup documentation](./README.md) for the various parts of Entropic.
+If you want to go the usual route and run the project locally, though, please read the [the setup documentation](/docs/HACKING.md) for the various parts of Entropic.
 
 ## Contribute Documentation
 
@@ -237,7 +237,7 @@ All of the below positions are granted based on the project team's needs, as wel
 
 You can spot a collaborator on the repo by looking for the `[Collaborator]` or `[Owner]` tags next to their names.
 
-See the [entropic process document](../docs/rfcs/0001-entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
+See the [entropic process document](/docs/entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
 
 Permission | Description
 --- | ---
