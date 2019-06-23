@@ -17,10 +17,7 @@ const exists = packageExists({
 });
 module.exports = [
   fork.get('/v1/namespaces', namespaces),
-  fork.get(
-    '/v1/namespaces/namespace/:namespace([^@]+)@:host/members',
-    authn.optional(members)
-  ),
+  fork.get('/v1/namespaces/namespace/:namespace([^@]+)@:host/members', authn.optional(members)),
   fork.post(
     '/v1/namespaces/namespace/:namespace([^@]+)@:host/members/:invitee',
     authn.required(findInvitee(canChangeNamespace(invite)))
@@ -113,7 +110,7 @@ async function namespaces(context, params) {
       'host.active': true,
       'host.name': process.env.EXTERNAL_HOST.replace(/^http(s)?:\/\//, '')
     })
-    .sort('name')
+    .order('name')
     .then();
   const objects = namespaces.map(ns => ns.name);
   return response.json({ objects });
@@ -170,9 +167,7 @@ async function invite(context, { invitee, namespace, host }) {
     active: true
   });
 
-  context.logger.info(
-    `${invitee} invited to join ${namespace}@${host} by ${context.user.name}`
-  );
+  context.logger.info(`${invitee} invited to join ${namespace}@${host} by ${context.user.name}`);
   return response.message(`${invitee} invited to join ${namespace}@${host}.`);
 }
 
@@ -195,13 +190,9 @@ async function remove(context, { invitee, namespace, host }) {
     .then();
 
   if (membership.length === 0) {
-    return response.message(
-      `${invitee} was not a member of ${namespace}@${host}.`
-    );
+    return response.message(`${invitee} was not a member of ${namespace}@${host}.`);
   }
-  context.logger.info(
-    `${invitee} removed from ${namespace}@${host} by ${context.user.name}`
-  );
+  context.logger.info(`${invitee} removed from ${namespace}@${host} by ${context.user.name}`);
 
   return response.message(`${invitee} removed from ${namespace}@${host}.`);
 }
@@ -267,13 +258,9 @@ async function accept(context, { namespace, host, name, member }) {
     });
 
   context.logger.info(
-    `${
-      context.user.name
-    } accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
+    `${context.user.name} accepted the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
-  return response.message(
-    `${member} is now a maintainer for ${namespace}@${host}/${name}`
-  );
+  return response.message(`${member} is now a maintainer for ${namespace}@${host}/${name}`);
 }
 
 async function decline(context, { namespace, host, name, member }) {
@@ -299,11 +286,7 @@ async function decline(context, { namespace, host, name, member }) {
     });
 
   context.logger.info(
-    `${
-      context.user.name
-    } declined the invitation for ${member} to join ${namespace}@${host}/${name}`
+    `${context.user.name} declined the invitation for ${member} to join ${namespace}@${host}/${name}`
   );
-  return response.message(
-    `You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`
-  );
+  return response.message(`You have declined the invitation for ${member} to join ${namespace}@${host}/${name}`);
 }
