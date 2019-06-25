@@ -6,7 +6,15 @@
     "MD028": false,
     "MD033": {
         "allowed_elements": [
-            "a"
+            "a",
+            "b",
+            "br",
+            "details",
+            "sub",
+            "summary",
+            "table",
+            "td",
+            "tr"
         ]
     },
     "MD034": false,
