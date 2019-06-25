@@ -127,7 +127,7 @@ const router = boltzmann.fork.router()(
 );
 
 async function ping() {
-  return boltmmann.response.text(ship)
+  return boltzmann.response.text(ship)
 }
 
 const myMiddles = [
