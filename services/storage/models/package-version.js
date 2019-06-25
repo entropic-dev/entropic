@@ -51,6 +51,7 @@ module.exports = class PackageVersion {
     const {
       created,
       modified,
+      signatures,
       derivedFiles,
       ...content
     } = await this.serialize();
