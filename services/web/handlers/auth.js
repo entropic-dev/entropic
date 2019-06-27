@@ -384,9 +384,9 @@ async function handleTokenAction(context) {
 
     context.session.set(
       'banner',
-      `Successfully deleted ${count} token${count === 1 ? '' : 's'}.`
+      `Successfully deleted tokens: ${count}.`
     );
-    context.logger.info(`${user.name} deleted a token`);
+    context.logger.info(`${user.name} deleted tokens: ${count}`);
     return response.redirect('/tokens');
   }
 }
