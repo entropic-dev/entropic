@@ -3,10 +3,12 @@ set -e
 
 cd /tmp
 
-if hash curl 2>/dev/null; then
-  curl -SsL https://www.entropic.dev/ds-latest.tgz -o ds-latest.tgz
-elif hash wget 2>/dev/null; then
-  wget https://www.entropic.dev/ds-latest.tgz -o ds-latest.tgz
+ENTROPIC_SRC="https://www.entropic.dev/ds-latest.tgz"
+
+if type wget &>/dev/null; then
+  curl -SsL $ENTROPIC_SRC -o ds-latest.tgz
+elif type wget &>/dev/null; then
+  curl $ENTROPIC_SRC -o ds-latest.tgz
 else
   echo 'Please install curl or wget!'
   exit 1
