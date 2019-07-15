@@ -83,7 +83,7 @@ For more, see [Contributing](./.github/CONTRIBUTING.md) and our [Code of Conduct
 ## Moderators
 
 - **[ceejbot](https://github.com/ceejbot)**
-- **[chrisdickison](https://github.com/chrisdickinson)**
+- **[chrisdickinson](https://github.com/chrisdickinson)**
 - **[toddself](https://github.com/toddself)**
 - **[varjmes](https://github.com/varjmes)**
 - **[aredridel](https://github.com/aredridel)**
