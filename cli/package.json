@@ -3,10 +3,6 @@
   "description": "ds: entropy delta; the entropic client",
   "version": "1.0.0",
   "author": "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)",
-  "contributors": [
-    "C J Silverio <ceejceej@gmail.com>",
-    "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)"
-  ],
   "bin": {
     "ds": "./lib/main.js"
   },
@@ -26,10 +22,16 @@
     "ssri",
     "user-home"
   ],
+  "contributors": [
+    "C J Silverio <ceejceej@gmail.com>",
+    "Chris Dickinson <chris@neversaw.us> (http://neversaw.us/)"
+  ],
   "dependencies": {
     "@iarna/toml": "^2.2.3",
+    "chalk": "^2.4.2",
     "figgy-pudding": "^3.5.1",
     "form-data": "^2.3.3",
+    "fs.promises": "^0.1.2",
     "graceful-fs": "^4.1.15",
     "minimist": "^1.2.0",
     "node-fetch": "^2.5.0",
@@ -43,16 +45,21 @@
     "user-home": "^2.0.0"
   },
   "devDependencies": {
+    "ava": "^2.0.0",
     "babel-eslint": "~10.0.1",
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
-    "prettier": "~1.17.1"
+    "prettier": "~1.17.1",
+    "sinon": "^7.3.2"
   },
   "directories": {
     "lib": "lib"
+  },
+  "engines": {
+    "node": ">=12"
   },
   "homepage": "https://github.com/entopic-dev/entropic#readme",
   "keywords": [],
@@ -65,6 +72,17 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
-    "test": "mocha -R spec"
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ],
+    "helpers": [
+      "test/utils/**/*"
+    ],
+    "sources": [
+      "lib/**/*"
+    ]
   }
 }

@@ -7,3 +7,11 @@ allowed-list
 .DS_Store
 *~
 *.swp
+services/data/entropic-cache
+.opt-in
+.opt-out
+*.snap
+
+# IDEs
+.idea
+.vscode

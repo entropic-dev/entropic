@@ -3,38 +3,24 @@
 module.exports = whoami;
 
 const figgy = require('figgy-pudding');
-const fetch = require('../fetch');
+const { whoAmI } = require('../utils');
 
 const whoamiOpts = figgy({
   registry: { default: 'https://registry.entropic.dev' },
   token: true,
-  log: { default: require('npmlog') }
+  log: true,
+  api: true
 });
 
 async function whoami(opts) {
   opts = whoamiOpts(opts);
 
-  const response = await fetch(`${opts.registry}/v1/auth/whoami`, {
-    headers: {
-      authorization: `Bearer ${opts.token}`
-    }
-  });
-
-  let body = null;
   try {
-    body = await response.json();
+    const username = await whoAmI(opts);
+    opts.log.log(username);
+    return 0;
   } catch (err) {
-    opts.log.error(`Caught error requesting "${opts.registry}/v1/auth/whoami"`);
+    opts.log.error(err.message, err);
     return 1;
   }
-
-  if (response.status > 399) {
-    opts.log.error(body.message || body);
-    return 1;
-  }
-
-  const { username } = body;
-
-  console.log(username);
-  return 0;
 }

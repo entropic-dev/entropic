@@ -111,7 +111,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/18172185?v=4",
       "profile": "https://aaronross.tech",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -166,6 +167,51 @@
       "name": "Zeke Sikelianos",
       "avatar_url": "https://avatars1.githubusercontent.com/u/2289?v=4",
       "profile": "http://zeke.sikelianos.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "samccone",
+      "name": "Sam Saccone",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/883126?v=4",
+      "profile": "https://github.com/samccone",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "moogacs",
+      "name": "Mohamed Badawi",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2805614?v=4",
+      "profile": "http://m-mooga.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "1stvamp",
+      "name": "Wes Mason",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/35831?v=4",
+      "profile": "http://1stvamp.org/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mirandaio",
+      "name": "Alfredo Miranda",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1652699?v=4",
+      "profile": "https://github.com/mirandaio",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "enykeev",
+      "name": "Kirill Enykeev",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1357357?v=4",
+      "profile": "http://mechanica.io/",
       "contributions": [
         "code"
       ]

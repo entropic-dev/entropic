@@ -18,3 +18,12 @@ brew install https://raw.githubusercontent.com/entropic-dev/entropic/master/docs
 ### Arch Linux
 
 If you're using Arch Linux, install the [`nodejs-entropic`](https://aur.archlinux.org/packages/nodejs-entropic/) package from the AUR.
+
+### Snap packages (multiple Linux distributions)
+
+If you're using a Linxu distro that supports `snapd`, you can install using `snap`:
+
+```sh
+# You might need to `sudo snap` if you aren't logged in with `snap login`
+snap install entropic-ds
+```

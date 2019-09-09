@@ -98,7 +98,7 @@ To contribute documentation:
 * Make sure your changes are formatted correctly and consistently with the rest of the documentation.
 * Re-read what you wrote, and run a spellchecker on it to make sure you didn't miss anything.
 * In your commit message(s), begin the first line with `docs:`. For example: `docs: Adding a doc contrib section to CONTRIBUTING.md`.
-* Write clear, concise commit message(s) using [conventional-changelog format](https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md). Documentation commits should use `docs(<component>): <message>`.
+* Write clear, concise commit message(s) using [conventional-changelog format](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular#angular-convention). Documentation commits should use `docs(<component>): <message>`.
 * Go to https://github.com/entropic-dev/entropic/pulls and open a new pull request with your changes.
 * If your PR is connected to an open issue, add a line in your PR's description that says `Fixes: #123`, where `#123` is the number of the issue you're fixing.
 
@@ -123,7 +123,7 @@ To contribute code:
 * Make any necessary changes to the source code.
 * Include any [additional documentation](#contribute-documentation) the changes might need.
 * Write tests that verify that your contribution works as expected.
-* Write clear, concise commit message(s) using [conventional-changelog format](https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md).
+* Write clear, concise commit message(s) using [conventional-changelog format](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular#angular-convention).
 * Dependency updates, additions, or removals must be in individual commits, and the message must use the format: `<prefix>(deps): PKG@VERSION`, where `<prefix>` is any of the usual `conventional-changelog` prefixes, at your discretion.
 * Go to https://github.com/entropic-dev/entropic/pulls and open a new pull request with your changes.
 * If your PR is connected to an open issue, add a line in your PR's description that says `Fixes: #123`, where `#123` is the number of the issue you're fixing.
@@ -236,6 +236,8 @@ There are many ways to contribute! Most of them don't require any official statu
 All of the below positions are granted based on the project team's needs, as well as their consensus opinion about whether they would like to work with the person and think that they would fit well into that position. The process is relatively informal, and it's likely that people who express interest in participating can just be granted the permissions they'd like.
 
 You can spot a collaborator on the repo by looking for the `[Collaborator]` or `[Owner]` tags next to their names.
+
+See the [entropic process document](../docs/rfcs/0001-entropic-workflow.md) for a description of how we'd like to discuss problems and solutions in this project.
 
 Permission | Description
 --- | ---

@@ -115,14 +115,20 @@ Here's the Boltzmann hello world, complete:
 'use strict';
 
 const boltzmann = require('boltzmann');
+const ship = require('culture-ships').random();
 
 async function greeting(context, params) {
   return boltzmann.response.text(`greetings, ${params.human}`);
 }
 
 const router = boltzmann.fork.router()(
-    fork.get('/greet/:human', greeting)
+  boltzmann.fork.get('/greet/:human', greeting),
+  boltzmann.fork.get('/ping', ping)
 );
+
+async function ping() {
+  return boltzmann.response.text(ship)
+}
 
 const myMiddles = [
   require('boltmmann/middleware/logger'),
@@ -130,9 +136,7 @@ const myMiddles = [
   require('boltmmann/middleware/requestid'),
 ];
 
-const server = boltzmann.make(router,  myMiddles);
-server.listen(process.env.PORT, '0.0.0.0');
-console.log(`now listening on ${process.env.PORT}`);
+run(router, myMiddles);
 ```
 
 ## LICENSE

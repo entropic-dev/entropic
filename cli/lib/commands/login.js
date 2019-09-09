@@ -17,7 +17,10 @@ async function login(opts) {
   opts = loginOpts(opts);
 
   const { username, token } = await profile.loginWeb(
-    async u => opener(u),
+    async url => {
+      console.log(`Here's your login url:\n  ${url}\nA browser window should open momentarily (If it doesn't, open the above link manually.)`);
+      return opener(url);
+    },
     opts
   );
 
@@ -27,6 +30,7 @@ async function login(opts) {
   current.registries = current.registries || {};
   current.registries[opts.registry] = current.registries[opts.registry] || {};
   current.registries[opts.registry].token = token;
+  current.registries[opts.registry].username = username;
 
   await save(current);
 }

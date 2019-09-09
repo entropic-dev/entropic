@@ -3,41 +3,63 @@
 'use strict';
 
 module.exports = main;
+module.exports.unpack = unpack;
 
 const minimist = require('minimist');
 
-const { load } = require('./config');
+const config = require('./config');
+const logger = require('./logger');
+const Api = require('./api');
 
-async function main(argv) {
-  if (!argv[0]) {
-    argv[0] = 'help';
+async function unpack(argv, { log = logger, load = config.load } = {}) {
+  let [commandName = 'help'] = argv;
+  if (/[/\\]/.test(commandName)) {
+    log.log(`Ignoring malformed command name: ${JSON.stringify(commandName)}`);
+    commandName = 'help';
   }
 
+  let cmd;
   try {
-    const cmd = require(`./commands/${argv[0]}`);
+    cmd = require(`./commands/${commandName}`);
+  } catch (e) {
+    cmd = require('./commands/help');
+  }
 
-    const config = await load();
-    const args = minimist(argv.slice(1));
-    const { _, ...rest } = args;
-    const env = {};
-    for (const key in process.env) {
-      if (key.startsWith('ent_')) {
-        env[key.slice(4)] = process.env[key];
-      }
+  const { _, ...args } = minimist(argv.slice(1));
+  const config = await load();
+  const env = {};
+  for (const key in process.env) {
+    if (key.startsWith('ent_')) {
+      env[key.slice(4)] = process.env[key];
     }
+  }
 
-    const registry =
-      args.registry ||
-      config.registry ||
-      env.registry ||
-      'https://registry.entropic.dev';
+  const registry = args.registry || config.registry || env.registry || 'https://registry.entropic.dev';
 
-    const registryConfig = (config.registries || {})[registry] || {};
+  const registryConfig = (config.registries || {})[registry] || {};
 
-    // env is overridden by config, which is overridden by registry-specific
-    // config, ...
-    await cmd({ ...env, ...config, ...registryConfig, ...args, argv: _ });
+  // env is overridden by config, which is overridden by registry-specific
+  // config, ...
+  const bundle = {
+    ...env,
+    ...config,
+    ...registryConfig,
+    ...args,
+    argv: _,
+    api: new Api(registry),
+    log
+  };
 
+  return {
+    cmd,
+    bundle,
+  };
+}
+
+async function main(argv) {
+  try {
+    const { cmd, bundle } = await unpack(argv);
+    await cmd(bundle);
     return 0;
   } catch (err) {
     console.log(err.stack);

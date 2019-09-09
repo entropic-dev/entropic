@@ -10,7 +10,9 @@ function required(next) {
       return response.error(
         `You must be authenticated to access "${context.request.url}"`,
         401,
-        { 'www-authenticate': 'Bearer' }
+        {
+          'www-authenticate': 'Bearer'
+        }
       );
     }
 

@@ -1,3 +1,5 @@
+# docker-compose is provided for development purposes only and is not
+# intended for use as a production entropic setup.
 version: '3.1'
 services:
   db:
@@ -32,13 +34,19 @@ services:
     volumes:
       - ./services/:/services
     working_dir: /services/registry
-    command: sh -c "npm run prestart && npm run dev"
+    command: sh -c "npm run dev"
     networks:
       - entropic
     ports:
       - "3000:3000"
     env_file:
       - ./services/registry/.env
+    environment:
+      STORAGE_API_URL: http://storage:3002
+      PORT: 3000
+      WEB_HOST: http://localhost:3001
+      REDIS_URL: redis://redis:6379
+      EXTERNAL_HOST: http://localhost:3000
 
   web:
     image: mhart/alpine-node:12
@@ -52,6 +60,12 @@ services:
       - "3001:3001"
     env_file:
       - ./services/web/.env
+    environment:
+      STORAGE_API_URL: http://storage:3002
+      PORT: 3001
+      WEB_HOST: http://localhost:3001
+      REDIS_URL: redis://redis:6379
+      EXTERNAL_HOST: http://localhost:3001
 
   storage:
     image: mhart/alpine-node:12
@@ -66,6 +80,13 @@ services:
     #  - "3002:3002"
     env_file:
       - ./services/storage/.env
+    environment:
+      POSTGRES_URL: postgres://postgres@db:5432
+      PGHOST: db
+      REDIS_URL: redis://redis:6379
+      PORT: 3002
+      PGUSER: postgres
+      PGDATABASE: entropic_dev
 
 volumes:
   postgres_data:

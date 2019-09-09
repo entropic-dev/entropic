@@ -12,4 +12,5 @@ else
   exit 1
 fi
 
-npm install -g ds-latest.tgz
+# engine-strict config forces checking against engines.node version constraint
+NPM_CONFIG_ENGINE_STRICT=true npm install -g ds-latest.tgz

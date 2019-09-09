@@ -2,6 +2,7 @@
 
 module.exports = { load, save };
 
+if (Number(process.version.match(/^v(\d+\.\d+)/)[1]) < 12) require('fs.promises')
 const { promises: fs } = require('fs');
 const toml = require('@iarna/toml');
 const home = require('user-home');
