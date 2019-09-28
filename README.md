@@ -1,6 +1,6 @@
 # Entropic: a federated package registry for anything
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors) [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat-square)](./.github/CODE_OF_CONDUCT.md)
+[![Financial Contributors on Open Collective](https://opencollective.com/entropic/all/badge.svg?label=financial+contributors)](https://opencollective.com/entropic) [![All Contributors](https://img.shields.io/badge/all_contributors-23-orange.svg?style=flat-square)](#contributors) [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat-square)](./.github/CODE_OF_CONDUCT.md)
 
 A new package registry with a new CLI, designed to be easy to stand up inside your network. Entropic features an entirely new file-centric API and a content-addressable storage system that attempts to minimize the amount of data you must retrieve over a network. This file-centric approach also applies to the publication API. See the [API section of the manifesto](https://github.com/entropic-dev/entropic/tree/master/docs#apis) for more details about the API offered.
 
@@ -97,6 +97,36 @@ For more, see [Contributing](./.github/CONTRIBUTING.md) and our [Code of Conduct
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <!-- markdownlint enable MD033 -->
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/entropic-dev/entropic/graphs/contributors"><img src="https://opencollective.com/entropic/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/entropic/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/entropic"><img src="https://opencollective.com/entropic/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/entropic/contribute)]
+
+<a href="https://opencollective.com/entropic/organization/0/website"><img src="https://opencollective.com/entropic/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/1/website"><img src="https://opencollective.com/entropic/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/2/website"><img src="https://opencollective.com/entropic/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/3/website"><img src="https://opencollective.com/entropic/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/4/website"><img src="https://opencollective.com/entropic/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/5/website"><img src="https://opencollective.com/entropic/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/6/website"><img src="https://opencollective.com/entropic/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/7/website"><img src="https://opencollective.com/entropic/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/8/website"><img src="https://opencollective.com/entropic/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/entropic/organization/9/website"><img src="https://opencollective.com/entropic/organization/9/avatar.svg"></a>
 
 ## LICENSE
 
