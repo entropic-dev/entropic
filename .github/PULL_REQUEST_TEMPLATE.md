@@ -10,7 +10,7 @@ Fixes #[Issue Number] or Closes #[Issue Number]
 (example: Closes #123)
 
 Is there an external bug report or discussion (for example,
-on social media or in Discource)?
+on social media or in Discourse)?
 
 Is there a related screenshot?
 -->

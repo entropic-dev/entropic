@@ -6,14 +6,17 @@
 * [Get Docker Compose](https://docs.docker.com/compose/install/)
 * [Get Node](https://nodejs.org/en/download/)
 
-Once you have Node, Docker, and Docker Compose,
-`cp services/registry/.env-example services/registry/.env`
-`cp services/storage/.env-example services/storage/.env`
-`cp services/web/.env-example services/web/.env`
-and make any adjustments you like.
+Once you have Node, Docker, and Docker Compose:
 
-run `npm i` in services/registry/, services/storage/, services/web, services/workers
-then `npm start` (or `docker-compose up`) in main directory
+```sh
+cp services/registry/.env-example services/registry/.env
+cp services/storage/.env-example services/storage/.env
+cp services/web/.env-example services/web/.env
+```
+
+And make any adjustments you like.
+
+Run `npm i` in `services/registry/`, `services/storage/`, `services/web`, and `services/workers` then `npm start`, or `docker-compose up` in main directory.
 
 Then go to <http://localhost:3000>.
 

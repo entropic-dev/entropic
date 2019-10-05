@@ -33,8 +33,7 @@ We wish to produce a healthy project that is capable of maintaining a federated
 package ecosystem over the long run.
 
 GitHub is a useful platform but it is incentivized to make people believe that
-project health is directly correlated to issue & PR count. **It's not.** GitHub is
-encouraging us to move fast at the expense of coordination.
+project health is directly correlated to issue & PR count. **It's not.** GitHub is encouraging us to move fast at the expense of coordination.
 
 Context switching and lack of coordination are increasing friction, and the
 more the friction increases the faster we have to move to stay in the same

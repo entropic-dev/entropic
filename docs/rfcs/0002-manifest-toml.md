@@ -59,7 +59,7 @@ version 0.5.0 or later as defined by the project.
 
 The manifest **MUST** contain the following top-level keys, in order to be published:
 
-- `"name"` - the canonical name of the package, as a string, including its namespace. e.g. `"toddself@static-pkg.dev/packge2toml"`
+- `"name"` - the canonical name of the package, as a string, including its namespace. e.g. `"toddself@static-pkg.dev/package2toml"`
 - `"version"` - a [SEMVER](https://semver.org/) designation conforming to version 2.0.0 of the semantic versioning specification. Due to how TOML parses numbers, this must be represented as a string. e.g. `"1.0.4"`
 
 These keys are **NOT REQUIRED** be present when interacting with the CLI locally (e.g. installing dependencies).
