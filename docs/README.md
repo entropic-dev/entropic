@@ -75,7 +75,7 @@ have to, at minimum, provide the following:
 - Critical mass of **INSTALLERS** and **MAINTAINERS** moving to the new registry.
 - Support structure for any new tooling **INSTALLERS** or **MAINTAINERS** must
   use (documentation, blog posts, reassurances that the new registry won't turn
-  into a werewolf.)
+  into a werewolf).
 
 **MAINTAINERS** may be further swayed by the following features:
 
@@ -184,7 +184,7 @@ on the resources of administrators.
 ## Just Build the Damn Registry From Scratch Again, But Differently This Time, and Also Write a CLI
 
 - Lots of green field here. This is both a good and a bad thing (Decisions take
-  time. Making wise decisions takes even more time. We are time-limited.)
+  time. Making wise decisions takes even more time. We are time-limited).
 - Target the future!
 
 ### A Really Content Addressable Take On The Situation, Publishes and Installs
@@ -295,8 +295,8 @@ no versions, in the case of a brand-new package), this object will be
 
 Installation of a package can happen in a couple of different ways:
 
-- a fresh install or tagged install (`npm i foo`, `npm i foo@beta`).
-- an install of a specific version (`npm i foo@1.0.0`)
+- A fresh install or tagged install (`npm i foo`, `npm i foo@beta`).
+- An install of a specific version (`npm i foo@1.0.0`).
 
 The flow for syncing a dependency tree to local cache:
 
@@ -381,15 +381,15 @@ GET     /packages/maintained-by/<namespace>
 
 GET     /packages/package/<namespace>/<name>
 PUT     /packages/package/<namespace>/<name>
-DELETE  /packages/package/<namespace>/<name>                            # yank. still available, but not displayed anywhere. maintained only by "abandonware"
+DELETE  /packages/package/<namespace>/<name>                                # yank. still available, but not displayed anywhere. maintained only by "abandonware"
 
 GET     /packages/package/<namespace>/<name>/dist-tags
-PUT     /packages/package/<namespace>/<name>/dist-tags/latest           $DISALLOWED
-DELETE  /packages/package/<namespace>/<name>/dist-tags/latest           $DISALLOWED
+PUT     /packages/package/<namespace>/<name>/dist-tags/latest               $DISALLOWED
+DELETE  /packages/package/<namespace>/<name>/dist-tags/latest               $DISALLOWED
 PUT     /packages/package/<namespace>/<name>/dist-tags/<tag>
 DELETE  /packages/package/<namespace>/<name>/dist-tags/<tag>
 
-GET     /packages/package/<namespace>/<name>/versions                   # version-list comes with hash of result of <files> call below
+GET     /packages/package/<namespace>/<name>/versions                       # version-list comes with hash of result of <files> call below
 PUT     /packages/package/<namespace>/<name>/versions/<version>
 DELETE  /packages/package/<namespace>/<name>/versions/<version>
 
@@ -418,7 +418,7 @@ GET     /auth/whoami
 GET     /changes
 ```
 
-`scope` represents a user. Eventually we may allow teams to be created (for free.)
+`scope` represents a user. Eventually we may allow teams to be created (for free).
 
 We will reserve two scopes up-front: `legacy` and `abandonware`. `legacy` is
 special-cased and reads through to the legacy VCPM API. When a package is
@@ -455,10 +455,10 @@ GET     /search
 GET     /legacy
 GET     /legacy/<legacy scope>/<legacy package>   # special casing this for the website: @smallwins/slack is available as /legacy/smallwins/slack
 GET     /legacy/<legacy package>
-GET     /<namespace>/<package>/accept/<uuid>          # accept invitation
+GET     /<namespace>/<package>/accept/<uuid>      # accept invitation
 POST    /<namespace>/<package>/accept/<uuid>
 GET     /<namespace>/<package>
-GET     /<namespace>                                  # display all non-yanked packages that the user currently maintains.
+GET     /<namespace>                              # display all non-yanked packages that the user currently maintains.
 ```
 
 Website uses cookie-based auth.
