@@ -36,3 +36,7 @@ Commands that should exist:
 * __create__: create a new package, meta-info only
 * __about__: or 'info' or 'view'; describe a package
 * __install__: probably this would be handy
+
+## Playground
+There's [playground project](https://github.com/fetis/entropic-playground) with preconfigured entropic package
+and Node.js application to play with `ds` commands.
