@@ -52,6 +52,7 @@
     "eslint-plugin-prettier": "~3.1.0",
     "mocha": "~6.1.4",
     "must": "~0.13.4",
+    "nyc": "^14.1.1",
     "prettier": "~1.17.1",
     "sinon": "^7.3.2"
   },
@@ -72,14 +73,15 @@
   "scripts": {
     "lint": "eslint .",
     "lint-fix": "prettier --write '**/*.js'",
-    "test": "ava"
+    "test": "ava",
+    "test:ci": "nyc ava"
   },
   "ava": {
     "files": [
-      "test/**/*"
+      "**/*.spec.js"
     ],
     "helpers": [
-      "test/utils/**/*"
+      "test/**/*"
     ],
     "sources": [
       "lib/**/*"

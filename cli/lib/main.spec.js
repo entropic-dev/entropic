@@ -1,8 +1,9 @@
 const test = require('ava');
-const main = require('../../lib/main');
-const help = require('../../lib/commands/help');
-const whoami = require('../../lib/commands/whoami');
 const sinon = require('sinon');
+
+const main = require('./main');
+const help = require('./commands/help');
+const whoami = require('./commands/whoami');
 
 async function testUnpack(argv) {
   const log = { log: sinon.spy(), error: sinon.spy() };
