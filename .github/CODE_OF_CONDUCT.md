@@ -122,7 +122,7 @@ Sometimes, though, you need to get maintainers involved. Maintainers will do the
 
 > Patt: "@keeperofbits Okay sorry. I'm just frustrated and I'm kinda burnt out and I guess I got carried away. I'll DM Alex a note apologizing and edit my messages. Sorry for the trouble."
 
-> KeeperOfCommitBits: "@patt Thanks for that. I hear you on the stress. Burnout sucks :/.  Have a good one!"
+> KeeperOfCommitBits: "@patt Thanks for that. I hear you on the stress. Burnout sucks :/. Take care."
 
 #### The Nope Case
 
