@@ -33,7 +33,7 @@
     "form-data": "^2.3.3",
     "fs.promises": "^0.1.2",
     "graceful-fs": "^4.1.15",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.3",
     "node-fetch": "^2.5.0",
     "npm-packlist": "^1.4.1",
     "npm-profile": "^4.0.1",
