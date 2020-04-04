@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "form-data": "^2.3.3",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.3",
     "node-fetch": "^2.5.0",
     "pacote": "^9.5.0"
   },
