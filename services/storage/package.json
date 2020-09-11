@@ -23,7 +23,7 @@
     "micro": "~9.3.4",
     "mkdirp": "~0.5.1",
     "multiparty": "^4.2.1",
-    "node-fetch": "~2.5.0",
+    "node-fetch": "~2.6.1",
     "npm-user-validate": "^1.0.0",
     "ormnomnom": "^5.2.2",
     "pacote": "~9.5.0",
