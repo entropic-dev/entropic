@@ -24,7 +24,7 @@
     "mkdirp": "~0.5.1",
     "multiparty": "^4.2.1",
     "node-fetch": "~2.5.0",
-    "npm-user-validate": "^1.0.0",
+    "npm-user-validate": "^1.0.1",
     "ormnomnom": "^5.2.2",
     "pacote": "~9.5.0",
     "pg": "~7.4.0",
