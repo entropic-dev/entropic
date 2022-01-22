@@ -34,7 +34,7 @@
     "fs.promises": "^0.1.2",
     "graceful-fs": "^4.1.15",
     "minimist": "^1.2.0",
-    "node-fetch": "^2.5.0",
+    "node-fetch": "^3.1.1",
     "npm-packlist": "^1.4.1",
     "npm-profile": "^4.0.1",
     "npmlog": "^4.1.2",
