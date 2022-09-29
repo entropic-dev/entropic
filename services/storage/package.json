@@ -7,8 +7,8 @@
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
-    "@hapi/iron": "^5.1.0",
-    "@hapi/joi": "~15.0.2",
+    "@hapi/iron": "^5.1.4",
+    "@hapi/joi": "~15.1.1",
     "boltzmann": "file:../common/boltzmann",
     "cls-hooked": "^4.2.2",
     "cookie": "^0.3.1",
