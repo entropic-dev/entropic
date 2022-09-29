@@ -7,7 +7,7 @@
     "url": "https://github.com/entropic-dev/entropic/issues"
   },
   "dependencies": {
-    "@hapi/joi": "~15.0.2",
+    "@hapi/joi": "~15.1.1",
     "boltzmann": "file:../common/boltzmann",
     "culture-ships": "~1.0.0",
     "dotenv": "~8.0.0",
