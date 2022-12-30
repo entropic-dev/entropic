@@ -40,7 +40,7 @@
     "eslint": "~5.16.0",
     "eslint-config-prettier": "~4.3.0",
     "eslint-plugin-prettier": "~3.1.0",
-    "mocha": "~6.1.4",
+    "mocha": "~10.2.0",
     "must": "~0.13.4",
     "nyc": "~14.1.1",
     "pgtools": "^0.3.0",
